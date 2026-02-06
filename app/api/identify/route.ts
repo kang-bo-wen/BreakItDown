@@ -1,6 +1,6 @@
 // app/api/identify/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { callQwenVision, IDENTIFICATION_PROMPT } from '@/lib/ai-client';
+import { callVisionAPI, IDENTIFICATION_PROMPT } from '@/lib/ai-client';
 import { IdentificationResponse } from '@/types/graph';
 
 export async function POST(request: NextRequest) {
@@ -21,8 +21,8 @@ export async function POST(request: NextRequest) {
     const buffer = Buffer.from(bytes);
     const base64Image = buffer.toString('base64');
 
-    // Call Qwen Vision API
-    const text = await callQwenVision(base64Image, IDENTIFICATION_PROMPT);
+    // Call Vision API (will use custom AI or Qwen based on config)
+    const text = await callVisionAPI(base64Image, IDENTIFICATION_PROMPT);
 
     // Clean up markdown code blocks if present
     let cleanedText = text.trim();

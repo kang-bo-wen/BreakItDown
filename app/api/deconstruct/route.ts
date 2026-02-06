@@ -1,6 +1,6 @@
 // app/api/deconstruct/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { callQwenText, getDeconstructionPrompt } from '@/lib/ai-client';
+import { callTextAPI, getDeconstructionPrompt } from '@/lib/ai-client';
 import { DeconstructionResponse } from '@/types/graph';
 
 export async function POST(request: NextRequest) {
@@ -19,8 +19,8 @@ export async function POST(request: NextRequest) {
     // Generate the prompt
     const prompt = getDeconstructionPrompt(itemName, parentContext);
 
-    // Call Qwen Text API
-    const text = await callQwenText(prompt);
+    // Call Text API (will use custom AI or Qwen based on config)
+    const text = await callTextAPI(prompt);
 
     // Clean up markdown code blocks if present
     let cleanedText = text.trim();

@@ -1,23 +1,96 @@
 // lib/ai-client.ts
 /**
  * AI Client for Entropy Reverse Project
- * Supports: Alibaba Cloud Qwen (通义千问)
+ * Supports: Custom AI API (OpenAI-compatible) or Alibaba Cloud Qwen
  */
 
-// 阿里云通义千问API配置
+// 检查是否使用自定义AI接口
+const useCustomAI = !!process.env.AI_BASE_URL && !!process.env.AI_API_KEY;
+
+// 自定义AI配置
+const AI_BASE_URL = process.env.AI_BASE_URL;
+const AI_API_KEY = process.env.AI_API_KEY;
+const AI_MODEL_VISION = process.env.AI_MODEL_VISION || 'gpt-4-vision-preview';
+const AI_MODEL_TEXT = process.env.AI_MODEL_TEXT || 'gpt-4';
+
+// 阿里云通义千问配置
 const DASHSCOPE_API_KEY = process.env.DASHSCOPE_API_KEY;
-
-if (!DASHSCOPE_API_KEY) {
-  throw new Error('DASHSCOPE_API_KEY is not defined in environment variables');
-}
-
 const DASHSCOPE_BASE_URL = 'https://dashscope.aliyuncs.com/api/v1/services/aigc/multimodal-generation/generation';
 const DASHSCOPE_TEXT_URL = 'https://dashscope.aliyuncs.com/api/v1/services/aigc/text-generation/generation';
 
+// 验证配置
+if (!useCustomAI && !DASHSCOPE_API_KEY) {
+  throw new Error('Please configure either custom AI (AI_BASE_URL + AI_API_KEY) or DASHSCOPE_API_KEY');
+}
+
 /**
- * 调用通义千问视觉模型（用于图片识别）
+ * 调用自定义AI视觉模型（OpenAI兼容格式）
  */
-export async function callQwenVision(imageBase64: string, prompt: string): Promise<string> {
+async function callCustomVision(imageBase64: string, prompt: string): Promise<string> {
+  const response = await fetch(`${AI_BASE_URL}/chat/completions`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${AI_API_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: AI_MODEL_VISION,
+      messages: [
+        {
+          role: 'user',
+          content: [
+            { type: 'text', text: prompt },
+            { type: 'image_url', image_url: { url: `data:image/jpeg;base64,${imageBase64}` } }
+          ]
+        }
+      ],
+      max_tokens: 1000,
+    })
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Custom AI API error: ${response.status} - ${errorText}`);
+  }
+
+  const data = await response.json();
+  return data.choices[0].message.content;
+}
+
+/**
+ * 调用自定义AI文本模型（OpenAI兼容格式）
+ */
+async function callCustomText(prompt: string): Promise<string> {
+  const response = await fetch(`${AI_BASE_URL}/chat/completions`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${AI_API_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: AI_MODEL_TEXT,
+      messages: [
+        { role: 'system', content: 'You are a helpful assistant that returns responses in JSON format.' },
+        { role: 'user', content: prompt }
+      ],
+      temperature: 0.8,
+      max_tokens: 2000,
+    })
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Custom AI API error: ${response.status} - ${errorText}`);
+  }
+
+  const data = await response.json();
+  return data.choices[0].message.content;
+}
+
+/**
+ * 调用通义千问视觉模型
+ */
+async function callQwenVision(imageBase64: string, prompt: string): Promise<string> {
   const response = await fetch(DASHSCOPE_BASE_URL, {
     method: 'POST',
     headers: {
@@ -25,7 +98,7 @@ export async function callQwenVision(imageBase64: string, prompt: string): Promi
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      model: 'qwen-vl-plus', // 或使用 'qwen-vl-max' 获得更好效果
+      model: 'qwen-vl-plus',
       input: {
         messages: [
           {
@@ -58,9 +131,9 @@ export async function callQwenVision(imageBase64: string, prompt: string): Promi
 }
 
 /**
- * 调用通义千问文本模型（用于物体拆解）
+ * 调用通义千问文本模型
  */
-export async function callQwenText(prompt: string): Promise<string> {
+async function callQwenText(prompt: string): Promise<string> {
   const response = await fetch(DASHSCOPE_TEXT_URL, {
     method: 'POST',
     headers: {
@@ -68,7 +141,7 @@ export async function callQwenText(prompt: string): Promise<string> {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      model: 'qwen-plus', // 或使用 'qwen-max' 获得更好效果
+      model: 'qwen-plus',
       input: {
         messages: [
           {
@@ -103,33 +176,59 @@ export async function callQwenText(prompt: string): Promise<string> {
 }
 
 /**
+ * 统一的视觉API调用接口
+ */
+export async function callVisionAPI(imageBase64: string, prompt: string): Promise<string> {
+  if (useCustomAI) {
+    console.log('Using custom AI vision model:', AI_MODEL_VISION);
+    return callCustomVision(imageBase64, prompt);
+  } else {
+    console.log('Using Qwen vision model');
+    return callQwenVision(imageBase64, prompt);
+  }
+}
+
+/**
+ * 统一的文本API调用接口
+ */
+export async function callTextAPI(prompt: string): Promise<string> {
+  if (useCustomAI) {
+    console.log('Using custom AI text model:', AI_MODEL_TEXT);
+    return callCustomText(prompt);
+  } else {
+    console.log('Using Qwen text model');
+    return callQwenText(prompt);
+  }
+}
+
+/**
  * System prompt for image identification
  */
-export const IDENTIFICATION_PROMPT = `Role: You are identifying objects in images for a kids' game.
+export const IDENTIFICATION_PROMPT = `Role: You are an object identification system that provides accurate and objective descriptions.
 
-Task: Look at this image and identify the main object.
+Task: Analyze this image and identify the main object with precision.
 
-Output: Return ONLY a JSON object with these fields:
-- name: A specific name (e.g., "iPhone 15 Pro" not just "phone", "Red bicycle" not just "bicycle")
-- category: What type of thing it is (e.g., "Electronic", "Vehicle", "Furniture", "Toy")
-- brief_description: A detailed description that a 10-year-old can understand (2-3 sentences)
+Output: Return ONLY a JSON object with these fields (use Chinese for all text):
+- name: A specific, detailed name in Chinese (e.g., "iPhone 15 Pro" not just "手机", "红色山地自行车" not just "自行车")
+- category: The object's category in Chinese (e.g., "电子产品", "交通工具", "家具", "家电", "工具")
+- brief_description: An accurate, objective description in Chinese (2-3 sentences) covering key features, materials, and primary functions
 
 Example outputs:
 {
   "name": "iPhone 15 Pro",
-  "category": "Electronic",
-  "brief_description": "A black smartphone with three cameras on the back. It has a large touchscreen and is made by Apple. People use it to make calls, take photos, and use apps."
+  "category": "电子产品",
+  "brief_description": "一款采用钛金属边框和玻璃后盖的智能手机，配备三摄像头系统。设备拥有6.1英寸OLED显示屏，运行苹果iOS操作系统。主要功能包括通讯、摄影、上网和运行移动应用程序。"
 }
 
 {
-  "name": "Red Mountain Bike",
-  "category": "Vehicle",
-  "brief_description": "A red bicycle with thick tires for riding on rough trails. It has gears to help you go up hills and hand brakes to stop. The seat can be adjusted for different heights."
+  "name": "红色山地自行车",
+  "category": "交通工具",
+  "brief_description": "一辆配备铝合金车架、前避震叉和越野轮胎的山地自行车，专为崎岖地形设计。装备多速变速系统和液压碟刹。可调节座管适应不同身高的骑行者。"
 }
 
-Remember: Be specific and descriptive, but use simple words that kids understand!
+Requirements: Be specific, accurate, and objective. Use clear, professional Chinese language.
 
-Output Format: JSON only.`;
+Output Format: JSON only (all text in Chinese).`;
 
 /**
  * Generate system prompt for deconstruction
@@ -139,62 +238,82 @@ Output Format: JSON only.`;
 export function getDeconstructionPrompt(currentItem: string, parentContext?: string): string {
   const contextNote = parentContext ? `\nContext: This item is part of "${parentContext}".` : '';
 
-  return `Role: You are explaining how things are made to a 10-year-old child in a game.
+  return `Role: You are a manufacturing and materials expert analyzing product composition and supply chains.
 
-Task: Break down "${currentItem}" into what it's made of (one level only).${contextNote}
+Task: Break down "${currentItem}" into its constituent components or materials (one level only).${contextNote}
 
-IMPORTANT RULES FOR A 10-YEAR-OLD:
-- Use SIMPLE words that kids understand
-- NO chemistry words (NO atoms, molecules, compounds, elements, etc.)
-- Only use things you can SEE and TOUCH in nature
+CRITICAL CONSTRAINTS:
+1. Maximum decomposition depth: 6 levels total
+2. Final leaf nodes MUST be from the Basic Elements List below
+3. Be LESS detailed - skip minor components, focus on major materials
+4. When close to basic elements, jump directly to them (don't over-decompose)
 
-How to break things down:
+BASIC ELEMENTS LIST (Final Leaf Nodes MUST be from this list):
+🌿 Organic/Biological:
+- Wood (木材)
+- Cotton/Fiber (棉/植物纤维)
+- Natural Rubber (天然橡胶)
+- Biomass (生物质/食物)
 
-1. If it's something BUILT by putting parts together (like a phone, car, or toy):
-   → Show all the parts you can take apart
-   → Example: "Phone" → Screen, Battery, Buttons, Case
+🛢️ Fossil/Chemical:
+- Crude Oil (原油)
+- Coal (煤炭)
 
-2. If it's a PART of something (like a screen or wheel):
-   → Show what materials it's made from
-   → Example: "Screen" → Glass, Plastic frame
+💎 Minerals/Metals:
+- Iron Ore (铁矿石)
+- Copper Ore (铜矿石)
+- Bauxite (铝土矿)
+- Silica Sand (硅砂/石英)
+- Gold (金)
+- Lithium (锂)
 
-3. If it's a MATERIAL (like plastic, glass, metal):
-   → Jump straight to natural things from nature
-   → Example: "Plastic" → Oil from underground, Natural gas
-   → Example: "Glass" → Sand from beach, Limestone rocks
-   → Example: "Metal" → Metal rocks from mines
+💧 Basic Elements:
+- Water (水)
+- Clay/Stone (黏土/石头)
 
-NATURAL MATERIALS (things from nature - STOP HERE):
-✓ From the ground: Sand, Rocks, Clay, Dirt, Coal, Metal ores (iron rocks, copper rocks, gold rocks)
-✓ From plants: Wood, Leaves, Cotton, Bamboo, Tree sap (rubber)
-✓ Liquids: Water, Underground oil, Natural gas
-✓ From animals: Leather, Wool, Silk
+DECOMPOSITION STRATEGY (Maximum 6 levels):
 
-❌ NEVER SAY THESE (too complicated for kids):
-- Silicon, Silica, Quartz → Just say "Sand"
-- Cellulose, Lignin → Just say "Wood"
-- Iron oxide, Ferrous → Just say "Iron ore" or "Iron rocks"
-- Sodium carbonate, Calcium → Just say "Limestone" or "Salt rocks"
-- Petroleum → Say "Underground oil" or just "Oil"
-- ANY chemical names or formulas
+Level 1 - ASSEMBLED PRODUCTS:
+→ Break into 3-5 major functional components only
+→ Example: "Smartphone" → Display, Battery, Circuit board, Housing
 
-EXAMPLES (talk like this):
-✓ "Plastic bottle" → Underground oil, Natural gas
-✓ "Glass window" → Sand, Limestone rocks
-✓ "Steel knife" → Iron ore (iron rocks), Coal
-✓ "Paper" → Wood, Water
-✓ "Rubber tire" → Tree sap (rubber), Oil
-✓ "Concrete" → Sand, Small rocks (gravel), Limestone, Water
+Level 2-3 - MAJOR COMPONENTS:
+→ Break into main material types (skip minor parts)
+→ Example: "Display" → Glass, Plastic frame, Metal connectors
 
-Remember: If it comes from nature and a kid can understand it, mark it as RAW_MATERIAL = true
+Level 4-5 - MATERIALS:
+→ Identify the material category
+→ Example: "Glass" → Silica Sand, Soda ash (from Clay/Stone)
+→ Example: "Plastic" → Crude Oil
 
-Output Format: JSON only.
+Level 6 - BASIC ELEMENTS:
+→ MUST be from the Basic Elements List above
+→ Mark is_raw_material = true
+
+IMPORTANT RULES:
+1. Use Chinese for all names and descriptions (中文输出)
+2. Be LESS precise - combine similar materials, skip minor components
+3. When you reach a material that's 1-2 steps from basic elements, jump directly
+4. NEVER exceed 6 levels of decomposition
+5. Final nodes MUST match the Basic Elements List exactly
+6. Skip chemical synthesis steps - go straight to basic elements
+
+EXAMPLES:
+
+✓ "塑料瓶" → 塑料 → 原油 (2 levels, good!)
+✓ "玻璃窗" → 玻璃 → 硅砂 (2 levels, good!)
+✓ "钢架" → 钢材 → 铁矿石, 煤炭 (2 levels, good!)
+✓ "电路板" → PCB基板, 铜线, 焊料 → (next level: 硅砂, 铜矿石, etc.)
+
+❌ "塑料瓶" → 聚乙烯树脂 → 聚合物颗粒 → 精炼石油 → 原油 (TOO DETAILED!)
+
+Output Format: JSON only (Chinese names and descriptions).
 {
   "parent_item": "${currentItem}",
   "parts": [
     {
-      "name": "Simple name a kid understands",
-      "description": "What it does, in simple words",
+      "name": "组件或材料名称（中文）",
+      "description": "功能或特性（中文）",
       "is_raw_material": true or false
     }
   ]

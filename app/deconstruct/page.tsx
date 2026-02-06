@@ -36,6 +36,7 @@ export default function DeconstructionGame() {
   const [identificationResult, setIdentificationResult] = useState<IdentificationResult | null>(null);
   const [deconstructionTree, setDeconstructionTree] = useState<TreeNode | null>(null);
   const [isDeconstructing, setIsDeconstructing] = useState(false);
+  const [processingStatus, setProcessingStatus] = useState<string>(''); // 新增：显示当前处理状态
 
   // 处理图片上传
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -81,88 +82,194 @@ export default function DeconstructionGame() {
     }
   };
 
-  // 递归拆解
-  const deconstructItem = async (itemName: string, parentContext?: string): Promise<TreeNode> => {
+  // 单层拆解（不递归）
+  const deconstructItem = async (
+    itemName: string,
+    parentContext?: string
+  ): Promise<TreeNode> => {
+    setProcessingStatus(prev => prev + `\n🔍 正在拆解: ${itemName}`);
+
     const response = await fetch('/api/deconstruct', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ itemName, parentContext }),
     });
 
-    const result: DeconstructionResult = await response.json();
-
-    const children: TreeNode[] = [];
-    for (const part of result.parts) {
-      if (!part.is_raw_material) {
-        // 继续递归拆解
-        const childNode = await deconstructItem(part.name, itemName);
-        children.push(childNode);
-      } else {
-        // 原材料，停止拆解
-        children.push({
-          id: `${itemName}-${part.name}`,
-          name: part.name,
-          description: part.description,
-          isRawMaterial: true,
-          children: [],
-          isExpanded: false,
-        });
-      }
+    if (!response.ok) {
+      throw new Error('拆解失败');
     }
 
-    return {
-      id: itemName,
+    const result: DeconstructionResult = await response.json();
+
+    setProcessingStatus(prev => prev + `\n✅ 获取到 ${result.parts.length} 个组成部分`);
+
+    // 创建子节点（不递归拆解）
+    const children: TreeNode[] = result.parts.map(part => ({
+      id: `${Date.now()}-${Math.random()}-${part.name}`,
+      name: part.name,
+      description: part.description,
+      isRawMaterial: part.is_raw_material,
+      children: [],
+      isExpanded: false,
+    }));
+
+    const currentNode: TreeNode = {
+      id: `${Date.now()}-${itemName}`,
       name: itemName,
       description: result.parts[0]?.description || '',
       isRawMaterial: false,
       children,
-      isExpanded: true,
+      isExpanded: false,
     };
+
+    return currentNode;
   };
 
-  // 开始拆解
+  // 开始初始拆解（只拆解第一层）
   const startDeconstruction = async () => {
     if (!identificationResult) return;
 
     setIsDeconstructing(true);
+    setDeconstructionTree(null);
+    setProcessingStatus('🚀 开始拆解第一层...');
+
     try {
       const tree = await deconstructItem(identificationResult.name);
       setDeconstructionTree(tree);
+      setProcessingStatus(prev => prev + '\n\n✅ 第一层拆解完成！点击节点继续拆解');
     } catch (error) {
       console.error('拆解错误:', error);
       alert('拆解失败，请重试');
+      setProcessingStatus(prev => prev + '\n\n❌ 拆解失败');
     } finally {
       setIsDeconstructing(false);
     }
   };
 
-  // 渲染拆解树
-  const renderTree = (node: TreeNode, depth: number = 0) => {
+  // 处理节点点击（展开拆解）
+  const handleNodeClick = async (nodeId: string, nodeName: string, parentContext?: string) => {
+    // 如果是原材料，不能继续拆解
+    const findNode = (tree: TreeNode | null, id: string): TreeNode | null => {
+      if (!tree) return null;
+      if (tree.id === id) return tree;
+      for (const child of tree.children) {
+        const found = findNode(child, id);
+        if (found) return found;
+      }
+      return null;
+    };
+
+    const targetNode = findNode(deconstructionTree, nodeId);
+    if (!targetNode || targetNode.isRawMaterial) return;
+
+    // 如果已经展开过，只是切换展开状态
+    if (targetNode.children.length > 0) {
+      setDeconstructionTree(prevTree => {
+        if (!prevTree) return null;
+        const updateNode = (node: TreeNode): TreeNode => {
+          if (node.id === nodeId) {
+            return { ...node, isExpanded: !node.isExpanded };
+          }
+          return {
+            ...node,
+            children: node.children.map(updateNode),
+          };
+        };
+        return updateNode(prevTree);
+      });
+      return;
+    }
+
+    // 如果还没有拆解过，进行拆解
+    setProcessingStatus(prev => prev + `\n\n🔍 点击拆解: ${nodeName}`);
+
+    try {
+      const response = await fetch('/api/deconstruct', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ itemName: nodeName, parentContext }),
+      });
+
+      if (!response.ok) {
+        throw new Error('拆解失败');
+      }
+
+      const result: DeconstructionResult = await response.json();
+
+      setProcessingStatus(prev => prev + `\n✅ 获取到 ${result.parts.length} 个组成部分`);
+
+      // 创建子节点
+      const children: TreeNode[] = result.parts.map(part => ({
+        id: `${Date.now()}-${Math.random()}-${part.name}`,
+        name: part.name,
+        description: part.description,
+        isRawMaterial: part.is_raw_material,
+        children: [],
+        isExpanded: false,
+      }));
+
+      // 更新树结构
+      setDeconstructionTree(prevTree => {
+        if (!prevTree) return null;
+        const updateNode = (node: TreeNode): TreeNode => {
+          if (node.id === nodeId) {
+            return { ...node, children, isExpanded: true };
+          }
+          return {
+            ...node,
+            children: node.children.map(updateNode),
+          };
+        };
+        return updateNode(prevTree);
+      });
+    } catch (error) {
+      console.error('拆解错误:', error);
+      alert('拆解失败，请重试');
+      setProcessingStatus(prev => prev + `\n❌ 拆解 ${nodeName} 失败`);
+    }
+  };
+
+  // 渲染拆解树（带点击交互）
+  const renderTree = (node: TreeNode, depth: number = 0, parentName?: string) => {
     const indent = depth * 24;
+    const canExpand = !node.isRawMaterial;
+    const hasChildren = node.children.length > 0;
 
     return (
       <div key={node.id} style={{ marginLeft: `${indent}px` }} className="my-2">
-        <div className={`p-3 rounded-lg ${
-          node.isRawMaterial
-            ? 'bg-green-500/20 border-2 border-green-500'
-            : 'bg-blue-500/20 border-2 border-blue-500'
-        }`}>
+        <div
+          className={`p-3 rounded-lg transition-all ${
+            node.isRawMaterial
+              ? 'bg-green-500/20 border-2 border-green-500'
+              : 'bg-blue-500/20 border-2 border-blue-500 cursor-pointer hover:bg-blue-500/30'
+          }`}
+          onClick={() => canExpand && handleNodeClick(node.id, node.name, parentName)}
+        >
           <div className="flex items-center gap-2">
             <span className="text-2xl">
-              {node.isRawMaterial ? '🌿' : '📦'}
+              {node.isRawMaterial ? '🌿' : hasChildren ? (node.isExpanded ? '📂' : '📦') : '📦'}
             </span>
-            <div>
+            <div className="flex-1">
               <div className="font-bold text-lg">{node.name}</div>
               <div className="text-sm text-gray-300">{node.description}</div>
               {node.isRawMaterial && (
-                <div className="text-xs text-green-400 mt-1">✅ 自然材料 - 拆解完成</div>
+                <div className="text-xs text-green-400 mt-1">✅ 自然材料 - 拆解终点</div>
+              )}
+              {!node.isRawMaterial && !hasChildren && (
+                <div className="text-xs text-blue-400 mt-1">👆 点击拆解此组件</div>
+              )}
+              {!node.isRawMaterial && hasChildren && !node.isExpanded && (
+                <div className="text-xs text-blue-400 mt-1">👆 点击展开 ({node.children.length} 个子组件)</div>
+              )}
+              {!node.isRawMaterial && hasChildren && node.isExpanded && (
+                <div className="text-xs text-gray-400 mt-1">👆 点击折叠</div>
               )}
             </div>
           </div>
         </div>
-        {node.children.length > 0 && (
+        {hasChildren && node.isExpanded && (
           <div className="mt-2">
-            {node.children.map(child => renderTree(child, depth + 1))}
+            {node.children.map(child => renderTree(child, depth + 1, node.name))}
           </div>
         )}
       </div>
@@ -233,8 +340,16 @@ export default function DeconstructionGame() {
                 disabled={isDeconstructing}
                 className="mt-4 bg-purple-500 hover:bg-purple-600 disabled:bg-gray-500 px-8 py-3 rounded-lg font-semibold transition"
               >
-                {isDeconstructing ? '拆解中...' : '🔨 开始拆解'}
+                {isDeconstructing ? '拆解中...' : '🔨 开始拆解（第一层）'}
               </button>
+            )}
+
+            {deconstructionTree && (
+              <div className="mt-4 bg-blue-500/20 rounded-lg p-4 border border-blue-500/50">
+                <div className="text-sm text-blue-300">
+                  💡 <strong>交互提示：</strong>点击蓝色节点继续拆解，绿色节点是自然材料（拆解终点）
+                </div>
+              </div>
             )}
           </div>
         )}
@@ -249,12 +364,20 @@ export default function DeconstructionGame() {
           </div>
         )}
 
-        {isDeconstructing && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
-            <div className="bg-white/10 backdrop-blur-lg rounded-lg p-8 text-center">
-              <div className="text-4xl mb-4">🔄</div>
-              <div className="text-xl">正在递归拆解...</div>
-              <div className="text-sm text-gray-300 mt-2">这可能需要1-2分钟</div>
+        {/* 实时处理日志 */}
+        {processingStatus && (
+          <div className="bg-white/10 backdrop-blur-lg rounded-lg p-6 mt-6 border border-white/20">
+            <div className="flex items-center gap-3 mb-4">
+              <h2 className="text-2xl font-semibold">📋 处理日志</h2>
+              {isDeconstructing && (
+                <div className="flex items-center gap-2 text-yellow-400">
+                  <div className="text-2xl animate-spin">🔄</div>
+                  <span className="text-sm font-semibold">正在拆解中...</span>
+                </div>
+              )}
+            </div>
+            <div className="bg-black/50 rounded-lg p-4 max-h-[400px] overflow-y-auto font-mono text-sm">
+              <pre className="whitespace-pre-wrap text-gray-300">{processingStatus}</pre>
             </div>
           </div>
         )}
