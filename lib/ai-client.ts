@@ -61,30 +61,44 @@ async function callCustomVision(imageBase64: string, prompt: string): Promise<st
  * 调用自定义AI文本模型（OpenAI兼容格式）
  */
 async function callCustomText(prompt: string): Promise<string> {
-  const response = await fetch(`${AI_BASE_URL}/chat/completions`, {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${AI_API_KEY}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      model: AI_MODEL_TEXT,
-      messages: [
-        { role: 'system', content: 'You are a helpful assistant that returns responses in JSON format.' },
-        { role: 'user', content: prompt }
-      ],
-      temperature: 0.8,
-      max_tokens: 2000,
-    })
-  });
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 90000); // 90秒超时
 
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`Custom AI API error: ${response.status} - ${errorText}`);
+  try {
+    const response = await fetch(`${AI_BASE_URL}/chat/completions`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${AI_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: AI_MODEL_TEXT,
+        messages: [
+          { role: 'system', content: 'You are a helpful assistant that returns responses in JSON format.' },
+          { role: 'user', content: prompt }
+        ],
+        temperature: 0.8,
+        max_tokens: 2000,
+      }),
+      signal: controller.signal
+    });
+
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Custom AI API error: ${response.status} - ${errorText}`);
+    }
+
+    const data = await response.json();
+    return data.choices[0].message.content;
+  } catch (error: any) {
+    clearTimeout(timeoutId);
+    if (error.name === 'AbortError') {
+      throw new Error('AI API request timeout (90s)');
+    }
+    throw error;
   }
-
-  const data = await response.json();
-  return data.choices[0].message.content;
 }
 
 /**
@@ -134,45 +148,59 @@ async function callQwenVision(imageBase64: string, prompt: string): Promise<stri
  * 调用通义千问文本模型
  */
 async function callQwenText(prompt: string): Promise<string> {
-  const response = await fetch(DASHSCOPE_TEXT_URL, {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${DASHSCOPE_API_KEY}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      model: 'qwen-plus',
-      input: {
-        messages: [
-          {
-            role: 'system',
-            content: 'You are a helpful assistant that returns responses in JSON format.'
-          },
-          {
-            role: 'user',
-            content: prompt
-          }
-        ]
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 90000); // 90秒超时
+
+  try {
+    const response = await fetch(DASHSCOPE_TEXT_URL, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${DASHSCOPE_API_KEY}`,
+        'Content-Type': 'application/json',
       },
-      parameters: {
-        result_format: 'message',
-        temperature: 0.8
-      }
-    })
-  });
+      body: JSON.stringify({
+        model: 'qwen-plus',
+        input: {
+          messages: [
+            {
+              role: 'system',
+              content: 'You are a helpful assistant that returns responses in JSON format.'
+            },
+            {
+              role: 'user',
+              content: prompt
+            }
+          ]
+        },
+        parameters: {
+          result_format: 'message',
+          temperature: 0.8
+        }
+      }),
+      signal: controller.signal
+    });
 
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`Qwen API error: ${response.status} - ${errorText}`);
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Qwen API error: ${response.status} - ${errorText}`);
+    }
+
+    const data = await response.json();
+
+    if (data.output?.choices?.[0]?.message?.content) {
+      return data.output.choices[0].message.content;
+    }
+
+    throw new Error('Invalid response format from Qwen API');
+  } catch (error: any) {
+    clearTimeout(timeoutId);
+    if (error.name === 'AbortError') {
+      throw new Error('Qwen API request timeout (90s)');
+    }
+    throw error;
   }
-
-  const data = await response.json();
-
-  if (data.output?.choices?.[0]?.message?.content) {
-    return data.output.choices[0].message.content;
-  }
-
-  throw new Error('Invalid response format from Qwen API');
 }
 
 /**
@@ -204,31 +232,15 @@ export async function callTextAPI(prompt: string): Promise<string> {
 /**
  * System prompt for image identification
  */
-export const IDENTIFICATION_PROMPT = `Role: You are an object identification system that provides accurate and objective descriptions.
-
-Task: Analyze this image and identify the main object with precision.
-
-Output: Return ONLY a JSON object with these fields (use Chinese for all text):
-- name: A specific, detailed name in Chinese (e.g., "iPhone 15 Pro" not just "手机", "红色山地自行车" not just "自行车")
-- category: The object's category in Chinese (e.g., "电子产品", "交通工具", "家具", "家电", "工具")
-- brief_description: An accurate, objective description in Chinese (2-3 sentences) covering key features, materials, and primary functions
-
-Example outputs:
-{
-  "name": "iPhone 15 Pro",
-  "category": "电子产品",
-  "brief_description": "一款采用钛金属边框和玻璃后盖的智能手机，配备三摄像头系统。设备拥有6.1英寸OLED显示屏，运行苹果iOS操作系统。主要功能包括通讯、摄影、上网和运行移动应用程序。"
-}
+export const IDENTIFICATION_PROMPT = `识别图片中的主要物体，返回JSON格式（中文）：
 
 {
-  "name": "红色山地自行车",
-  "category": "交通工具",
-  "brief_description": "一辆配备铝合金车架、前避震叉和越野轮胎的山地自行车，专为崎岖地形设计。装备多速变速系统和液压碟刹。可调节座管适应不同身高的骑行者。"
+  "name": "具体名称（如'iPhone 15 Pro'而非'手机'）",
+  "category": "类别（如'电子产品'、'交通工具'、'家具'）",
+  "brief_description": "客观描述（2-3句话，包含材料、功能）"
 }
 
-Requirements: Be specific, accurate, and objective. Use clear, professional Chinese language.
-
-Output Format: JSON only (all text in Chinese).`;
+要求：准确、具体、客观，使用专业中文。`;
 
 /**
  * Generate system prompt for deconstruction

@@ -3,6 +3,37 @@ import { NextRequest, NextResponse } from 'next/server';
 import { callTextAPI, getDeconstructionPrompt } from '@/lib/ai-client';
 import { DeconstructionResponse } from '@/types/graph';
 
+// 重试函数
+async function retryWithBackoff<T>(
+  fn: () => Promise<T>,
+  maxRetries: number = 2,
+  initialDelay: number = 1000
+): Promise<T> {
+  let lastError: Error | null = null;
+
+  for (let i = 0; i <= maxRetries; i++) {
+    try {
+      return await fn();
+    } catch (error: any) {
+      lastError = error;
+
+      // 如果是最后一次重试，直接抛出错误
+      if (i === maxRetries) {
+        break;
+      }
+
+      // 计算延迟时间（指数退避）
+      const delay = initialDelay * Math.pow(2, i);
+      console.log(`拆解请求失败，${delay}ms后重试 (${i + 1}/${maxRetries})...`);
+
+      // 等待后重试
+      await new Promise(resolve => setTimeout(resolve, delay));
+    }
+  }
+
+  throw lastError;
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -19,8 +50,8 @@ export async function POST(request: NextRequest) {
     // Generate the prompt
     const prompt = getDeconstructionPrompt(itemName, parentContext);
 
-    // Call Text API (will use custom AI or Qwen based on config)
-    const text = await callTextAPI(prompt);
+    // Call Text API with retry logic
+    const text = await retryWithBackoff(() => callTextAPI(prompt));
 
     // Clean up markdown code blocks if present
     let cleanedText = text.trim();

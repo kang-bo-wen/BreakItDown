@@ -29,6 +29,18 @@ interface TreeNode {
   isExpanded: boolean;
 }
 
+interface KnowledgeCardData {
+  title: string;
+  doc_number: string;
+  steps: {
+    step_number: number;
+    action_title: string;
+    description: string;
+    parameters: { label: string; value: string }[];
+    ai_image_prompt: string;
+  }[];
+}
+
 export default function DeconstructionGame() {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -38,20 +50,157 @@ export default function DeconstructionGame() {
   const [isDeconstructing, setIsDeconstructing] = useState(false);
   const [processingStatus, setProcessingStatus] = useState<string>(''); // 新增：显示当前处理状态
   const [loadingNodeIds, setLoadingNodeIds] = useState<Set<string>>(new Set()); // 跟踪正在加载的节点
+  const [knowledgeCard, setKnowledgeCard] = useState<{ node: TreeNode; data: KnowledgeCardData } | null>(null); // 知识卡片状态
+  const [loadingKnowledge, setLoadingKnowledge] = useState(false); // 知识卡片加载状态
+  const [knowledgeCache, setKnowledgeCache] = useState<Map<string, KnowledgeCardData>>(new Map()); // 知识卡片缓存
+  const [loadingKnowledgeIds, setLoadingKnowledgeIds] = useState<Set<string>>(new Set()); // 跟踪正在加载知识卡片的节点
+
+  // 高亮显示文本中的子节点名称
+  const highlightChildrenNames = (text: string, childrenNames: string[]) => {
+    if (!text || childrenNames.length === 0) return text;
+
+    // 按长度从长到短排序，避免短名称先匹配导致长名称无法匹配
+    const sortedNames = [...childrenNames].sort((a, b) => b.length - a.length);
+
+    // 创建正则表达式，匹配所有子节点名称
+    const pattern = sortedNames.map(name => name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
+    const regex = new RegExp(`(${pattern})`, 'g');
+
+    // 分割文本并高亮匹配的部分
+    const parts = text.split(regex);
+
+    return (
+      <>
+        {parts.map((part, index) => {
+          if (sortedNames.includes(part)) {
+            return (
+              <span key={index} className="font-bold text-red-400">
+                {part}
+              </span>
+            );
+          }
+          return <span key={index}>{part}</span>;
+        })}
+      </>
+    );
+  };
+
+  // 知识卡片请求队列（限制并发数，支持优先级）
+  const knowledgeRequestQueue = useState(() => {
+    let activeRequests = 0;
+    const maxConcurrent = 4; // 最多同时4个请求
+    const highPriorityQueue: Array<() => Promise<void>> = []; // 高优先级队列（前台请求）
+    const lowPriorityQueue: Array<() => Promise<void>> = []; // 低优先级队列（后台预加载）
+
+    const processQueue = async () => {
+      if (activeRequests >= maxConcurrent) return;
+
+      // 优先处理高优先级队列
+      const task = highPriorityQueue.shift() || lowPriorityQueue.shift();
+      if (!task) return;
+
+      activeRequests++;
+      try {
+        await task();
+      } finally {
+        activeRequests--;
+        processQueue(); // 处理下一个任务
+      }
+    };
+
+    return {
+      enqueue: (task: () => Promise<void>, highPriority: boolean = false) => {
+        if (highPriority) {
+          highPriorityQueue.push(task);
+        } else {
+          lowPriorityQueue.push(task);
+        }
+        processQueue();
+      }
+    };
+  })[0];
+
+  // 压缩图片
+  const compressImage = async (file: File, maxWidth: number = 800, maxHeight: number = 800, quality: number = 0.8): Promise<File> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = document.createElement('img');
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+
+          // 计算缩放比例
+          if (width > height) {
+            if (width > maxWidth) {
+              height = (height * maxWidth) / width;
+              width = maxWidth;
+            }
+          } else {
+            if (height > maxHeight) {
+              width = (width * maxHeight) / height;
+              height = maxHeight;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          if (!ctx) {
+            reject(new Error('无法获取canvas context'));
+            return;
+          }
+
+          ctx.drawImage(img, 0, 0, width, height);
+
+          canvas.toBlob(
+            (blob) => {
+              if (!blob) {
+                reject(new Error('图片压缩失败'));
+                return;
+              }
+              const compressedFile = new File([blob], file.name, {
+                type: 'image/jpeg',
+                lastModified: Date.now(),
+              });
+              resolve(compressedFile);
+            },
+            'image/jpeg',
+            quality
+          );
+        };
+        img.onerror = () => reject(new Error('图片加载失败'));
+        img.src = e.target?.result as string;
+      };
+      reader.onerror = () => reject(new Error('文件读取失败'));
+      reader.readAsDataURL(file);
+    });
+  };
 
   // 处理图片上传
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setImageFile(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-      // 重置之前的结果
-      setIdentificationResult(null);
-      setDeconstructionTree(null);
+      try {
+        // 压缩图片
+        const compressedFile = await compressImage(file);
+        setImageFile(compressedFile);
+
+        // 生成预览
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setImagePreview(reader.result as string);
+        };
+        reader.readAsDataURL(compressedFile);
+
+        // 重置之前的结果
+        setIdentificationResult(null);
+        setDeconstructionTree(null);
+      } catch (error) {
+        console.error('图片压缩失败:', error);
+        alert('图片处理失败，请重试');
+      }
     }
   };
 
@@ -142,6 +291,11 @@ export default function DeconstructionGame() {
       );
       setDeconstructionTree(tree);
       setProcessingStatus(prev => prev + '\n\n✅ 第一层拆解完成！点击节点继续拆解');
+
+      // 后台预加载知识卡片（不阻塞）
+      if (tree.children.length > 0) {
+        fetchKnowledgeCard(tree, false);
+      }
     } catch (error) {
       console.error('拆解错误:', error);
       alert('拆解失败，请重试');
@@ -233,6 +387,17 @@ export default function DeconstructionGame() {
         };
         return updateNode(prevTree);
       });
+
+      // 后台预加载知识卡片（不阻塞）
+      const updatedNode: TreeNode = {
+        id: nodeId,
+        name: nodeName,
+        description: targetNode?.description || '',
+        isRawMaterial: false,
+        children,
+        isExpanded: true
+      };
+      fetchKnowledgeCard(updatedNode, false);
     } catch (error) {
       console.error('拆解错误:', error);
       alert('拆解失败，请重试');
@@ -245,6 +410,82 @@ export default function DeconstructionGame() {
         return newSet;
       });
     }
+  };
+
+  // 获取知识卡片内容（后台静默加载，不阻塞）
+  const fetchKnowledgeCard = async (node: TreeNode, showModal: boolean = true): Promise<void> => {
+    if (!node.children || node.children.length === 0) return;
+
+    // 检查缓存
+    if (knowledgeCache.has(node.id)) {
+      if (showModal) {
+        setKnowledgeCard({ node, data: knowledgeCache.get(node.id)! });
+      }
+      return;
+    }
+
+    // 检查是否已经在加载中，避免重复请求
+    if (loadingKnowledgeIds.has(node.id)) {
+      console.log(`知识卡片 ${node.name} 已在加载中，跳过重复请求`);
+      return;
+    }
+
+    // 标记为加载中
+    setLoadingKnowledgeIds(prev => new Set(prev).add(node.id));
+
+    // 将请求加入队列（前台请求高优先级，后台预加载低优先级）
+    knowledgeRequestQueue.enqueue(async () => {
+      if (showModal) {
+        setLoadingKnowledge(true);
+      }
+
+      try {
+        const response = await fetch('/api/knowledge-card', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            parentName: node.name,
+            parentDescription: node.description,
+            children: node.children.map(c => ({
+              name: c.name,
+              description: c.description,
+              isRawMaterial: c.isRawMaterial
+            }))
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error('获取知识卡片失败');
+        }
+
+        const data: KnowledgeCardData = await response.json();
+
+        // 存入缓存
+        setKnowledgeCache(prev => new Map(prev).set(node.id, data));
+
+        if (showModal) {
+          setKnowledgeCard({ node, data });
+        }
+
+        console.log(`知识卡片 ${node.name} 加载完成并已缓存`);
+      } catch (error) {
+        console.error('知识卡片错误:', error);
+        if (showModal) {
+          alert('获取知识卡片失败，请重试');
+        }
+      } finally {
+        // 从加载集合中移除
+        setLoadingKnowledgeIds(prev => {
+          const newSet = new Set(prev);
+          newSet.delete(node.id);
+          return newSet;
+        });
+
+        if (showModal) {
+          setLoadingKnowledge(false);
+        }
+      }
+    }, showModal); // showModal为true时高优先级，false时低优先级
   };
 
   // 渲染拆解树（带点击交互）
@@ -297,6 +538,27 @@ export default function DeconstructionGame() {
                 <div className="text-xs text-gray-400 mt-1">👆 点击折叠</div>
               )}
             </div>
+            {/* 知识卡片按钮 - 只在知识卡片已缓存时显示 */}
+            {!node.isRawMaterial && hasChildren && knowledgeCache.has(node.id) && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  fetchKnowledgeCard(node);
+                }}
+                className="px-3 py-2 bg-yellow-500/20 hover:bg-yellow-500/30 border border-yellow-500/50 rounded-lg transition-all text-sm flex items-center gap-1"
+                title="查看知识卡片"
+              >
+                <span>💡</span>
+                <span className="hidden sm:inline">知识</span>
+              </button>
+            )}
+            {/* 知识卡片加载中提示 */}
+            {!node.isRawMaterial && hasChildren && !knowledgeCache.has(node.id) && loadingKnowledgeIds.has(node.id) && (
+              <div className="px-3 py-2 bg-gray-500/20 border border-gray-500/50 rounded-lg text-sm flex items-center gap-1 text-gray-400">
+                <span className="inline-block animate-spin">🔄</span>
+                <span className="hidden sm:inline text-xs">加载中</span>
+              </div>
+            )}
           </div>
         </div>
         {hasChildren && node.isExpanded && (
@@ -314,6 +576,115 @@ export default function DeconstructionGame() {
         <h1 className="text-4xl font-bold text-center mb-8">
           🔬 Entropy Reverse - 物体拆解游戏
         </h1>
+
+        {/* 知识卡片弹窗 */}
+        {knowledgeCard && (
+          <div
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+            onClick={() => setKnowledgeCard(null)}
+          >
+            <div
+              className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl p-6 max-w-2xl w-full border-2 border-yellow-500/50 shadow-2xl max-h-[80vh] overflow-y-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-2xl font-bold flex items-center gap-2">
+                  <span>💡</span>
+                  <span>知识卡片：{knowledgeCard.node.name}</span>
+                </h3>
+                <button
+                  onClick={() => setKnowledgeCard(null)}
+                  className="text-gray-400 hover:text-white text-2xl"
+                >
+                  ✕
+                </button>
+              </div>
+
+              {loadingKnowledge ? (
+                <div className="flex items-center justify-center py-12">
+                  <div className="flex flex-col items-center gap-3">
+                    <span className="text-4xl animate-spin">🔄</span>
+                    <span className="text-gray-400">正在生成知识卡片...</span>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-6">
+                  {/* 标题和文档编号 */}
+                  <div className="bg-gradient-to-r from-yellow-500/10 to-orange-500/10 rounded-lg p-4 border border-yellow-500/30">
+                    <div className="text-xl font-bold text-yellow-300">{knowledgeCard.data.title}</div>
+                    <div className="text-sm text-gray-400 mt-1">文档编号: {knowledgeCard.data.doc_number}</div>
+                  </div>
+
+                  {/* 流程步骤 */}
+                  <div className="space-y-4">
+                    {knowledgeCard.data.steps.map((step, idx) => (
+                      <div key={idx} className="relative">
+                        {/* 步骤卡片 */}
+                        <div className="bg-gradient-to-br from-slate-700 to-slate-800 rounded-lg p-4 border-2 border-blue-500/50 hover:border-blue-400/70 transition-all">
+                          <div className="flex items-start gap-3">
+                            {/* 步骤编号 */}
+                            <div className="flex-shrink-0 w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center font-bold text-lg">
+                              {step.step_number}
+                            </div>
+
+                            <div className="flex-1">
+                              {/* 步骤标题 */}
+                              <div className="text-lg font-bold text-blue-300 mb-2">
+                                {step.action_title}
+                              </div>
+
+                              {/* 步骤描述 */}
+                              <div className="text-gray-300 text-sm mb-3">
+                                {highlightChildrenNames(
+                                  step.description,
+                                  knowledgeCard.node.children.map(c => c.name)
+                                )}
+                              </div>
+
+                              {/* 参数列表 */}
+                              {step.parameters.length > 0 && (
+                                <div className="flex flex-wrap gap-2">
+                                  {step.parameters.map((param, pidx) => (
+                                    <div key={pidx} className="bg-black/30 rounded px-3 py-1 text-xs border border-gray-600">
+                                      <span className="text-gray-400">{param.label}:</span>
+                                      <span className="text-white ml-1 font-semibold">{param.value}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* 连接箭头 */}
+                        {idx < knowledgeCard.data.steps.length - 1 && (
+                          <div className="flex justify-center my-2">
+                            <div className="text-3xl text-blue-400">↓</div>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* 组成部分总结 */}
+                  <div className="bg-blue-500/10 rounded-lg p-4 border border-blue-500/30">
+                    <div className="text-sm text-blue-300 font-semibold mb-2">
+                      📦 使用的组成部分
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {knowledgeCard.node.children.map((child, idx) => (
+                        <div key={idx} className="bg-black/30 rounded-full px-3 py-1 text-sm border border-gray-600 flex items-center gap-1">
+                          <span className="text-white">{child.name}</span>
+                          {child.isRawMaterial && <span className="text-green-400 text-xs">🌿</span>}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* 步骤1: 上传图片 */}
         <div className="bg-white/10 backdrop-blur-lg rounded-lg p-6 mb-6 border border-white/20">
