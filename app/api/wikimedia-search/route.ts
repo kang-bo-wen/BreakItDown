@@ -28,9 +28,12 @@ async function searchPexels(searchTerm: string, limit: number = 1): Promise<Pexe
     const apiKey = process.env.PEXELS_API_KEY;
 
     if (!apiKey) {
-      console.error('PEXELS_API_KEY is not configured');
+      console.error('❌ PEXELS_API_KEY is not configured');
       return [];
     }
+
+    console.log('🔍 Attempting to search Pexels for:', searchTerm);
+    console.log('📝 API Key length:', apiKey.length);
 
     // Pexels API endpoint
     const apiUrl = 'https://api.pexels.com/v1/search';
@@ -41,11 +44,16 @@ async function searchPexels(searchTerm: string, limit: number = 1): Promise<Pexe
       page: '1'
     });
 
-    const response = await fetch(`${apiUrl}?${params}`, {
+    const fullUrl = `${apiUrl}?${params}`;
+    console.log('🌐 Fetching from:', fullUrl);
+
+    const response = await fetch(fullUrl, {
       headers: {
         'Authorization': apiKey
       }
     });
+
+    console.log('✅ Response status:', response.status);
 
     if (!response.ok) {
       throw new Error(`Pexels API error: ${response.status}`);
@@ -54,12 +62,19 @@ async function searchPexels(searchTerm: string, limit: number = 1): Promise<Pexe
     const data = await response.json();
 
     if (!data.photos || !Array.isArray(data.photos)) {
+      console.log('⚠️ No photos found in response');
       return [];
     }
 
+    console.log(`✅ Found ${data.photos.length} photos`);
     return data.photos as PexelsSearchResult[];
   } catch (error) {
-    console.error('Pexels search error:', error);
+    console.error('❌ Pexels search error:', error);
+    console.error('Error details:', {
+      name: error instanceof Error ? error.name : 'Unknown',
+      message: error instanceof Error ? error.message : String(error),
+      cause: error instanceof Error ? (error as any).cause : undefined
+    });
     return [];
   }
 }
