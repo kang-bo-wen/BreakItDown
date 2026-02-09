@@ -101,7 +101,6 @@ export async function POST(request: NextRequest) {
             const wikimediaData = await wikimediaResponse.json();
             const imageUrl = wikimediaData.thumbnail || wikimediaData.imageUrl;
             if (imageUrl) {
-              console.log(`Found Wikimedia image for "${part.name}" (${part.searchTerm}): ${imageUrl}`);
               return { ...part, imageUrl };
             }
           } else {

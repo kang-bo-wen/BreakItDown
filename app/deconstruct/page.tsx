@@ -67,7 +67,6 @@ export default function DeconstructionGame() {
   const [identificationResult, setIdentificationResult] = useState<IdentificationResult | null>(null);
   const [deconstructionTree, setDeconstructionTree] = useState<TreeNode | null>(null);
   const [isDeconstructing, setIsDeconstructing] = useState(false);
-  const [processingStatus, setProcessingStatus] = useState<string>(''); // 新增：显示当前处理状态
   const [loadingNodeIds, setLoadingNodeIds] = useState<Set<string>>(new Set()); // 跟踪正在加载的节点
   const [knowledgeCard, setKnowledgeCard] = useState<{ node: TreeNode; data: KnowledgeCardData } | null>(null); // 知识卡片状态
   const [loadingKnowledge, setLoadingKnowledge] = useState(false); // 知识卡片加载状态
@@ -123,7 +122,6 @@ export default function DeconstructionGame() {
       try {
         const cacheArray = JSON.parse(savedKnowledgeCache);
         setKnowledgeCache(new Map(cacheArray));
-        console.log(`从缓存恢复了 ${cacheArray.length} 个知识卡片`);
       } catch (error) {
         console.error('恢复知识卡片缓存失败:', error);
       }
@@ -367,7 +365,6 @@ export default function DeconstructionGame() {
     parentIcon?: string,
     parentImageUrl?: string
   ): Promise<TreeNode> => {
-    setProcessingStatus(prev => prev + `\n🔍 正在拆解: ${itemName}`);
 
     const response = await fetch('/api/deconstruct', {
       method: 'POST',
@@ -390,7 +387,6 @@ export default function DeconstructionGame() {
 
     const result: DeconstructionResult = await response.json();
 
-    setProcessingStatus(prev => prev + `\n✅ 获取到 ${result.parts.length} 个组成部分`);
 
     // 创建子节点（不递归拆解）
     const children: TreeNode[] = result.parts.map(part => ({
@@ -424,7 +420,6 @@ export default function DeconstructionGame() {
 
     setIsDeconstructing(true);
     setDeconstructionTree(null);
-    setProcessingStatus('🚀 开始拆解第一层...');
 
     try {
       const tree = await deconstructItem(
@@ -435,7 +430,6 @@ export default function DeconstructionGame() {
         imagePreview || identificationResult.imageUrl // 使用原始上传的图片
       );
       setDeconstructionTree(tree);
-      setProcessingStatus(prev => prev + '\n\n✅ 第一层拆解完成！点击节点继续拆解');
 
       // 后台预加载知识卡片（不阻塞）
       if (tree.children.length > 0) {
@@ -444,7 +438,6 @@ export default function DeconstructionGame() {
     } catch (error) {
       console.error('拆解错误:', error);
       alert('拆解失败，请重试');
-      setProcessingStatus(prev => prev + '\n\n❌ 拆解失败');
     } finally {
       setIsDeconstructing(false);
     }
@@ -494,7 +487,6 @@ export default function DeconstructionGame() {
     }
 
     // 如果还没有拆解过，进行拆解
-    setProcessingStatus(prev => prev + `\n\n🔍 点击拆解: ${nodeName}`);
 
     // 添加到加载集合
     setLoadingNodeIds(prev => new Set(prev).add(nodeId));
@@ -503,7 +495,16 @@ export default function DeconstructionGame() {
       const response = await fetch('/api/deconstruct', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ itemName: nodeName, parentContext }),
+        body: JSON.stringify({
+          itemName: nodeName,
+          parentContext,
+          // 传递 prompt 自定义参数
+          promptOptions: {
+            humorLevel,
+            professionalLevel,
+            customTemplate: promptMode === 'advanced' ? customPrompt : undefined
+          }
+        }),
       });
 
       if (!response.ok) {
@@ -512,7 +513,6 @@ export default function DeconstructionGame() {
 
       const result: DeconstructionResult = await response.json();
 
-      setProcessingStatus(prev => prev + `\n✅ 获取到 ${result.parts.length} 个组成部分`);
 
       // 创建子节点
       const children: TreeNode[] = result.parts.map(part => ({
@@ -554,7 +554,6 @@ export default function DeconstructionGame() {
     } catch (error) {
       console.error('拆解错误:', error);
       alert('拆解失败，请重试');
-      setProcessingStatus(prev => prev + `\n❌ 拆解 ${nodeName} 失败`);
     } finally {
       // 从加载集合中移除
       setLoadingNodeIds(prev => {
@@ -579,7 +578,6 @@ export default function DeconstructionGame() {
 
     // 检查是否已经在加载中，避免重复请求
     if (loadingKnowledgeIds.has(node.id)) {
-      console.log(`知识卡片 ${node.name} 已在加载中，跳过重复请求`);
       return;
     }
 
@@ -627,7 +625,6 @@ export default function DeconstructionGame() {
           setKnowledgeCard({ node, data });
         }
 
-        console.log(`知识卡片 ${node.name} 加载完成并已缓存`);
       } catch (error: any) {
         clearTimeout(timeoutId);
         if (error.name === 'AbortError') {
@@ -760,7 +757,6 @@ export default function DeconstructionGame() {
                     setIdentificationResult(null);
                     setImagePreview(null);
                     setImageFile(null);
-                    setProcessingStatus('');
                     setKnowledgeCache(new Map());
                   }
                 }}
@@ -808,10 +804,9 @@ export default function DeconstructionGame() {
                 </div>
               ) : (
                 <div className="space-y-6">
-                  {/* 标题和文档编号 */}
+                  {/* 标题 */}
                   <div className="bg-gradient-to-r from-yellow-500/10 to-orange-500/10 rounded-lg p-4 border border-yellow-500/30">
                     <div className="text-xl font-bold text-yellow-300">{knowledgeCard.data.title}</div>
-                    <div className="text-sm text-gray-400 mt-1">文档编号: {knowledgeCard.data.doc_number}</div>
                   </div>
 
                   {/* 流程步骤 */}
@@ -940,7 +935,7 @@ export default function DeconstructionGame() {
             <h2 className="text-3xl font-bold mb-6 flex items-center gap-3">
               <span className="text-4xl">✅</span>
               <span className="bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">
-                步骤2: 识别结果
+                步骤2: 验证识别和定制
               </span>
             </h2>
             <div className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-xl p-6 border border-white/10">
@@ -1189,10 +1184,9 @@ export default function DeconstructionGame() {
                       </div>
                     ) : (
                       <div className="space-y-6">
-                        {/* 标题和文档编号 */}
+                        {/* 标题 */}
                         <div className="bg-gradient-to-r from-yellow-500/10 to-orange-500/10 rounded-lg p-4 border border-yellow-500/30">
                           <div className="text-xl font-bold text-yellow-300">{knowledgeCard.data.title}</div>
-                          <div className="text-sm text-gray-400 mt-1">文档编号: {knowledgeCard.data.doc_number}</div>
                         </div>
 
                         {/* 流程步骤 */}
@@ -1265,24 +1259,6 @@ export default function DeconstructionGame() {
                   </div>
                 </div>
               )}
-            </div>
-          </div>
-        )}
-
-        {/* 实时处理日志 */}
-        {processingStatus && (
-          <div className="bg-white/10 backdrop-blur-lg rounded-lg p-6 mt-6 border border-white/20">
-            <div className="flex items-center gap-3 mb-4">
-              <h2 className="text-2xl font-semibold">📋 处理日志</h2>
-              {isDeconstructing && (
-                <div className="flex items-center gap-2 text-yellow-400">
-                  <div className="text-2xl animate-spin">🔄</div>
-                  <span className="text-sm font-semibold">正在拆解中...</span>
-                </div>
-              )}
-            </div>
-            <div className="bg-black/50 rounded-lg p-4 max-h-[400px] overflow-y-auto font-mono text-sm">
-              <pre className="whitespace-pre-wrap text-gray-300">{processingStatus}</pre>
             </div>
           </div>
         )}

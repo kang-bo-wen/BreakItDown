@@ -80,12 +80,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log(`Searching Pexels for: "${searchTerm}"`);
 
     const results = await searchPexels(searchTerm, 1);
 
     if (results.length === 0) {
-      console.log(`No results found for: "${searchTerm}"`);
       return NextResponse.json({
         imageUrl: null,
         thumbnail: null
@@ -93,7 +91,6 @@ export async function POST(request: NextRequest) {
     }
 
     const bestMatch = results[0];
-    console.log(`Found image by ${bestMatch.photographer}: ${bestMatch.url}`);
 
     return NextResponse.json({
       imageUrl: bestMatch.src.large,

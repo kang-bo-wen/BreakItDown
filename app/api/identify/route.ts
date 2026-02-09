@@ -65,7 +65,6 @@ export async function POST(request: NextRequest) {
         if (wikimediaResponse.ok) {
           const wikimediaData = await wikimediaResponse.json();
           imageUrl = wikimediaData.thumbnail || wikimediaData.imageUrl;
-          console.log(`Found Wikimedia image for "${identificationData.searchTerm}": ${imageUrl}`);
         } else {
           console.warn(`Wikimedia search failed for "${identificationData.searchTerm}"`);
         }

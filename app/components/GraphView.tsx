@@ -53,6 +53,7 @@ function GraphViewInner({
   const [currentZoom, setCurrentZoom] = useState(1);
   const [showMiniMap, setShowMiniMap] = useState(true);
   const [isDraggingLocked, setIsDraggingLocked] = useState(false);
+  const [showHelp, setShowHelp] = useState(false);
   const { zoomIn, zoomOut, fitView } = useReactFlow();
 
   // 保存用户手动调整的节点位置
@@ -67,7 +68,6 @@ function GraphViewInner({
       try {
         const positionsArray = JSON.parse(savedPositions);
         userPositions.current = new Map(positionsArray);
-        console.log(`恢复了 ${positionsArray.length} 个节点的位置`);
       } catch (error) {
         console.error('恢复节点位置失败:', error);
       }
@@ -368,6 +368,15 @@ function GraphViewInner({
         >
           🗺️
         </button>
+
+        {/* 帮助按钮 */}
+        <button
+          onClick={() => setShowHelp(true)}
+          className="w-12 h-12 bg-gradient-to-br from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 backdrop-blur-sm border-2 border-white/30 rounded-xl flex items-center justify-center text-white text-2xl font-bold transition-all shadow-lg hover:shadow-xl hover:scale-105"
+          title="操作说明"
+        >
+          ?
+        </button>
       </div>
 
       <ReactFlow
@@ -401,6 +410,146 @@ function GraphViewInner({
           />
         )}
       </ReactFlow>
+
+      {/* 帮助弹窗 */}
+      {showHelp && (
+        <div
+          className="absolute inset-0 z-[10000] flex items-center justify-center bg-black/70 backdrop-blur-sm"
+          onClick={() => setShowHelp(false)}
+        >
+          <div
+            className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-8 max-w-2xl w-full mx-4 border-2 border-white/20 shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* 标题 */}
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold text-white flex items-center gap-3">
+                <span className="text-3xl">💡</span>
+                操作说明
+              </h2>
+              <button
+                onClick={() => setShowHelp(false)}
+                className="w-10 h-10 bg-white/10 hover:bg-white/20 rounded-lg flex items-center justify-center text-white text-xl transition"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* 操作说明内容 */}
+            <div className="space-y-6 text-gray-200">
+              {/* 节点交互 */}
+              <div>
+                <h3 className="text-lg font-semibold text-indigo-400 mb-3 flex items-center gap-2">
+                  <span>🎯</span>
+                  节点交互
+                </h3>
+                <ul className="space-y-2 ml-6">
+                  <li className="flex items-start gap-2">
+                    <span className="text-blue-400 font-mono">•</span>
+                    <span><strong className="text-white">左键点击</strong>：查看节点的详细知识卡片</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-blue-400 font-mono">•</span>
+                    <span><strong className="text-white">右键点击</strong>：展开节点，查看其组成部分</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-blue-400 font-mono">•</span>
+                    <span><strong className="text-white">鼠标悬停</strong>：在右侧显示节点名称</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-blue-400 font-mono">•</span>
+                    <span><strong className="text-white">拖拽节点</strong>：移动节点及其所有子节点</span>
+                  </li>
+                </ul>
+              </div>
+
+              {/* 视图控制 */}
+              <div>
+                <h3 className="text-lg font-semibold text-purple-400 mb-3 flex items-center gap-2">
+                  <span>🎮</span>
+                  视图控制
+                </h3>
+                <ul className="space-y-2 ml-6">
+                  <li className="flex items-start gap-2">
+                    <span className="text-purple-400 font-mono">•</span>
+                    <span><strong className="text-white">鼠标滚轮</strong>：缩放画布</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-purple-400 font-mono">•</span>
+                    <span><strong className="text-white">拖拽空白区域</strong>：平移画布</span>
+                  </li>
+                </ul>
+              </div>
+
+              {/* 控制按钮 */}
+              <div>
+                <h3 className="text-lg font-semibold text-amber-400 mb-3 flex items-center gap-2">
+                  <span>🎛️</span>
+                  控制按钮
+                </h3>
+                <ul className="space-y-2 ml-6">
+                  <li className="flex items-start gap-2">
+                    <span className="text-amber-400 font-mono">•</span>
+                    <span><strong className="text-white">← 返回</strong>：退出全屏模式</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-amber-400 font-mono">•</span>
+                    <span><strong className="text-white">+ / −</strong>：放大/缩小画布</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-amber-400 font-mono">•</span>
+                    <span><strong className="text-white">⊡ 自适应</strong>：自动调整视图以显示所有节点</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-amber-400 font-mono">•</span>
+                    <span><strong className="text-white">🔓/🔒 拖拽锁</strong>：锁定/解锁节点拖拽功能</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-amber-400 font-mono">•</span>
+                    <span><strong className="text-white">🗺️ 缩略图</strong>：显示/隐藏画布缩略图</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-amber-400 font-mono">•</span>
+                    <span><strong className="text-white">? 帮助</strong>：显示此操作说明</span>
+                  </li>
+                </ul>
+              </div>
+
+              {/* 节点颜色说明 */}
+              <div>
+                <h3 className="text-lg font-semibold text-green-400 mb-3 flex items-center gap-2">
+                  <span>🎨</span>
+                  节点颜色
+                </h3>
+                <ul className="space-y-2 ml-6">
+                  <li className="flex items-start gap-2">
+                    <span className="inline-block w-4 h-4 bg-blue-500 rounded mt-1"></span>
+                    <span><strong className="text-white">蓝色</strong>：普通组件</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="inline-block w-4 h-4 bg-green-500 rounded mt-1"></span>
+                    <span><strong className="text-white">绿色</strong>：原材料（不可再拆解）</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="inline-block w-4 h-4 bg-gray-500 rounded mt-1"></span>
+                    <span><strong className="text-white">灰色</strong>：加载中</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            {/* 关闭按钮 */}
+            <div className="mt-8 flex justify-center">
+              <button
+                onClick={() => setShowHelp(false)}
+                className="px-8 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 rounded-lg text-white font-semibold transition shadow-lg hover:shadow-xl"
+              >
+                我知道了
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
