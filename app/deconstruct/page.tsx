@@ -75,6 +75,13 @@ export default function DeconstructionGame() {
   const [loadingKnowledgeIds, setLoadingKnowledgeIds] = useState<Set<string>>(new Set()); // 跟踪正在加载知识卡片的节点
   const [isFullscreen, setIsFullscreen] = useState(false); // 跟踪全屏状态
 
+  // Prompt 自定义相关状态
+  const [showPromptSettings, setShowPromptSettings] = useState(false); // 是否显示设置面板
+  const [promptMode, setPromptMode] = useState<'simple' | 'advanced'>('simple'); // 模式
+  const [humorLevel, setHumorLevel] = useState(50); // 幽默度 0-100
+  const [professionalLevel, setProfessionalLevel] = useState(70); // 专业度 0-100
+  const [customPrompt, setCustomPrompt] = useState(''); // 自定义 prompt
+
   // 监听全屏状态变化
   useEffect(() => {
     const handleFullscreenChange = () => {
@@ -121,6 +128,17 @@ export default function DeconstructionGame() {
         console.error('恢复知识卡片缓存失败:', error);
       }
     }
+
+    // 恢复 prompt 设置
+    const savedHumor = localStorage.getItem('humorLevel');
+    const savedProfessional = localStorage.getItem('professionalLevel');
+    const savedMode = localStorage.getItem('promptMode');
+    const savedCustom = localStorage.getItem('customPrompt');
+
+    if (savedHumor) setHumorLevel(Number(savedHumor));
+    if (savedProfessional) setProfessionalLevel(Number(savedProfessional));
+    if (savedMode) setPromptMode(savedMode as 'simple' | 'advanced');
+    if (savedCustom) setCustomPrompt(savedCustom);
   }, []);
 
   // 保存拆解树到 localStorage
@@ -151,6 +169,14 @@ export default function DeconstructionGame() {
       localStorage.setItem('knowledgeCache', JSON.stringify(cacheArray));
     }
   }, [knowledgeCache]);
+
+  // 保存 prompt 设置到 localStorage
+  useEffect(() => {
+    localStorage.setItem('humorLevel', String(humorLevel));
+    localStorage.setItem('professionalLevel', String(professionalLevel));
+    localStorage.setItem('promptMode', promptMode);
+    if (customPrompt) localStorage.setItem('customPrompt', customPrompt);
+  }, [humorLevel, professionalLevel, promptMode, customPrompt]);
 
   // 高亮显示文本中的子节点名称
   const highlightChildrenNames = (text: string, childrenNames: string[]) => {
@@ -342,7 +368,16 @@ export default function DeconstructionGame() {
     const response = await fetch('/api/deconstruct', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ itemName, parentContext }),
+      body: JSON.stringify({
+        itemName,
+        parentContext,
+        // 传递 prompt 自定义参数
+        promptOptions: {
+          humorLevel,
+          professionalLevel,
+          customTemplate: promptMode === 'advanced' ? customPrompt : undefined
+        }
+      }),
     });
 
     if (!response.ok) {
@@ -393,7 +428,7 @@ export default function DeconstructionGame() {
         identificationResult.brief_description,
         undefined,
         identificationResult.icon,
-        identificationResult.imageUrl
+        imagePreview || identificationResult.imageUrl // 使用原始上传的图片
       );
       setDeconstructionTree(tree);
       setProcessingStatus(prev => prev + '\n\n✅ 第一层拆解完成！点击节点继续拆解');
@@ -740,7 +775,7 @@ export default function DeconstructionGame() {
         {/* 知识卡片弹窗 */}
         {knowledgeCard && !isFullscreen && (
           <div
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[100000] p-4"
             onClick={() => setKnowledgeCard(null)}
           >
             <div
@@ -914,6 +949,141 @@ export default function DeconstructionGame() {
               </div>
             </div>
 
+            {/* Prompt 自定义设置面板 */}
+            {!deconstructionTree && (
+              <div className="mt-6 space-y-4">
+                {/* 展开/收起按钮 */}
+                <button
+                  onClick={() => setShowPromptSettings(!showPromptSettings)}
+                  className="w-full bg-indigo-500/20 hover:bg-indigo-500/30 px-4 py-3 rounded-lg border border-indigo-500/50 transition flex items-center justify-between"
+                >
+                  <span className="flex items-center gap-2">
+                    <span>⚙️</span>
+                    <span>自定义分解风格（可选）</span>
+                  </span>
+                  <span>{showPromptSettings ? '▲' : '▼'}</span>
+                </button>
+
+                {/* 设置面板 */}
+                {showPromptSettings && (
+                  <div className="bg-slate-800/50 rounded-xl p-6 border border-white/10 space-y-6">
+                    {/* 模式切换 */}
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => setPromptMode('simple')}
+                        className={`flex-1 px-4 py-2 rounded-lg transition ${
+                          promptMode === 'simple'
+                            ? 'bg-indigo-500 text-white'
+                            : 'bg-slate-700 text-gray-300 hover:bg-slate-600'
+                        }`}
+                      >
+                        简单模式
+                      </button>
+                      <button
+                        onClick={() => setPromptMode('advanced')}
+                        className={`flex-1 px-4 py-2 rounded-lg transition ${
+                          promptMode === 'advanced'
+                            ? 'bg-indigo-500 text-white'
+                            : 'bg-slate-700 text-gray-300 hover:bg-slate-600'
+                        }`}
+                      >
+                        高级模式
+                      </button>
+                    </div>
+
+                    {/* 简单模式：滑块 */}
+                    {promptMode === 'simple' && (
+                      <div className="space-y-4">
+                        {/* 幽默度滑块 */}
+                        <div>
+                          <label className="block text-sm font-medium mb-2 flex items-center justify-between">
+                            <span>😄 幽默度</span>
+                            <span className="text-indigo-400">{humorLevel}%</span>
+                          </label>
+                          <input
+                            type="range"
+                            min="0"
+                            max="100"
+                            value={humorLevel}
+                            onChange={(e) => setHumorLevel(Number(e.target.value))}
+                            className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer"
+                          />
+                          <div className="flex justify-between text-xs text-gray-400 mt-1">
+                            <span>严肃</span>
+                            <span>幽默</span>
+                          </div>
+                        </div>
+
+                        {/* 专业度滑块 */}
+                        <div>
+                          <label className="block text-sm font-medium mb-2 flex items-center justify-between">
+                            <span>🎓 专业度</span>
+                            <span className="text-indigo-400">{professionalLevel}%</span>
+                          </label>
+                          <input
+                            type="range"
+                            min="0"
+                            max="100"
+                            value={professionalLevel}
+                            onChange={(e) => setProfessionalLevel(Number(e.target.value))}
+                            className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer"
+                          />
+                          <div className="flex justify-between text-xs text-gray-400 mt-1">
+                            <span>通俗</span>
+                            <span>专业</span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* 高级模式：自定义 prompt */}
+                    {promptMode === 'advanced' && (
+                      <div>
+                        <label className="block text-sm font-medium mb-2">
+                          自定义 Prompt 模板
+                        </label>
+                        <textarea
+                          value={customPrompt}
+                          onChange={(e) => setCustomPrompt(e.target.value)}
+                          placeholder={`使用 {{ITEM}} 代表物品名称，{{CONTEXT}} 代表上下文\n\n示例：\n请将 {{ITEM}} 拆解为主要组成部分。要求：\n1. 使用幽默风趣的语言\n2. 每个部分提供详细说明\n3. 标注是否为原材料`}
+                          className="w-full h-40 bg-slate-900 text-white px-4 py-3 rounded-lg border border-slate-600 focus:border-indigo-500 focus:outline-none resize-none font-mono text-sm"
+                        />
+                        <button
+                          onClick={() => {
+                            // 加载默认模板作为参考
+                            const template = `请将 {{ITEM}} 拆解为主要组成部分。
+
+要求：
+1. 列出所有主要组件或材料
+2. 每个部分提供简短描述
+3. 标注是否为原材料（is_raw_material: true/false）
+4. 为每个部分选择合适的 emoji 图标
+
+返回 JSON 格式：
+{
+  "parent_item": "{{ITEM}}",
+  "parts": [
+    {
+      "name": "组件名称",
+      "description": "功能描述",
+      "is_raw_material": false,
+      "icon": "📦"
+    }
+  ]
+}`;
+                            setCustomPrompt(template);
+                          }}
+                          className="mt-2 text-sm text-indigo-400 hover:text-indigo-300"
+                        >
+                          📋 加载默认模板
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+
             {!deconstructionTree && (
               <button
                 onClick={startDeconstruction}
@@ -986,7 +1156,7 @@ export default function DeconstructionGame() {
               {/* 全屏模式下的知识卡片弹窗 */}
               {knowledgeCard && isFullscreen && (
                 <div
-                  className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+                  className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[100000] p-4"
                   onClick={() => setKnowledgeCard(null)}
                 >
                   <div

@@ -436,3 +436,48 @@ ICON SELECTION GUIDELINES (CRITICAL - 图标必须精准匹配):
 **记住：用户应该看到图标就能立即知道这是什么，不需要看名字！**
 **关键思考：这个东西的主要特征是什么？它用来做什么？它看起来像什么？**`;
 }
+
+/**
+ * Generate custom deconstruction prompt based on user preferences
+ * @param currentItem - The item to deconstruct
+ * @param parentContext - Optional parent context
+ * @param options - Customization options
+ */
+export function generateCustomDeconstructionPrompt(
+  currentItem: string,
+  parentContext: string | undefined,
+  options: {
+    humorLevel: number;      // 0-100
+    professionalLevel: number; // 0-100
+    customTemplate?: string;  // If provided, use custom template
+  }
+): string {
+  // If custom template is provided, use it
+  if (options.customTemplate && options.customTemplate.trim()) {
+    return options.customTemplate
+      .replace(/\{\{ITEM\}\}/g, currentItem)
+      .replace(/\{\{CONTEXT\}\}/g, parentContext || '无');
+  }
+
+  // Otherwise, generate prompt based on parameters
+  const basePrompt = getDeconstructionPrompt(currentItem, parentContext);
+
+  // Add style instructions based on humor level
+  let styleInstructions = '';
+  if (options.humorLevel > 70) {
+    styleInstructions += '\n\n风格要求：使用幽默、有趣的语言描述，可以加入比喻和俏皮话，让拆解过程更有趣。';
+  } else if (options.humorLevel > 40) {
+    styleInstructions += '\n\n风格要求：保持轻松友好的语气，适当使用生动的表达。';
+  } else if (options.humorLevel < 20) {
+    styleInstructions += '\n\n风格要求：使用严肃、正式的语言，保持专业性。';
+  }
+
+  // Add detail level based on professional level
+  if (options.professionalLevel > 70) {
+    styleInstructions += '\n专业度：提供详细的技术规格、材料特性和制造工艺说明。';
+  } else if (options.professionalLevel < 30) {
+    styleInstructions += '\n专业度：使用通俗易懂的语言，避免专业术语，用日常用语解释。';
+  }
+
+  return basePrompt + styleInstructions;
+}

@@ -3,16 +3,14 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import ReactFlow, {
   Background,
-  Controls,
   MiniMap,
   useNodesState,
   useEdgesState,
-  Node,
-  Edge,
   BackgroundVariant,
   NodeChange,
-  applyNodeChanges,
   OnMove,
+  useReactFlow,
+  ReactFlowProvider,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 
@@ -41,7 +39,7 @@ const nodeTypes = {
   matterNode: MatterNode,
 };
 
-export default function GraphView({
+function GraphViewInner({
   tree,
   loadingNodeIds,
   knowledgeCache,
@@ -53,6 +51,9 @@ export default function GraphView({
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
   const [currentZoom, setCurrentZoom] = useState(1);
+  const [showMiniMap, setShowMiniMap] = useState(true);
+  const [isDraggingLocked, setIsDraggingLocked] = useState(false);
+  const { zoomIn, zoomOut, fitView } = useReactFlow();
 
   // 保存用户手动调整的节点位置
   const userPositions = useRef<Map<string, { x: number; y: number }>>(new Map());
@@ -299,7 +300,76 @@ export default function GraphView({
   }
 
   return (
-    <div className="w-full h-[900px] bg-black/30 rounded-lg overflow-hidden border-2 border-white/10">
+    <div className="w-full h-[900px] bg-black/30 rounded-lg overflow-hidden border-2 border-white/10 relative">
+      {/* 自定义控制按钮 - 左上角 */}
+      <div className="absolute top-4 left-4 z-10 flex flex-col gap-2">
+        {/* 返回按钮 */}
+        <button
+          onClick={() => {
+            if (document.fullscreenElement) {
+              document.exitFullscreen();
+            }
+          }}
+          className="w-12 h-12 bg-gradient-to-br from-slate-700 to-slate-800 hover:from-slate-600 hover:to-slate-700 backdrop-blur-sm border-2 border-white/30 rounded-xl flex items-center justify-center text-white text-xl transition-all shadow-lg hover:shadow-xl hover:scale-105"
+          title="返回"
+        >
+          ←
+        </button>
+
+        {/* 放大 */}
+        <button
+          onClick={() => zoomIn()}
+          className="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 backdrop-blur-sm border-2 border-white/30 rounded-xl flex items-center justify-center text-white text-2xl font-bold transition-all shadow-lg hover:shadow-xl hover:scale-105"
+          title="放大"
+        >
+          +
+        </button>
+
+        {/* 缩小 */}
+        <button
+          onClick={() => zoomOut()}
+          className="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 backdrop-blur-sm border-2 border-white/30 rounded-xl flex items-center justify-center text-white text-2xl font-bold transition-all shadow-lg hover:shadow-xl hover:scale-105"
+          title="缩小"
+        >
+          −
+        </button>
+
+        {/* 自适应观察 */}
+        <button
+          onClick={() => fitView({ padding: 0.2, duration: 300 })}
+          className="w-12 h-12 bg-gradient-to-br from-purple-600 to-purple-700 hover:from-purple-500 hover:to-purple-600 backdrop-blur-sm border-2 border-white/30 rounded-xl flex items-center justify-center text-white text-xl transition-all shadow-lg hover:shadow-xl hover:scale-105"
+          title="自适应观察"
+        >
+          ⊡
+        </button>
+
+        {/* 锁定/解锁拖拽 */}
+        <button
+          onClick={() => setIsDraggingLocked(!isDraggingLocked)}
+          className={`w-12 h-12 backdrop-blur-sm border-2 border-white/30 rounded-xl flex items-center justify-center text-white text-xl transition-all shadow-lg hover:shadow-xl hover:scale-105 ${
+            isDraggingLocked
+              ? 'bg-gradient-to-br from-red-600 to-red-700 hover:from-red-500 hover:to-red-600'
+              : 'bg-gradient-to-br from-green-600 to-green-700 hover:from-green-500 hover:to-green-600'
+          }`}
+          title={isDraggingLocked ? '解锁拖拽' : '锁定拖拽'}
+        >
+          {isDraggingLocked ? '🔒' : '🔓'}
+        </button>
+
+        {/* 缩略图开关 */}
+        <button
+          onClick={() => setShowMiniMap(!showMiniMap)}
+          className={`w-12 h-12 backdrop-blur-sm border-2 border-white/30 rounded-xl flex items-center justify-center text-white text-lg transition-all shadow-lg hover:shadow-xl hover:scale-105 ${
+            showMiniMap
+              ? 'bg-gradient-to-br from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600'
+              : 'bg-gradient-to-br from-slate-600 to-slate-700 hover:from-slate-500 hover:to-slate-600'
+          }`}
+          title={showMiniMap ? '隐藏缩略图' : '显示缩略图'}
+        >
+          🗺️
+        </button>
+      </div>
+
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -307,10 +377,12 @@ export default function GraphView({
         onEdgesChange={onEdgesChange}
         onMove={handleMove}
         nodeTypes={nodeTypes}
+        nodesDraggable={!isDraggingLocked}
         fitView
         minZoom={0.1}
         maxZoom={1.5}
         defaultViewport={{ x: 0, y: 0, zoom: 0.8 }}
+        proOptions={{ hideAttribution: true }}
       >
         <Background
           variant={BackgroundVariant.Dots}
@@ -318,18 +390,26 @@ export default function GraphView({
           size={1}
           color="#ffffff20"
         />
-        <Controls
-          className="bg-white/10 backdrop-blur-sm border border-white/20"
-        />
-        <MiniMap
-          className="bg-white/10 backdrop-blur-sm border border-white/20"
-          nodeColor={(node) => {
-            if (node.data.isRawMaterial) return '#10b981';
-            if (node.data.isLoading) return '#6b7280';
-            return '#3b82f6';
-          }}
-        />
+        {showMiniMap && (
+          <MiniMap
+            className="bg-white/10 backdrop-blur-sm border border-white/20"
+            nodeColor={(node) => {
+              if (node.data.isRawMaterial) return '#10b981';
+              if (node.data.isLoading) return '#6b7280';
+              return '#3b82f6';
+            }}
+          />
+        )}
       </ReactFlow>
     </div>
+  );
+}
+
+// Wrapper component with ReactFlowProvider
+export default function GraphView(props: GraphViewProps) {
+  return (
+    <ReactFlowProvider>
+      <GraphViewInner {...props} />
+    </ReactFlowProvider>
   );
 }

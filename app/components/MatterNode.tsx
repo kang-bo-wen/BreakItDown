@@ -1,7 +1,8 @@
 'use client';
 
-import { memo, useState, useRef } from 'react';
+import { memo, useState, useRef, useEffect } from 'react';
 import { Handle, Position, NodeProps } from 'reactflow';
+import { createPortal } from 'react-dom';
 
 interface MatterNodeData {
   name: string;
@@ -40,7 +41,39 @@ function MatterNode({ data }: NodeProps<MatterNodeData>) {
 
   const [isHovered, setIsHovered] = useState(false);
   const [imageError, setImageError] = useState(false);
+  const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
   const hideTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const nodeRef = useRef<HTMLDivElement>(null);
+
+  // 更新悬浮窗位置
+  useEffect(() => {
+    if (isHovered && nodeRef.current) {
+      const updatePosition = () => {
+        const rect = nodeRef.current!.getBoundingClientRect();
+        setTooltipPosition({
+          x: rect.right + 16, // 节点右侧 + 16px 间距
+          y: rect.top + rect.height / 2, // 节点垂直居中
+        });
+      };
+
+      updatePosition();
+
+      // 监听滚动和缩放事件，实时更新位置
+      const handleUpdate = () => {
+        if (isHovered && nodeRef.current) {
+          updatePosition();
+        }
+      };
+
+      window.addEventListener('scroll', handleUpdate, true);
+      window.addEventListener('resize', handleUpdate);
+
+      return () => {
+        window.removeEventListener('scroll', handleUpdate, true);
+        window.removeEventListener('resize', handleUpdate);
+      };
+    }
+  }, [isHovered]);
 
   // 显示悬浮窗
   const handleMouseEnter = () => {
@@ -96,6 +129,7 @@ function MatterNode({ data }: NodeProps<MatterNodeData>) {
 
   return (
     <div
+      ref={nodeRef}
       className={`relative ${isHovered ? 'z-[9999]' : 'z-10'}`}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
@@ -146,15 +180,24 @@ function MatterNode({ data }: NodeProps<MatterNodeData>) {
         </div>
       </div>
 
-      {/* Hover 时显示的详细信息卡片 */}
-      {isHovered && (
+      {/* 连接点 */}
+      <Handle
+        type="source"
+        position={Position.Bottom}
+        className="w-2 h-2 !bg-blue-500 border-2 border-white opacity-0"
+      />
+
+      {/* Hover 时显示的详细信息卡片 - 使用 Portal 渲染到 body，确保始终置顶 */}
+      {isHovered && typeof window !== 'undefined' && createPortal(
         <div
-          className="absolute left-full ml-4 top-1/2 -translate-y-1/2 z-[9999]"
+          className="fixed z-[99999]"
           style={{
+            left: `${tooltipPosition.x}px`,
+            top: `${tooltipPosition.y}px`,
+            transform: 'translateY(-50%)',
             width: '320px',
             maxHeight: '400px',
-            transform: `translateY(-50%) scale(${1 / zoom})`,
-            transformOrigin: 'left center',
+            pointerEvents: 'auto',
           }}
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
@@ -214,15 +257,9 @@ function MatterNode({ data }: NodeProps<MatterNodeData>) {
             {/* 三角形指示器 */}
             <div className="absolute right-full top-1/2 -translate-y-1/2 w-0 h-0 border-t-8 border-t-transparent border-b-8 border-b-transparent border-r-8 border-r-slate-800"></div>
           </div>
-        </div>
+        </div>,
+        document.fullscreenElement || document.body
       )}
-
-      {/* 连接点 */}
-      <Handle
-        type="source"
-        position={Position.Bottom}
-        className="w-2 h-2 !bg-blue-500 border-2 border-white opacity-0"
-      />
     </div>
   );
 }

@@ -1,6 +1,6 @@
 // app/api/deconstruct/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { callTextAPI, getDeconstructionPrompt } from '@/lib/ai-client';
+import { callTextAPI, getDeconstructionPrompt, generateCustomDeconstructionPrompt } from '@/lib/ai-client';
 import { DeconstructionResponse } from '@/types/graph';
 
 // 重试函数
@@ -37,7 +37,7 @@ async function retryWithBackoff<T>(
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { itemName, parentContext } = body;
+    const { itemName, parentContext, promptOptions } = body;
 
     // Validate input
     if (!itemName || typeof itemName !== 'string') {
@@ -47,8 +47,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Generate the prompt
-    const prompt = getDeconstructionPrompt(itemName, parentContext);
+    // Generate the prompt (use custom if provided, otherwise use default)
+    const prompt = promptOptions
+      ? generateCustomDeconstructionPrompt(itemName, parentContext, promptOptions)
+      : getDeconstructionPrompt(itemName, parentContext);
 
     // Call Text API with retry logic
     const text = await retryWithBackoff(() => callTextAPI(prompt));
