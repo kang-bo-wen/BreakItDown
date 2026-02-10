@@ -248,7 +248,7 @@ export default function Home() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <span className="relative z-10">🚀 开始体验</span>
+                <span className="relative z-10">开始体验</span>
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               </motion.button>
             </Link>
@@ -262,7 +262,7 @@ export default function Home() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                💡 关于我们
+                关于我们
               </motion.button>
             </Link>
           </div>

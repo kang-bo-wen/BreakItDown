@@ -1104,6 +1104,7 @@ export default function DeconstructionGame() {
               <div className="mt-4 bg-blue-500/20 rounded-lg p-4 border border-blue-500/50">
                 <div className="text-sm text-blue-300">
                   💡 <strong>交互提示：</strong>点击蓝色节点继续拆解，绿色节点是自然材料（拆解终点）
+                  💡 <strong>备注：</strong>因网络原因，图片检索功能暂不可用，已用卡通图标代替，敬请谅解
                 </div>
               </div>
             )}
@@ -1139,7 +1140,10 @@ export default function DeconstructionGame() {
             </div>
             <div className="mb-4 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-xl p-4 border border-blue-400/30">
               <div className="text-sm text-blue-200">
-                💡 <strong>交互提示：</strong>点击蓝色节点继续拆解，绿色节点是自然材料（拆解终点）。使用鼠标滚轮缩放，拖拽画布移动视图。
+                💡 <strong>交互提示：</strong>点击节点继续拆解，绿色节点是自然材料（拆解终点）。使用鼠标滚轮缩放，拖拽画布移动视图。
+              </div>
+              <div className="text-sm text-red-200">
+                💡 <strong>备注：</strong>因modelscope网络限制原因，图片检索功能暂不可用，已用卡通图标代替，敬请谅解
               </div>
             </div>
             <div id="graph-container" className="bg-black/50 rounded-xl relative">

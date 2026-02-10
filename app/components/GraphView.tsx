@@ -524,11 +524,11 @@ function GraphViewInner({
                 <ul className="space-y-2 ml-6">
                   <li className="flex items-start gap-2">
                     <span className="inline-block w-4 h-4 bg-blue-500 rounded mt-1"></span>
-                    <span><strong className="text-white">蓝色</strong>：普通组件</span>
+                    <span><strong className="text-white">相同颜色</strong>：同级组件</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="inline-block w-4 h-4 bg-green-500 rounded mt-1"></span>
-                    <span><strong className="text-white">绿色</strong>：原材料（不可再拆解）</span>
+                    <span><strong className="text-white">绿色</strong>：末节点（不可再拆解的原材料）</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="inline-block w-4 h-4 bg-gray-500 rounded mt-1"></span>

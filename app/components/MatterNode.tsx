@@ -270,24 +270,7 @@ function MatterNode({ data }: NodeProps<MatterNodeData>) {
               {description}
             </div>
 
-            {/* 状态标签 */}
-            <div className="flex flex-wrap gap-2 mb-3">
-              {isRawMaterial && (
-                <span className="px-2 py-1 bg-green-400/30 rounded-full text-xs text-white font-semibold">
-                  ✅ 原材料
-                </span>
-              )}
-              {isLoading && (
-                <span className="px-2 py-1 bg-gray-400/30 rounded-full text-xs text-white font-semibold">
-                  ⏳ 拆解中
-                </span>
-              )}
-              {!isRawMaterial && !isLoading && (
-                <span className="px-2 py-1 bg-blue-400/30 rounded-full text-xs text-white font-semibold">
-                  🖱️ 右键拆解
-                </span>
-              )}
-            </div>
+            
 
             {/* 操作按钮 */}
             {!isRawMaterial && hasKnowledgeCard && (
