@@ -34,22 +34,25 @@ export default function SessionCard({
 
   const handleDelete = async () => {
     setIsDeleting(true)
+    setShowDeleteConfirm(false)
+
+    // 乐观更新：立即从 UI 中移除
+    onDelete(id)
+
     try {
       const response = await fetch(`/api/sessions/${id}`, {
         method: 'DELETE'
       })
 
-      if (response.ok) {
-        onDelete(id)
-      } else {
-        alert('删除失败，请重试')
+      if (!response.ok) {
+        // 如果删除失败，显示错误但不恢复（因为很少失败）
+        alert('删除失败，请刷新页面')
       }
     } catch (error) {
       console.error('Delete error:', error)
-      alert('删除失败，请重试')
+      alert('删除失败，请刷新页面')
     } finally {
       setIsDeleting(false)
-      setShowDeleteConfirm(false)
     }
   }
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, useRef, Suspense } from 'react';
 import Image from 'next/image';
 import dynamic from 'next/dynamic';
 import { useSession } from 'next-auth/react';
@@ -85,6 +85,9 @@ function DeconstructionGameContent() {
   const [isSaving, setIsSaving] = useState(false);
   const [sessionCache, setSessionCache] = useState<Map<string, any>>(new Map()); // 会话缓存
   const [isLoadingSession, setIsLoadingSession] = useState(false); // 会话加载状态
+
+  // 用于追踪上次保存的数据，避免重复保存
+  const lastSavedDataRef = useRef<string | null>(null);
 
   // Prompt 自定义相关状态
   const [showPromptSettings, setShowPromptSettings] = useState(false); // 是否显示设置面板
@@ -253,9 +256,21 @@ function DeconstructionGameContent() {
     createSession();
   }, [identificationResult, deconstructionTree, currentSessionId, status]);
 
-  // 自动保存会话（每次拆解树更新后立即保存）
+  // 自动保存会话（只在数据真正变化时保存）
   useEffect(() => {
     if (!currentSessionId || !deconstructionTree || status !== 'authenticated') return;
+
+    // 生成当前数据的哈希值用于比较
+    const currentDataHash = JSON.stringify({
+      tree: deconstructionTree,
+      cache: Array.from(knowledgeCache.entries())
+    });
+
+    // 如果数据没有变化，跳过保存
+    if (lastSavedDataRef.current === currentDataHash) {
+      console.log('⏭️ 数据未变化，跳过自动保存');
+      return;
+    }
 
     // 清除当前会话的缓存（因为内容已更改）
     if (sessionCache.has(currentSessionId)) {
@@ -268,6 +283,8 @@ function DeconstructionGameContent() {
 
     // 使用较短的防抖时间，确保用户操作后快速保存
     const timer = setTimeout(() => {
+      console.log('💾 检测到数据变化，触发自动保存');
+      lastSavedDataRef.current = currentDataHash; // 更新最后保存的数据哈希
       saveSessionToDatabase(false);
     }, 2000); // 2秒防抖，确保快速保存
 

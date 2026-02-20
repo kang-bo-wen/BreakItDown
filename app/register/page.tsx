@@ -59,8 +59,8 @@ export default function RegisterPage() {
         setError('注册成功，但登录失败，请手动登录')
         setTimeout(() => router.push('/login'), 2000)
       } else {
-        router.push('/deconstruct')
-        router.refresh()
+        // 使用 window.location.href 强制刷新页面，确保认证状态正确加载
+        window.location.href = '/deconstruct'
       }
     } catch (err) {
       setError('注册失败，请稍后重试')

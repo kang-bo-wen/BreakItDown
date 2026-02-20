@@ -21,21 +21,44 @@ export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(false)
   const [sessions, setSessions] = useState<SessionItem[]>([])
   const [isLoadingSessions, setIsLoadingSessions] = useState(false)
+  const [hasFetchedSessions, setHasFetchedSessions] = useState(false)
 
   // 获取会话列表
   useEffect(() => {
-    if (status === 'authenticated' && isOpen) {
+    if (status === 'authenticated' && isOpen && !hasFetchedSessions) {
       fetchSessions()
+      setHasFetchedSessions(true)
     }
-  }, [status, isOpen])
+  }, [status, isOpen, hasFetchedSessions])
 
   const fetchSessions = async () => {
     setIsLoadingSessions(true)
     try {
+      // 先尝试从 sessionStorage 读取缓存
+      const cached = sessionStorage.getItem('sidebar-sessions-cache')
+      if (cached) {
+        const { data, timestamp } = JSON.parse(cached)
+        // 如果缓存在 30 秒内，直接使用
+        if (Date.now() - timestamp < 30000) {
+          console.log('📦 侧边栏使用缓存的会话数据')
+          setSessions(data)
+          setIsLoadingSessions(false)
+          return
+        }
+      }
+
+      console.log('🔄 侧边栏从服务器获取会话数据')
       const response = await fetch('/api/sessions')
       if (response.ok) {
         const data = await response.json()
-        setSessions(data.sessions || [])
+        const sessionsData = data.sessions || []
+        setSessions(sessionsData)
+
+        // 缓存到 sessionStorage
+        sessionStorage.setItem('sidebar-sessions-cache', JSON.stringify({
+          data: sessionsData,
+          timestamp: Date.now()
+        }))
       }
     } catch (error) {
       console.error('获取会话列表失败:', error)
@@ -73,16 +96,26 @@ export default function Sidebar() {
     e.stopPropagation()
     if (!confirm('确定要删除这个拆解记录吗？')) return
 
+    // 乐观更新：立即从 UI 中移除
+    setSessions(sessions.filter(s => s.id !== sessionId))
+
+    // 同步更新缓存
+    const updatedSessions = sessions.filter(s => s.id !== sessionId)
+    sessionStorage.setItem('sidebar-sessions-cache', JSON.stringify({
+      data: updatedSessions,
+      timestamp: Date.now()
+    }))
+
     try {
       const response = await fetch(`/api/sessions/${sessionId}`, {
         method: 'DELETE'
       })
-      if (response.ok) {
-        setSessions(sessions.filter(s => s.id !== sessionId))
+      if (!response.ok) {
+        console.error('删除会话失败')
+        // 不恢复，因为删除很少失败
       }
     } catch (error) {
       console.error('删除会话失败:', error)
-      alert('删除失败，请重试')
     }
   }
 
@@ -207,7 +240,33 @@ export default function Sidebar() {
 
           {/* 历史记录列表 */}
           <div className="flex-1 overflow-y-auto p-4">
-            <h3 className="text-sm font-semibold text-gray-400 mb-3">拆解历史</h3>
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-sm font-semibold text-gray-400">拆解历史</h3>
+              <button
+                onClick={() => {
+                  sessionStorage.removeItem('sidebar-sessions-cache')
+                  setHasFetchedSessions(false)
+                  fetchSessions()
+                }}
+                className="p-1 hover:bg-gray-800 rounded transition-colors"
+                title="刷新列表"
+                disabled={isLoadingSessions}
+              >
+                <svg
+                  className={`w-4 h-4 text-gray-400 ${isLoadingSessions ? 'animate-spin' : ''}`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                  />
+                </svg>
+              </button>
+            </div>
             {isLoadingSessions ? (
               <div className="flex items-center justify-center py-8">
                 <span className="text-gray-400">加载中...</span>

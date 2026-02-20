@@ -27,8 +27,8 @@ export default function LoginPage() {
       if (result?.error) {
         setError('邮箱或密码错误')
       } else {
-        router.push('/deconstruct')
-        router.refresh()
+        // 使用 window.location.href 强制刷新页面，确保认证状态正确加载
+        window.location.href = '/deconstruct'
       }
     } catch (err) {
       setError('登录失败，请稍后重试')

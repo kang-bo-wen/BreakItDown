@@ -23,20 +23,36 @@ export default function HistoryPage() {
   const [error, setError] = useState('')
   const [searchQuery, setSearchQuery] = useState('')
   const [sortBy, setSortBy] = useState<'newest' | 'oldest' | 'recent'>('newest')
+  const [hasFetched, setHasFetched] = useState(false)
 
   useEffect(() => {
     if (status === 'unauthenticated') {
       router.push('/login')
-    } else if (status === 'authenticated') {
+    } else if (status === 'authenticated' && !hasFetched) {
       fetchSessions()
+      setHasFetched(true)
     }
-  }, [status, router])
+  }, [status, router, hasFetched])
 
   const fetchSessions = async () => {
     setIsLoading(true)
     setError('')
 
     try {
+      // 先尝试从 sessionStorage 读取缓存
+      const cached = sessionStorage.getItem('sessions-cache')
+      if (cached) {
+        const { data, timestamp } = JSON.parse(cached)
+        // 如果缓存在 30 秒内，直接使用
+        if (Date.now() - timestamp < 30000) {
+          console.log('📦 使用缓存的会话数据')
+          setSessions(data)
+          setIsLoading(false)
+          return
+        }
+      }
+
+      console.log('🔄 从服务器获取会话数据')
       const response = await fetch('/api/sessions')
 
       if (!response.ok) {
@@ -44,7 +60,14 @@ export default function HistoryPage() {
       }
 
       const data = await response.json()
-      setSessions(data.sessions || [])
+      const sessionsData = data.sessions || []
+      setSessions(sessionsData)
+
+      // 缓存到 sessionStorage
+      sessionStorage.setItem('sessions-cache', JSON.stringify({
+        data: sessionsData,
+        timestamp: Date.now()
+      }))
     } catch (err) {
       console.error('Fetch error:', err)
       setError('加载历史记录失败')
@@ -54,7 +77,15 @@ export default function HistoryPage() {
   }
 
   const handleDelete = (id: string) => {
-    setSessions(sessions.filter(s => s.id !== id))
+    // 立即从 UI 中移除
+    const updatedSessions = sessions.filter(s => s.id !== id)
+    setSessions(updatedSessions)
+
+    // 更新缓存
+    sessionStorage.setItem('sessions-cache', JSON.stringify({
+      data: updatedSessions,
+      timestamp: Date.now()
+    }))
   }
 
   const filteredSessions = sessions
@@ -88,7 +119,20 @@ export default function HistoryPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-4">拆解历史</h1>
+          <div className="flex items-center justify-between mb-4">
+            <h1 className="text-3xl font-bold">拆解历史</h1>
+            <button
+              onClick={() => {
+                sessionStorage.removeItem('sessions-cache')
+                setHasFetched(false)
+                fetchSessions()
+              }}
+              className="px-4 py-2 text-sm bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
+              disabled={isLoading}
+            >
+              {isLoading ? '刷新中...' : '🔄 刷新'}
+            </button>
+          </div>
 
           {/* Search and Sort */}
           <div className="flex flex-col sm:flex-row gap-4">
