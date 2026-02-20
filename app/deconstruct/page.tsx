@@ -460,7 +460,9 @@ function DeconstructionGameContent() {
       });
 
       if (!response.ok) {
-        throw new Error('保存会话失败');
+        const errorData = await response.json().catch(() => ({}));
+        console.error('❌ 保存会话失败，状态码:', response.status, '错误信息:', errorData);
+        throw new Error(`保存会话失败: ${errorData.error || response.statusText}`);
       }
 
       const data = await response.json();
@@ -1435,6 +1437,15 @@ function DeconstructionGameContent() {
                 loadingKnowledgeIds={loadingKnowledgeIds}
                 onNodeExpand={handleNodeClick}
                 onShowKnowledge={(node) => fetchKnowledgeCard(node, true)}
+                onNodePositionsChange={() => {
+                  // 只有在已有会话ID时才保存（避免创建新会话时缺少必要字段）
+                  if (currentSessionId) {
+                    console.log('🔄 节点位置已更改，触发数据库保存');
+                    saveSessionToDatabase(false);
+                  } else {
+                    console.log('⚠️ 尚未创建会话，跳过节点位置保存');
+                  }
+                }}
               />
 
               {/* 全屏模式下的知识卡片弹窗 */}

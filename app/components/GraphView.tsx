@@ -33,6 +33,7 @@ interface GraphViewProps {
   loadingKnowledgeIds: Set<string>;
   onNodeExpand: (nodeId: string, nodeName: string, parentContext?: string) => void;
   onShowKnowledge: (node: TreeNode) => void;
+  onNodePositionsChange?: () => void;
 }
 
 const nodeTypes = {
@@ -46,6 +47,7 @@ function GraphViewInner({
   loadingKnowledgeIds,
   onNodeExpand,
   onShowKnowledge,
+  onNodePositionsChange,
 }: GraphViewProps) {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
@@ -68,11 +70,12 @@ function GraphViewInner({
       try {
         const positionsArray = JSON.parse(savedPositions);
         userPositions.current = new Map(positionsArray);
+        console.log('✅ GraphView: 从 localStorage 恢复节点位置', positionsArray.length);
       } catch (error) {
         console.error('恢复节点位置失败:', error);
       }
     }
-  }, []);
+  }, [tree]);
 
   // 处理 viewport 变化（包括缩放）
   const handleMove: OnMove = useCallback((event, viewport) => {
@@ -277,6 +280,14 @@ function GraphViewInner({
             // 保存到 localStorage
             const positionsArray = Array.from(userPositions.current.entries());
             localStorage.setItem('nodePositions', JSON.stringify(positionsArray));
+            console.log('💾 节点位置已保存到 localStorage');
+
+            // 延迟触发父组件的回调，避免在渲染期间更新状态
+            if (onNodePositionsChange) {
+              setTimeout(() => {
+                onNodePositionsChange();
+              }, 0);
+            }
 
             return nds;
           });
@@ -286,7 +297,7 @@ function GraphViewInner({
       // 应用其他类型的变化
       onNodesChange(changes);
     },
-    [tree, findAllDescendants, onNodesChange]
+    [tree, findAllDescendants, onNodesChange, onNodePositionsChange]
   );
 
   if (!tree) {
