@@ -22,7 +22,7 @@ interface PixabaySearchResult {
  */
 async function searchPixabay(searchTerm: string, limit: number = 1): Promise<PixabaySearchResult[]> {
   try {
-    const apiKey = process.env.PIXABAY_API_KEY;
+    const apiKey = process.env.PIXABAY_API_KEY?.trim();
 
     if (!apiKey) {
       console.error('❌ PIXABAY_API_KEY is not configured');
