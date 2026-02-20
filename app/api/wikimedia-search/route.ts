@@ -31,6 +31,10 @@ async function searchPixabay(searchTerm: string, limit: number = 1): Promise<Pix
 
     console.log('🔍 Attempting to search Pixabay for:', searchTerm);
     console.log('📝 API Key length:', apiKey.length);
+    console.log('📝 API Key first 10 chars:', apiKey.substring(0, 10));
+    console.log('📝 API Key last 10 chars:', apiKey.substring(apiKey.length - 10));
+    console.log('📝 API Key has newlines:', apiKey.includes('\n'));
+    console.log('📝 API Key has carriage returns:', apiKey.includes('\r'));
 
     // Pixabay API endpoint
     const apiUrl = 'https://pixabay.com/api/';
@@ -55,7 +59,9 @@ async function searchPixabay(searchTerm: string, limit: number = 1): Promise<Pix
     console.log('✅ Response status:', response.status);
 
     if (!response.ok) {
-      throw new Error(`Pixabay API error: ${response.status}`);
+      const errorText = await response.text();
+      console.error('❌ Pixabay API error response:', errorText);
+      throw new Error(`Pixabay API error: ${response.status} - ${errorText}`);
     }
 
     const data = await response.json();
