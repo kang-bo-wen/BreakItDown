@@ -94,6 +94,7 @@ function DeconstructionGameContent() {
   const [promptMode, setPromptMode] = useState<'simple' | 'advanced'>('simple'); // 模式
   const [humorLevel, setHumorLevel] = useState(50); // 幽默度 0-100
   const [professionalLevel, setProfessionalLevel] = useState(70); // 专业度 0-100
+  const [detailLevel, setDetailLevel] = useState(50); // 细致度 0-100
   const [customPrompt, setCustomPrompt] = useState(''); // 自定义 prompt
 
   // 监听全屏状态变化
@@ -151,11 +152,13 @@ function DeconstructionGameContent() {
     // 恢复 prompt 设置
     const savedHumor = localStorage.getItem('humorLevel');
     const savedProfessional = localStorage.getItem('professionalLevel');
+    const savedDetail = localStorage.getItem('detailLevel');
     const savedMode = localStorage.getItem('promptMode');
     const savedCustom = localStorage.getItem('customPrompt');
 
     if (savedHumor) setHumorLevel(Number(savedHumor));
     if (savedProfessional) setProfessionalLevel(Number(savedProfessional));
+    if (savedDetail) setDetailLevel(Number(savedDetail));
     if (savedMode) setPromptMode(savedMode as 'simple' | 'advanced');
     if (savedCustom) setCustomPrompt(savedCustom);
   }, [searchParams]);
@@ -194,12 +197,13 @@ function DeconstructionGameContent() {
     const timer = setTimeout(() => {
       localStorage.setItem('humorLevel', String(humorLevel));
       localStorage.setItem('professionalLevel', String(professionalLevel));
+      localStorage.setItem('detailLevel', String(detailLevel));
       localStorage.setItem('promptMode', promptMode);
       if (customPrompt) localStorage.setItem('customPrompt', customPrompt);
     }, 500); // 500ms 防抖
 
     return () => clearTimeout(timer);
-  }, [humorLevel, professionalLevel, promptMode, customPrompt]);
+  }, [humorLevel, professionalLevel, detailLevel, promptMode, customPrompt]);
 
   // 检查 URL 中的 sessionId 并加载会话
   useEffect(() => {
@@ -320,6 +324,7 @@ function DeconstructionGameContent() {
         if (session.promptSettings) {
           setHumorLevel(session.promptSettings.humorLevel || 50);
           setProfessionalLevel(session.promptSettings.professionalLevel || 70);
+          setDetailLevel(session.promptSettings.detailLevel || 50);
           if (session.promptSettings.promptMode) {
             setPromptMode(session.promptSettings.promptMode);
           }
@@ -462,6 +467,7 @@ function DeconstructionGameContent() {
           promptSettings: {
             humorLevel,
             professionalLevel,
+            detailLevel,
             promptMode,
             customPrompt: promptMode === 'advanced' ? customPrompt : undefined
           },
@@ -698,6 +704,7 @@ function DeconstructionGameContent() {
         promptOptions: {
           humorLevel,
           professionalLevel,
+          detailLevel,
           customTemplate: promptMode === 'advanced' ? customPrompt : undefined
         }
       }),
@@ -1330,6 +1337,26 @@ function DeconstructionGameContent() {
                           <div className="flex justify-between text-xs text-gray-400 mt-1">
                             <span>通俗</span>
                             <span>专业</span>
+                          </div>
+                        </div>
+
+                        {/* 细致度滑块 */}
+                        <div>
+                          <label className="block text-sm font-medium mb-2 flex items-center justify-between">
+                            <span>🔍 细致度</span>
+                            <span className="text-indigo-400">{detailLevel}%</span>
+                          </label>
+                          <input
+                            type="range"
+                            min="0"
+                            max="100"
+                            value={detailLevel}
+                            onChange={(e) => setDetailLevel(Number(e.target.value))}
+                            className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer"
+                          />
+                          <div className="flex justify-between text-xs text-gray-400 mt-1">
+                            <span>简化</span>
+                            <span>详细</span>
                           </div>
                         </div>
                       </div>

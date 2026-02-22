@@ -304,23 +304,6 @@ export function getDeconstructionPrompt(currentItem: string, parentContext?: str
 
 Task: Break down "${currentItem}" into its constituent components or materials (one level only).${contextNote}
 
-**CRITICAL: 专注于物体本身，不要联想到环境、装备、附属物！**
-
-拆解范围约束：
-- ✅ 只拆解物体本身的组成部分
-- ❌ 不要包含环境因素（背景、地面、空气等）
-- ❌ 不要包含可拆卸的装备（衣服、鞋子、配饰等，除非它们是物体的固有部分）
-- ❌ 不要包含使用场景中的其他物品
-
-示例：
-- "科比·布莱恩特" → 头部、躯干、四肢 ✅（只拆解人体本身）
-- "科比·布莱恩特" → 头部、躯干、四肢、球衣、球鞋 ❌（包含了装备，错误！）
-- "穿着球衣的科比" → 头部、躯干、四肢、球衣 ✅（球衣是照片中的一部分）
-- "汽车" → 发动机、车身、轮胎、座椅 ✅（车辆本体）
-- "汽车" → 发动机、车身、轮胎、座椅、汽油、机油 ❌（包含了消耗品，错误！）
-- "乒乓球桌" → 球网、桌面、支撑腿 ✅（桌子本身）
-- "乒乓球桌" → 球网、桌面、支撑腿、乒乓球、球拍 ❌（包含了使用场景的物品，错误！）
-
 CRITICAL CONSTRAINTS:
 1. Maximum decomposition depth: 6 levels total
 2. Final leaf nodes MUST be from the Basic Elements List below
@@ -352,120 +335,39 @@ BASIC ELEMENTS LIST (Final Leaf Nodes MUST be from this list):
 
 DECOMPOSITION STRATEGY (Maximum 6 levels):
 
-**核心原则：宁可少拆一层，也不要多拆！尽快到达自然元素！**
+Level 1 - ASSEMBLED PRODUCTS:
+→ Break into 3-5 major functional components only
+→ Example: "Smartphone" → Display, Battery, Circuit board, Housing
 
-**拆解决策流程（每次拆解都要遵循）：**
-1. 首先判断：当前物品是什么类型？
-   - 完整产品 → 拆成功能组件
-   - 功能组件 → 拆成子组件或材料类型
-   - 材料类型 → **优先考虑直接跳到自然元素**
+Level 2-3 - MAJOR COMPONENTS:
+→ Break into main material types (skip minor parts)
+→ Example: "Display" → Glass, Plastic frame, Metal connectors
 
-2. **关键决策：能跳就跳，不要犹豫！**
-   - 看到任何**加工材料**（塑料、玻璃、钢材、木材、橡胶等）→ **必须继续拆到自然元素**
-   - 只有明显的复合结构（如"电路板"、"液晶屏"）才继续拆一层
-   - **疑问时选择跳到自然元素，而不是继续拆解**
-   - **重要：加工材料（塑料、玻璃、钢材等）不是终点，必须拆到基础元素列表中的自然元素！**
+Level 4-5 - MATERIALS:
+→ Identify the material category
+→ Example: "Glass" → Silica Sand, Soda ash (from Clay/Stone)
+→ Example: "Plastic" → Crude Oil
 
-3. 自然元素判断（满足任一条件就是自然元素）：
-   - **必须**在基础元素列表中（木材、原油、铁矿石、硅砂等）
-   - **不是**加工材料（塑料、玻璃、钢材、铝合金等都不是自然元素！）
-   - 标记 is_raw_material = true 的**只能是**基础元素列表中的物品
-
-**常见错误：**
-❌ "塑料" 标记为 is_raw_material = true（错误！塑料是加工材料，应该拆到"原油"）
-❌ "玻璃" 标记为 is_raw_material = true（错误！玻璃是加工材料，应该拆到"硅砂"）
-❌ "钢材" 标记为 is_raw_material = true（错误！钢材是加工材料，应该拆到"铁矿石、煤炭"）
-✅ "原油" 标记为 is_raw_material = true（正确！原油在基础元素列表中）
-✅ "木材" 标记为 is_raw_material = true（正确！木材在基础元素列表中）
-
-4. 保持结构合理性：
-   - 同一层的组件应该在相似的抽象层次
-   - 不要混合功能组件和原材料
-   - 每层 3-5 个主要组件即可
-
-**分层示例：**
-
-Level 1 - ASSEMBLED PRODUCTS (完整产品):
-→ **必须拆解成 3-5 个主要功能组件**
-→ **禁止**直接拆解到材料（如铁矿石、塑料、玻璃等）
-→ 例子：
-  * "乒乓球桌" → 球网、桌面、支撑腿 ✅
-  * "乒乓球桌" → 铁矿石、木材、塑料 ❌ (错误！太深了)
-  * "智能手机" → 屏幕、电池、主板、外壳 ✅
-  * "汽车" → 发动机、车身、轮胎、座椅 ✅
-
-Level 2-3 - MAJOR COMPONENTS (主要组件):
-→ 拆解成子组件或主要材料类型
-→ **关键判断**：如果是简单材料，准备下一层跳到自然元素
-→ 例子：
-  * "桌面" → 木板、金属边框、涂层 ✅ (材料类型)
-  * "屏幕" → 玻璃面板、液晶层、背光模组 ✅ (子组件)
-  * "电池" → 正极、负极、电解液、外壳 ✅ (子组件)
-
-Level 3-4 - MATERIALS (材料):
-→ **默认策略：直接跳到自然元素！**
-→ 只有明显的复合结构才继续拆一层
-→ 例子：
-  * "木板" → 木材 ✅ (直接到自然元素)
-  * "塑料外壳" → 原油 ✅ (直接到自然元素)
-  * "玻璃面板" → 硅砂 ✅ (直接到自然元素)
-  * "钢管" → 铁矿石, 煤炭 ✅ (直接到自然元素)
-  * "橡胶" → 天然橡胶 ✅ (直接到自然元素)
-  * "电路板" → PCB基板, 铜线, 焊料 ✅ (明显的复合结构，再拆一层)
-
-Level 4-6 - BASIC ELEMENTS (基础元素):
-→ **必须**来自基础元素列表
-→ 标记 is_raw_material = true
-→ 例子：
-  * "铝合金" → 铝土矿 ✅
-  * "塑料" → 原油 ✅
-  * "木材" → 木材 ✅ (已经是自然元素)
+Level 6 - BASIC ELEMENTS:
+→ MUST be from the Basic Elements List above
+→ Mark is_raw_material = true
 
 IMPORTANT RULES:
 1. Use Chinese for all names and descriptions (中文输出)
-2. **专注于物体本身！不要联想到环境、装备、附属物！宁少勿滥！**
-3. **加工材料（塑料、玻璃、钢材等）不是终点！必须拆到基础元素列表中的自然元素！**
-4. **第一层必须是功能组件，不能是材料**
-5. **只有基础元素列表中的物品才能标记 is_raw_material = true**
-6. 保持同一层组件在相似的抽象层次
-7. 每层 3-5 个主要组件，不要太多
-8. 最终节点必须精确匹配基础元素列表
-9. 跳过化学合成步骤 - 直接到基础元素
+2. Be LESS precise - combine similar materials, skip minor components
+3. When you reach a material that's 1-2 steps from basic elements, jump directly
+4. NEVER exceed 6 levels of decomposition
+5. Final nodes MUST match the Basic Elements List exactly
+6. Skip chemical synthesis steps - go straight to basic elements
 
 EXAMPLES:
 
-**第一层拆解（功能组件 - 只拆物体本身）：**
-✓ "乒乓球桌" → 球网, 桌面, 支撑腿 (桌子本身，正确！)
-✓ "笔记本电脑" → 屏幕, 键盘, 主板, 电池, 外壳 (电脑本身，正确！)
-✓ "科比·布莱恩特" → 头部, 躯干, 四肢 (人体本身，正确！)
-✓ "汽车" → 发动机, 车身, 轮胎, 座椅 (车辆本体，正确！)
-❌ "乒乓球桌" → 球网, 桌面, 支撑腿, 乒乓球, 球拍 (包含了使用场景的物品，错误！)
-❌ "科比·布莱恩特" → 头部, 躯干, 四肢, 球衣, 球鞋 (包含了装备，错误！)
-❌ "汽车" → 发动机, 车身, 轮胎, 座椅, 汽油 (包含了消耗品，错误！)
-❌ "笔记本电脑" → 屏幕, 键盘, 主板, 电池, 外壳, 鼠标 (鼠标是外设，不是电脑本身，错误！)
+✓ "塑料瓶" → 塑料 → 原油 (2 levels, good!)
+✓ "玻璃窗" → 玻璃 → 硅砂 (2 levels, good!)
+✓ "钢架" → 钢材 → 铁矿石, 煤炭 (2 levels, good!)
+✓ "电路板" → PCB基板, 铜线, 焊料 → (next level: 硅砂, 铜矿石, etc.)
 
-**第二层拆解（子组件或材料类型）：**
-✓ "桌面" → 木板, 金属边框, 涂层 (材料类型，正确！)
-✓ "屏幕" → 玻璃面板, 液晶层, 背光模组 (子组件，正确！)
-✓ "支撑腿" → 钢管, 橡胶脚垫 (材料类型，正确！)
-
-**第三层拆解（必须拆到自然元素，不能停在加工材料）：**
-✓ "木板" → 木材 (木材是自然元素，正确！)
-✓ "塑料外壳" → 原油 (原油是自然元素，正确！)
-✓ "玻璃面板" → 硅砂 (硅砂是自然元素，正确！)
-✓ "钢管" → 铁矿石, 煤炭 (铁矿石、煤炭是自然元素，正确！)
-✓ "橡胶脚垫" → 天然橡胶 (天然橡胶是自然元素，正确！)
-✓ "液晶层" → 液晶材料, 偏光片 (复合材料，继续拆解)
-❌ "塑料外壳" → 塑料 (塑料是加工材料，不是终点，错误！)
-❌ "玻璃面板" → 玻璃 (玻璃是加工材料，不是终点，错误！)
-❌ "钢管" → 钢材 (钢材是加工材料，不是终点，错误！)
-❌ "木板" → 纤维素 → 葡萄糖 → ... (过度细分，错误！)
-
-**第四层拆解（基础元素）：**
-✓ "钢材" → 铁矿石, 煤炭 (基础元素，标记 is_raw_material = true)
-✓ "铝合金" → 铝土矿 (基础元素，标记 is_raw_material = true)
-✓ "塑料" → 原油 (基础元素，标记 is_raw_material = true)
-✓ "木材" → 木材 (已经是基础元素，标记 is_raw_material = true)
+❌ "塑料瓶" → 聚乙烯树脂 → 聚合物颗粒 → 精炼石油 → 原油 (TOO DETAILED!)
 
 Output Format: JSON only (Chinese names and descriptions).
 {
@@ -610,7 +512,7 @@ export function generateCustomDeconstructionPrompt(
   if (options.detailLevel > 70) {
     styleInstructions += '\n\n细致度：高细致度拆解\n- 包含更多子组件和中间材料\n- 拆解层次更深，展示更多细节\n- 每层可以包含 5-7 个组件\n- 适当包含次要组件和辅助材料';
   } else if (options.detailLevel < 30) {
-    styleInstructions += '\n\n细致度：低细致度拆解\n- 只包含最主要的组件\n- 快速跳到自然元素，减少中间层次\n- 每层只包含 2-3 个核心组件\n- 跳过次要组件和辅助材料\n- 优先选择直接路径到达基础元素';
+    styleInstructions += '\n\n**细致度：极简拆解模式（强制执行）**\n- **强制要求：每层最多 2-3 个核心组件**\n- **强制要求：尽可能快速跳到自然元素，最多 3-4 层**\n- **强制要求：跳过所有次要组件、辅助材料、中间步骤**\n- **强制要求：看到任何材料立即跳到自然元素，不要犹豫**\n- 示例：\n  * "笔记本电脑" → 屏幕、主板、电池（只保留核心）\n  * "屏幕" → 玻璃、液晶（跳过背光等次要组件）\n  * "玻璃" → 硅砂（立即到自然元素）';
   } else {
     styleInstructions += '\n\n细致度：中等细致度拆解\n- 包含主要组件和关键材料\n- 保持合理的拆解层次\n- 每层包含 3-5 个主要组件';
   }
