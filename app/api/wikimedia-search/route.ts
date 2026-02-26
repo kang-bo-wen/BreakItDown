@@ -41,7 +41,8 @@ async function searchPixabay(searchTerm: string, limit: number = 1): Promise<Pix
       per_page: String(perPage),
       page: '1',
       image_type: 'photo',
-      safesearch: 'true'
+      safesearch: 'true',
+      order: 'popular' // 按热门度排序，通常更相关
     });
 
     const fullUrl = `${apiUrl}?${params}`;
@@ -84,7 +85,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const results = await searchPixabay(searchTerm, 1);
+    const results = await searchPixabay(searchTerm, 3); // 获取前3个结果
 
     if (results.length === 0) {
       return NextResponse.json({
@@ -93,7 +94,27 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    const bestMatch = results[0];
+    // 选择最佳匹配：优先选择标签中包含搜索词的图片
+    const searchWords = searchTerm.toLowerCase().split(' ');
+    let bestMatch = results[0];
+    let bestScore = 0;
+
+    for (const result of results) {
+      const tags = (result as any).tags?.toLowerCase() || '';
+      let score = 0;
+
+      // 计算匹配分数：标签中包含的搜索词越多，分数越高
+      for (const word of searchWords) {
+        if (tags.includes(word)) {
+          score++;
+        }
+      }
+
+      if (score > bestScore) {
+        bestScore = score;
+        bestMatch = result;
+      }
+    }
 
     return NextResponse.json({
       imageUrl: bestMatch.largeImageURL,

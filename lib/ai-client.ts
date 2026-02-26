@@ -235,20 +235,18 @@ async function callQwenText(prompt: string): Promise<string> {
 
 /**
  * 统一的视觉API调用接口
+ * 识图固定使用千问，不使用自定义 AI
  */
 export async function callVisionAPI(imageBase64: string, prompt: string): Promise<string> {
   validateConfig();
-  if (useCustomAI) {
-    console.log('Using custom AI vision model:', AI_MODEL_VISION);
-    return callCustomVision(imageBase64, prompt);
-  } else {
-    console.log('Using Qwen vision model');
-    return callQwenVision(imageBase64, prompt);
-  }
+  // 识图固定使用千问
+  console.log('Using Qwen vision model (fixed for image identification)');
+  return callQwenVision(imageBase64, prompt);
 }
 
 /**
  * 统一的文本API调用接口
+ * 拆解可以使用自定义 AI 或千问
  */
 export async function callTextAPI(prompt: string): Promise<string> {
   validateConfig();
@@ -271,26 +269,39 @@ export const IDENTIFICATION_PROMPT = `识别图片中的主要物体，返回JSO
   "category": "类别（如'电子产品'、'交通工具'、'家具'）",
   "brief_description": "客观描述（2-3句话，包含材料、功能）",
   "icon": "一个最能代表该物体的emoji图标",
-  "searchTerm": "English search term for Wikimedia Commons (e.g., 'iPhone smartphone', 'aluminum metal', 'silicon chip')"
+  "searchTerm": "English search term for Pixabay (e.g., 'smartphone', 'basketball player', 'assault rifle')"
 }
 
 要求：
 1. 名称要准确、具体、客观，使用专业中文
 2. **图标必须精准匹配物体特征，一看就知道是什么**
-3. **searchTerm 必须是英文，简洁准确，适合在 Wikimedia Commons 搜索图片**
+3. **searchTerm 搜索词规则（非常重要）：**
+   - 必须是英文
+   - 只使用 1-3 个最核心的关键词
+   - 优先使用通用词汇，不要太具体的型号
+   - 示例：
+     * ✅ "smartphone" (而不是 "iPhone 15 Pro smartphone")
+     * ✅ "basketball player" (而不是 "Kobe Bryant Los Angeles Lakers")
+     * ✅ "assault rifle" (而不是 "QBZ-95 Chinese assault rifle")
+     * ✅ "laptop computer" (而不是 "MacBook Pro M3 laptop")
+     * ✅ "sports car" (而不是 "Ferrari F8 Tributo sports car")
+   - 如果是人物，使用"职业/特征"而不是具体姓名
+   - 如果是产品，使用"类别"而不是品牌型号
 
 图标选择指南：
 - 电子产品：📱(手机)、💻(笔记本)、🖥️(台式机)、⌚(手表)、📷(相机)、🎧(耳机)、⌨️(键盘)、🖱️(鼠标)
 - 交通工具：🚗(汽车)、🚙(SUV)、🚕(出租车)、🚌(公交)、🚂(火车)、✈️(飞机)、🚁(直升机)、🚀(火箭)、🚲(自行车)、🛵(摩托)、🚢(船)
 - 家具家电：🪑(椅子)、🛋️(沙发)、🛏️(床)、🚪(门)、🪟(窗)、📺(电视)、🔌(插座)、💡(灯)
 - 工具器械：🔧(扳手)、🔨(锤子)、🪛(螺丝刀)、⚙️(齿轮)、🔩(螺丝)
+- 武器装备：🔫(枪械)、🗡️(刀剑)
 - 食品饮料：🍔(汉堡)、🍕(披萨)、🍎(苹果)、🥤(饮料)、☕(咖啡)
 - 服装配饰：👕(衣服)、👖(裤子)、👟(鞋)、👓(眼镜)、⌚(手表)、💼(包)
 - 文具书籍：📚(书)、📖(笔记本)、✏️(铅笔)、🖊️(钢笔)、📏(尺子)
 - 运动器材：⚽(足球)、🏀(篮球)、🎾(网球)、🏓(乒乓球)、🎯(飞镖)
 - 乐器：🎸(吉他)、🎹(钢琴)、🎺(小号)、🥁(鼓)、🎻(小提琴)
 
-**关键：选择最具体、最有代表性的图标，让用户一眼就能认出物体！**`;
+**关键：选择最具体、最有代表性的图标，让用户一眼就能认出物体！**
+**searchTerm 要简洁通用，便于在图库中找到相关图片！**`;
 
 /**
  * Generate system prompt for deconstruction
