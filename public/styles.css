@@ -1,0 +1,389 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.container {
+  max-width: 1600px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+}
+
+header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 30px;
+}
+
+header h1 {
+  font-size: 32px;
+  margin-bottom: 20px;
+}
+
+.product-input {
+  display: flex;
+  gap: 10px;
+}
+
+.product-input input {
+  flex: 1;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+}
+
+.product-input button {
+  padding: 12px 30px;
+  background: white;
+  color: #667eea;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.product-input button:hover {
+  transform: scale(1.05);
+}
+
+main {
+  padding: 30px;
+}
+
+/* 三栏布局 */
+.three-column-layout {
+  display: flex;
+  gap: 20px;
+  height: calc(100vh - 200px);
+}
+
+.left-column {
+  width: 20%;
+  overflow-y: auto;
+}
+
+.center-column {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.right-column {
+  width: 30%;
+  overflow-y: auto;
+}
+
+.left-column h2,
+.center-column h2,
+.right-column h2 {
+  font-size: 20px;
+  margin-bottom: 15px;
+  color: #333;
+  position: sticky;
+  top: 0;
+  background: white;
+  padding: 10px 0;
+  z-index: 10;
+}
+
+.parts-tree {
+  background: #f8f9fa;
+  border-radius: 10px;
+  padding: 15px;
+  min-height: 100px;
+}
+
+.part-item {
+  background: white;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 15px;
+  margin: 10px 0;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.part-item:hover {
+  border-color: #667eea;
+  transform: translateX(5px);
+}
+
+.part-item.selected {
+  border-color: #667eea;
+  background: #f0f4ff;
+}
+
+.part-item.level-1 {
+  margin-left: 0;
+}
+
+.part-item.level-2 {
+  margin-left: 30px;
+}
+
+.part-item.level-3 {
+  margin-left: 60px;
+}
+
+.agents-panel h2 {
+  font-size: 24px;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+/* Agent 2x2网格布局 */
+.agents-vertical {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 15px;
+  height: 100%;
+}
+
+.agent-card {
+  background: #f8f9fa;
+  border-radius: 10px;
+  padding: 15px;
+  border: 2px solid #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.agent-card.active {
+  border-color: #667eea;
+  background: #f0f4ff;
+}
+
+.agent-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.agent-status {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #ccc;
+  margin-right: 10px;
+}
+
+.agent-status.active {
+  background: #4caf50;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.agent-name {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+}
+
+.agent-thinking {
+  background: white;
+  border-radius: 8px;
+  padding: 12px;
+  flex: 1;
+  overflow-y: auto;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #555;
+  white-space: pre-wrap;
+  min-height: 100px;
+}
+
+.interaction-panel {
+  background: #f8f9fa;
+  border-radius: 10px;
+  padding: 15px;
+}
+
+/* 弹窗样式 */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  animation: fadeIn 0.3s;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal.show {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 15px;
+  padding: 40px;
+  max-width: 1200px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  animation: slideIn 0.3s;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.close-modal {
+  position: absolute;
+  right: 20px;
+  top: 20px;
+  font-size: 28px;
+  font-weight: bold;
+  color: #999;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.close-modal:hover {
+  color: #333;
+}
+
+.supplier-list {
+  display: grid;
+  gap: 15px;
+}
+
+.supplier-item {
+  background: white;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.supplier-item:hover {
+  border-color: #667eea;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.supplier-item.selected {
+  border-color: #667eea;
+  background: #f0f4ff;
+}
+
+.supplier-name {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.supplier-details {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  font-size: 14px;
+  color: #666;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-primary {
+  background: #667eea;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #5568d3;
+}
+
+.btn-secondary {
+  background: #e0e0e0;
+  color: #333;
+}
+
+.btn-secondary:hover {
+  background: #d0d0d0;
+}
+
+.assessment-results {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.assessment-card {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  border: 2px solid #e0e0e0;
+}
+
+.assessment-title {
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.assessment-value {
+  font-size: 24px;
+  font-weight: bold;
+  color: #667eea;
+  margin-bottom: 10px;
+}
+
+.assessment-details {
+  font-size: 14px;
+  color: #666;
+  line-height: 1.6;
+}

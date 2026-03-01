@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>智能制造业多Agent系统</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>智能制造业多Agent系统</h1>
+      <div class="product-input">
+        <input type="text" id="productName" placeholder="输入产品名称（例如：白色金属闹钟）">
+        <button id="startBtn">开始分析</button>
+      </div>
+    </header>
+
+    <main class="three-column-layout">
+      <div class="left-column">
+        <h2>零件树结构</h2>
+        <div id="partsTree" class="parts-tree"></div>
+      </div>
+
+      <div class="center-column">
+        <h2>Agent工作面板</h2>
+        <div class="agents-vertical" id="agentsGrid">
+          <!-- Agent面板将动态生成 -->
+        </div>
+      </div>
+
+      <div class="right-column">
+        <h2>供应商选项</h2>
+        <div id="interactionPanel">
+          <!-- 供应商选项将动态生成 -->
+        </div>
+      </div>
+    </main>
+
+    <!-- 评估结果弹窗 -->
+    <div id="assessmentModal" class="modal">
+      <div class="modal-content">
+        <span class="close-modal">&times;</span>
+        <div id="assessmentModalBody"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
