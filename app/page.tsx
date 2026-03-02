@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 
@@ -22,6 +22,28 @@ export default function Home() {
   const startButtonRef = useRef<HTMLDivElement>(null);
   const aboutButtonRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const dragTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // 节流的拖动处理函数
+  const handleLetterDrag = useCallback((event: any, index: number) => {
+    if (dragTimeoutRef.current) return;
+
+    dragTimeoutRef.current = setTimeout(() => {
+      if (containerRef.current) {
+        const containerRect = containerRef.current.getBoundingClientRect();
+        const element = event.target as HTMLElement;
+        const rect = element.getBoundingClientRect();
+        setLetterPositions(prev => ({
+          ...prev,
+          [index]: {
+            x: rect.left + rect.width / 2 - containerRect.left,
+            y: rect.top + rect.height / 2 - containerRect.top
+          }
+        }));
+      }
+      dragTimeoutRef.current = null;
+    }, 16); // ~60fps
+  }, []);
 
   // 获取按钮位置
   useEffect(() => {
@@ -146,12 +168,14 @@ export default function Home() {
       {/* 主内容 */}
       <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4">
         {/* 标题 - 树状节点风格 */}
-        <motion.div
+        <motion.header
           className="mb-8 relative"
           variants={containerVariants}
           initial="hidden"
           animate="visible"
+          role="banner"
         >
+          <h1 className="sr-only">Break It Down - 探索万物的本质</h1>
           <div className="flex flex-wrap justify-center gap-3 md:gap-4 relative" style={{ zIndex: 1 }}>
             {letters.map((letter, index) => (
               <motion.div
@@ -160,20 +184,7 @@ export default function Home() {
                 drag
                 dragMomentum={false}
                 dragElastic={0.1}
-                onDrag={(event) => {
-                  if (containerRef.current) {
-                    const containerRect = containerRef.current.getBoundingClientRect();
-                    const element = event.target as HTMLElement;
-                    const rect = element.getBoundingClientRect();
-                    setLetterPositions(prev => ({
-                      ...prev,
-                      [index]: {
-                        x: rect.left + rect.width / 2 - containerRect.left,
-                        y: rect.top + rect.height / 2 - containerRect.top
-                      }
-                    }));
-                  }
-                }}
+                onDrag={(event) => handleLetterDrag(event, index)}
                 className="relative group cursor-move"
               >
                 {/* 节点圆圈背景 */}
@@ -186,8 +197,8 @@ export default function Home() {
                   group-hover:scale-110 group-hover:border-purple-400
                   ${letter === ' ' ? 'opacity-0' : ''}
                 `} style={{
-                  width: letter === ' ' ? '2rem' : '7rem',
-                  height: letter === ' ' ? '2rem' : '7rem',
+                  width: letter === ' ' ? '1rem' : 'clamp(3rem, 10vw, 7rem)',
+                  height: letter === ' ' ? '1rem' : 'clamp(3rem, 10vw, 7rem)',
                   transform: 'translate(-50%, -50%)',
                   left: '50%',
                   top: '50%',
@@ -215,8 +226,8 @@ export default function Home() {
                 {/* 节点光晕效果 */}
                 {letter !== ' ' && (
                   <div className="absolute inset-0 rounded-full bg-purple-500/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{
-                    width: '7rem',
-                    height: '7rem',
+                    width: 'clamp(3rem, 10vw, 7rem)',
+                    height: 'clamp(3rem, 10vw, 7rem)',
                     transform: 'translate(-50%, -50%)',
                     left: '50%',
                     top: '50%',
@@ -225,7 +236,7 @@ export default function Home() {
               </motion.div>
             ))}
           </div>
-        </motion.div>
+        </motion.header>
 
         {/* 副标题 */}
         <motion.p

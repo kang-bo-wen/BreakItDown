@@ -269,24 +269,27 @@ export const IDENTIFICATION_PROMPT = `识别图片中的主要物体，返回JSO
   "category": "类别（如'电子产品'、'交通工具'、'家具'）",
   "brief_description": "客观描述（2-3句话，包含材料、功能）",
   "icon": "一个最能代表该物体的emoji图标",
-  "searchTerm": "English search term for Pixabay (e.g., 'smartphone', 'basketball player', 'assault rifle')"
+  "searchTerm": "English search term - use popular words with lots of photos (e.g., 'smartphone', 'car', 'laptop', 'watch', 'headphones')"
 }
 
 要求：
 1. 名称要准确、具体、客观，使用专业中文
 2. **图标必须精准匹配物体特征，一看就知道是什么**
-3. **searchTerm 搜索词规则（非常重要）：**
+3. **searchTerm 搜索词规则（非常重要，必须严格遵守）：**
    - 必须是英文
    - 只使用 1-3 个最核心的关键词
+   - **必须选择图片多的热门词汇**（如 "battery" 图片比 "lithium battery" 多很多）
    - 优先使用通用词汇，不要太具体的型号
    - 示例：
-     * ✅ "smartphone" (而不是 "iPhone 15 Pro smartphone")
-     * ✅ "basketball player" (而不是 "Kobe Bryant Los Angeles Lakers")
-     * ✅ "assault rifle" (而不是 "QBZ-95 Chinese assault rifle")
-     * ✅ "laptop computer" (而不是 "MacBook Pro M3 laptop")
-     * ✅ "sports car" (而不是 "Ferrari F8 Tributo sports car")
-   - 如果是人物，使用"职业/特征"而不是具体姓名
-   - 如果是产品，使用"类别"而不是品牌型号
+     * ✅ "smartphone" (图片最多，最推荐)
+     * ✅ "battery" (比 "lithium battery" 图片多)
+     * ✅ "laptop" (比 "MacBook Pro" 图片多)
+     * ✅ "car" (比具体车型图片多)
+     * ✅ "processor chip" (比具体型号图片多)
+     * ❌ "iPhone 15 Pro" (图片太少)
+     * ❌ "QBZ-95" (几乎没有图片)
+     * ❌ "M3 chip" (图片太少)
+   - 如果不确定，选择更通用、更常见的词汇
 
 图标选择指南：
 - 电子产品：📱(手机)、💻(笔记本)、🖥️(台式机)、⌚(手表)、📷(相机)、🎧(耳机)、⌨️(键盘)、🖱️(鼠标)
@@ -389,12 +392,12 @@ Output Format: JSON only (Chinese names and descriptions).
       "description": "功能或特性（中文）",
       "is_raw_material": true or false,
       "icon": "一个最能代表该组件的emoji图标（如：🚀火箭、💻电脑、🔋电池、⚙️齿轮、🔌电线等）",
-      "searchTerm": "English search term for Wikimedia Commons (e.g., 'lithium battery', 'aluminum alloy', 'silicon wafer', 'iron ore')"
+      "searchTerm": "English search term for image search - use popular words with lots of photos (e.g., 'battery', 'metal', 'glass', 'plastic', 'wire', 'chip', 'screen')"
     }
   ]
 }
 
-**IMPORTANT: searchTerm must be in English and suitable for searching professional/technical images on Wikimedia Commons.**
+**IMPORTANT: searchTerm must be in English and suitable for searching images on Unsplash (choose popular, common words with lots of photos - e.g., "battery" instead of "lithium battery", "metal" instead of "aluminum alloy").**
 
 ICON SELECTION GUIDELINES (CRITICAL - 图标必须精准匹配):
 **核心原则：图标必须精准、具体、一目了然，避免模糊抽象**
