@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>智能制造业多Agent系统</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>智能制造业多Agent系统</h1>
+      <div class="product-input">
+        <input type="text" id="productName" placeholder="输入产品名称（例如：白色金属闹钟）">
+        <button id="startBtn">开始分析</button>
+      </div>
+    </header>
+
+    <main class="center-radiation-layout">
+      <!-- 左侧：零件详情 -->
+      <aside class="left-panel" id="leftPanel">
+        <div class="panel-header">
+          <h2>零件详情</h2>
+          <span class="panel-toggle" onclick="togglePanel('left')">◀</span>
+        </div>
+        <div class="panel-content" id="leftPanelContent">
+          <div id="partsCards" class="parts-cards-list"></div>
+        </div>
+      </aside>
+
+      <!-- 中间：树状图主区域 -->
+      <section class="main-tree-area">
+        <div id="visualTree" class="visual-tree-container">
+          <div class="tree-controls">
+            <button class="tree-control-btn" onclick="zoomIn()" title="放大">+</button>
+            <button class="tree-control-btn" onclick="zoomOut()" title="缩小">-</button>
+            <button class="tree-control-btn" onclick="expandAllNodes()" title="展开全部">⬆</button>
+            <button class="tree-control-btn" onclick="collapseAllNodes()" title="折叠全部">⬇</button>
+            <button class="tree-control-btn" onclick="resetTreeView()" title="重置视图">⟲</button>
+            <span class="zoom-level" id="zoomLevel">100%</span>
+          </div>
+          <svg id="treeEdges" class="tree-edges"></svg>
+          <div id="treeNodes" class="tree-nodes"></div>
+        </div>
+      </section>
+
+      <!-- 右侧：Agent/供应商悬浮栏 -->
+      <aside class="right-floating-panel" id="rightPanel">
+        <div class="panel-tabs">
+          <button class="panel-tab active" data-tab="agents" onclick="switchPanelTab('agents')">Agent</button>
+          <button class="panel-tab" data-tab="suppliers" onclick="switchPanelTab('suppliers')">供应商</button>
+        </div>
+        <div class="panel-body">
+          <div id="agentsGrid" class="agents-grid-container">
+            <!-- Agent面板将动态生成 -->
+          </div>
+          <div id="interactionPanel" class="interaction-panel-container hidden">
+            <!-- 供应商选项将动态生成 -->
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <!-- 评估结果弹窗 -->
+    <div id="assessmentModal" class="modal">
+      <div class="modal-content">
+        <span class="close-modal">&times;</span>
+        <div id="assessmentModalBody"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
