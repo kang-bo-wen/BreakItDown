@@ -210,14 +210,10 @@ export default function Sidebar() {
                 localStorage.removeItem('imagePreview');
                 localStorage.removeItem('knowledgeCache');
                 localStorage.removeItem('nodePositions');
+                localStorage.removeItem('setupState');
 
-                // 如果当前在拆解页面，使用 window.location 强制刷新
-                if (pathname === '/deconstruct' || pathname.startsWith('/deconstruct?')) {
-                  window.location.href = '/deconstruct';
-                } else {
-                  // 否则使用 router 导航
-                  router.push('/deconstruct');
-                }
+                // 使用 window.location 强制刷新到新页面
+                window.location.href = '/setup';
               }}
               className="w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors bg-blue-600 hover:bg-blue-700 text-white"
             >
