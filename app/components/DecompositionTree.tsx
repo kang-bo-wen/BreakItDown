@@ -34,7 +34,7 @@ export default function DecompositionTree({
 }: DecompositionTreeProps) {
   if (!tree) {
     return (
-      <div className="text-gray-500 text-sm p-4">
+      <div className="text-cyan-300/50 text-sm p-4">
         暂无分解结构
       </div>
     );
@@ -81,17 +81,15 @@ function TreeNodeItem({
   const isHovered = hoveredNodeId === node.id;
   const isCollapsed = !node.isExpanded && hasChildren;
 
-  // 根据层级计算颜色
+  // 根据层级计算颜色 - 统一为青色科技风
   const getLevelColor = (lvl: number) => {
     const colors = [
-      { bg: 'bg-blue-600', border: 'border-blue-400', glow: 'shadow-blue-500/60', text: 'text-blue-100' },
-      { bg: 'bg-purple-600', border: 'border-purple-400', glow: 'shadow-purple-500/60', text: 'text-purple-100' },
-      { bg: 'bg-pink-600', border: 'border-pink-400', glow: 'shadow-pink-500/60', text: 'text-pink-100' },
-      { bg: 'bg-orange-600', border: 'border-orange-400', glow: 'shadow-orange-500/60', text: 'text-orange-100' },
-      { bg: 'bg-yellow-600', border: 'border-yellow-400', glow: 'shadow-yellow-500/60', text: 'text-yellow-100' },
       { bg: 'bg-cyan-600', border: 'border-cyan-400', glow: 'shadow-cyan-500/60', text: 'text-cyan-100' },
-      { bg: 'bg-green-600', border: 'border-green-400', glow: 'shadow-green-500/60', text: 'text-green-100' },
-      { bg: 'bg-red-600', border: 'border-red-400', glow: 'shadow-red-500/60', text: 'text-red-100' },
+      { bg: 'bg-cyan-700', border: 'border-cyan-500', glow: 'shadow-cyan-500/60', text: 'text-cyan-100' },
+      { bg: 'bg-blue-600', border: 'border-blue-400', glow: 'shadow-blue-500/60', text: 'text-blue-100' },
+      { bg: 'bg-blue-700', border: 'border-blue-500', glow: 'shadow-blue-500/60', text: 'text-blue-100' },
+      { bg: 'bg-indigo-600', border: 'border-indigo-400', glow: 'shadow-indigo-500/60', text: 'text-indigo-100' },
+      { bg: 'bg-cyan-500', border: 'border-cyan-300', glow: 'shadow-cyan-500/60', text: 'text-cyan-100' },
     ];
     return colors[lvl % colors.length];
   };
@@ -148,7 +146,7 @@ function TreeNodeItem({
             onClick={handleToggle}
             className={`
               w-5 h-5 flex items-center justify-center rounded
-              ${isHovered ? 'bg-white/30 text-white' : 'bg-gray-700 text-gray-400'}
+              ${isHovered ? 'bg-cyan-500/30 text-white' : 'bg-slate-700 text-cyan-300/70'}
               hover:bg-white/20 transition-all text-xs font-bold
             `}
           >
@@ -179,7 +177,7 @@ function TreeNodeItem({
         <div className="relative">
           {/* 连接线 */}
           <div
-            className="absolute border-l-2 border-gray-600"
+            className="absolute border-l-2 border-cyan-500/30"
             style={{
               left: `${(level + 1) * 20 - 10}px`,
               top: '8px',

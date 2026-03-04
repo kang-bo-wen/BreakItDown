@@ -9,8 +9,11 @@ import { useSession } from 'next-auth/react';
 const GraphView = dynamic(() => import('../components/GraphView'), {
   ssr: false,
   loading: () => (
-    <div className="w-full h-[700px] flex items-center justify-center bg-black/30 rounded-lg">
-      <div className="text-gray-400">加载中...</div>
+    <div className="w-full h-[600px] tech-card flex items-center justify-center">
+      <div className="text-center">
+        <div className="w-12 h-12 mx-auto mb-4 rounded-full border-4 border-cyan-500/30 border-t-cyan-400 animate-spin"></div>
+        <div className="text-cyan-300/60">加载图谱中...</div>
+      </div>
     </div>
   ),
 });
@@ -823,16 +826,25 @@ function CanvasContent() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-950 via-purple-950 to-slate-950 text-white p-8">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-black text-white p-8 relative overflow-hidden">
+      {/* 背景装饰 */}
+      <div className="absolute inset-0 tech-grid opacity-30 pointer-events-none" />
+      <div className="absolute inset-0 pointer-events-none" style={{
+        background: 'radial-gradient(circle at 50% 0%, rgba(6, 182, 212, 0.1) 0%, transparent 50%)',
+      }} />
+
+      <div className="max-w-7xl mx-auto relative z-10">
         {/* Title area */}
         <div className="text-center mb-8">
-          <div className="flex items-center justify-center gap-4 mb-4">
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-red-400 bg-clip-text text-transparent">
-              Canvas - 操作界面
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500 to-cyan-700 flex items-center justify-center shadow-lg shadow-cyan-500/30">
+              <span className="text-2xl">🌌</span>
+            </div>
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-cyan-400 via-cyan-300 to-cyan-500 bg-clip-text text-transparent">
+              操作界面
             </h1>
           </div>
-          <p className="text-xl text-gray-300">
+          <p className="text-cyan-300/60 text-sm">
             探索万物本质 - 拆解图谱
           </p>
         </div>
@@ -841,21 +853,21 @@ function CanvasContent() {
         <div className="mb-6">
           <button
             onClick={returnToSetup}
-            className="bg-gray-600 hover:bg-gray-700 px-6 py-3 rounded-lg font-semibold transition flex items-center gap-2"
+            className="tech-btn flex items-center gap-2"
           >
             <span>←</span>
-            <span>返回调制界面</span>
+            <span>返回调制</span>
           </button>
         </div>
 
         {/* Identification Result Display */}
         {identificationResult && (
-          <div className="bg-white/5 backdrop-blur-xl rounded-2xl p-6 mb-6 border-2 border-white/10">
+          <div className="tech-card p-5 mb-6">
             <div className="flex items-center gap-4">
               <div className="text-3xl">{identificationResult.icon || '📦'}</div>
               <div>
-                <div className="text-xl font-bold">{identificationResult.name}</div>
-                <div className="text-sm text-gray-300">{identificationResult.brief_description}</div>
+                <div className="text-xl font-bold text-white">{identificationResult.name}</div>
+                <div className="text-sm text-cyan-300/70">{identificationResult.brief_description}</div>
               </div>
             </div>
           </div>
@@ -863,19 +875,22 @@ function CanvasContent() {
 
         {/* Start Deconstruction Button */}
         {!deconstructionTree && identificationResult && (
-          <div className="bg-white/5 backdrop-blur-xl rounded-2xl p-8 mb-6 border-2 border-white/10">
+          <div className="tech-card p-8 mb-6">
             <button
               onClick={startDeconstruction}
               disabled={isDeconstructing}
-              className="bg-purple-500 hover:bg-purple-600 disabled:bg-gray-500 px-8 py-3 rounded-lg font-semibold transition flex items-center gap-2"
+              className="tech-btn tech-btn-primary flex items-center gap-3 px-8 py-4 text-lg"
             >
               {isDeconstructing ? (
                 <>
-                  <span className="inline-block animate-spin">🔄</span>
-                  <span>拆解中...</span>
+                  <span className="inline-block animate-spin text-xl">⚡</span>
+                  <span>AI 拆解中...</span>
                 </>
               ) : (
-                '🔨 开始拆解'
+                <>
+                  <span>🔨</span>
+                  <span>开始拆解</span>
+                </>
               )}
             </button>
           </div>
@@ -885,12 +900,10 @@ function CanvasContent() {
         {deconstructionTree && (
           <div className="flex gap-6">
             {/* 左侧分解结构栏 */}
-            <div className="w-80 flex-shrink-0 bg-white/5 backdrop-blur-xl rounded-2xl p-4 border-2 border-white/10 hover:border-white/20 transition-all shadow-xl max-h-[700px] overflow-hidden flex flex-col">
-              <h3 className="text-lg font-bold flex items-center gap-2 mb-4">
+            <div className="w-80 flex-shrink-0 tech-card p-4 max-h-[700px] overflow-hidden flex flex-col">
+              <h3 className="text-lg font-bold flex items-center gap-2 mb-4 text-cyan-100">
                 <span>📋</span>
-                <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                  分解结构
-                </span>
+                <span>分解结构</span>
               </h3>
               <div className="flex-1 overflow-y-auto custom-scrollbar">
                 <DecompositionTree
@@ -947,13 +960,11 @@ function CanvasContent() {
             </div>
 
             {/* 右侧图谱区域 */}
-            <div className="flex-1 bg-white/5 backdrop-blur-xl rounded-2xl p-8 border-2 border-white/10 hover:border-white/20 transition-all shadow-2xl">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-3xl font-bold flex items-center gap-3">
-                <span className="text-4xl">🌌</span>
-                <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-                  拆解图谱
-                </span>
+            <div className="flex-1 tech-card p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-2xl font-bold flex items-center gap-3 text-cyan-100">
+                <span className="text-3xl">🌌</span>
+                <span>拆解图谱</span>
               </h2>
               <button
                 onClick={() => {
@@ -966,18 +977,18 @@ function CanvasContent() {
                     }
                   }
                 }}
-                className="px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 rounded-xl text-white font-semibold transition-all shadow-lg hover:shadow-xl flex items-center gap-2"
+                className="tech-btn flex items-center gap-2 text-sm px-4 py-2"
               >
                 <span>🔍</span>
-                <span>全屏查看</span>
+                <span>全屏</span>
               </button>
             </div>
-            <div className="mb-4 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-xl p-4 border border-blue-400/30">
-              <div className="text-sm text-blue-200">
-                点击节点继续拆解，绿色节点是自然材料。使用鼠标滚轮缩放，拖拽画布移动视图。
+            <div className="mb-4 bg-cyan-500/10 rounded-xl p-3 border border-cyan-500/20">
+              <div className="text-sm text-cyan-300/70">
+                点击节点继续拆解，青色节点是原材料。使用鼠标滚轮缩放，拖拽画布移动视图。
               </div>
             </div>
-            <div id="graph-container" className="bg-black/50 rounded-xl relative">
+            <div id="graph-container" className="rounded-xl relative overflow-hidden">
               <GraphView
                 tree={deconstructionTree}
                 loadingNodeIds={loadingNodeIds}

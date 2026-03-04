@@ -294,21 +294,31 @@ function SetupContent() {
   }, [humorLevel, professionalLevel, detailLevel, promptMode, customPrompt, identificationResult, imagePreview]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-950 via-purple-950 to-slate-950 text-white p-8">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-black text-white p-8 relative overflow-hidden">
+      {/* 背景装饰 */}
+      <div className="absolute inset-0 tech-grid opacity-30 pointer-events-none" />
+      <div className="absolute inset-0 pointer-events-none" style={{
+        background: 'radial-gradient(circle at 50% 0%, rgba(6, 182, 212, 0.1) 0%, transparent 50%)',
+      }} />
+
+      <div className="max-w-4xl mx-auto relative z-10">
         {/* Title area */}
-        <div className="text-center mb-12">
-          <div className="flex items-center justify-center gap-4 mb-4">
-            <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+        <div className="text-center mb-10">
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500 to-cyan-700 flex items-center justify-center shadow-lg shadow-cyan-500/30">
+              <span className="text-2xl">⚙️</span>
+            </div>
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-cyan-400 via-cyan-300 to-cyan-500 bg-clip-text text-transparent">
               调制界面
             </h1>
           </div>
+          <p className="text-cyan-300/60 text-sm">上传图片，识别物体，调整参数，开始拆解</p>
         </div>
 
         {/* Image Preview - always show if available */}
         {imagePreview && (
-          <div className="bg-white/5 backdrop-blur-xl rounded-2xl p-8 mb-6 border-2 border-white/10 hover:border-white/20 transition-all shadow-2xl">
-            <div className="relative w-full max-w-md h-64 mx-auto bg-black/30 rounded-lg overflow-hidden">
+          <div className="tech-card p-6 mb-6 transition-all">
+            <div className="relative w-full max-w-sm h-48 mx-auto bg-black/40 rounded-xl overflow-hidden border border-cyan-500/20">
               <Image
                 src={imagePreview}
                 alt="预览"
@@ -321,20 +331,30 @@ function SetupContent() {
 
         {/* Upload Image - only show if no identification result yet */}
         {!identificationResult && (
-          <div className="bg-white/5 backdrop-blur-xl rounded-2xl p-8 mb-6 border-2 border-white/10 hover:border-white/20 transition-all shadow-2xl">
-            <div className="flex flex-col items-center gap-4">
-              <label className="cursor-pointer bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 px-8 py-4 rounded-xl font-semibold transition-all shadow-lg hover:shadow-xl hover:scale-105">
-                选择图片
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageUpload}
-                  className="hidden"
-                />
-              </label>
+          <div className="tech-card p-8 mb-6">
+            <div className="flex flex-col items-center gap-6">
+              {/* 上传区域 */}
+              <div className="w-full">
+                <label className="cursor-pointer flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-cyan-500/30 rounded-xl hover:border-cyan-400/60 hover:bg-cyan-500/5 transition-all group">
+                  <div className="flex flex-col items-center gap-3">
+                    <div className="w-16 h-16 rounded-full bg-cyan-500/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <span className="text-3xl">📤</span>
+                    </div>
+                    <span className="text-cyan-300 font-medium">点击上传图片</span>
+                    <span className="text-xs text-cyan-300/50">支持 JPG, PNG, WEBP 格式</span>
+                  </div>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    className="hidden"
+                  />
+                </label>
+              </div>
 
+              {/* 图片预览 */}
               {imagePreview && (
-                <div className="relative w-full max-w-md h-64 bg-black/30 rounded-lg overflow-hidden">
+                <div className="relative w-full max-w-sm h-48 bg-black/40 rounded-xl overflow-hidden border border-cyan-500/20">
                   <Image
                     src={imagePreview}
                     alt="预览"
@@ -344,19 +364,23 @@ function SetupContent() {
                 </div>
               )}
 
+              {/* 识别按钮 */}
               {imageFile && !identificationResult && (
                 <button
                   onClick={identifyImage}
                   disabled={isIdentifying}
-                  className="bg-green-500 hover:bg-green-600 disabled:bg-gray-500 px-8 py-3 rounded-lg font-semibold transition flex items-center gap-2"
+                  className="tech-btn tech-btn-primary flex items-center gap-3 px-8 py-4 text-lg"
                 >
                   {isIdentifying ? (
                     <>
-                      <span className="inline-block animate-spin">🔄</span>
-                      <span>识别中...</span>
+                      <span className="inline-block animate-spin text-xl">⚡</span>
+                      <span>AI 识别中...</span>
                     </>
                   ) : (
-                    '🔍 识别物体'
+                    <>
+                      <span>🔍</span>
+                      <span>开始识别</span>
+                    </>
                   )}
                 </button>
               )}
@@ -366,52 +390,62 @@ function SetupContent() {
 
         {/* Identification Result and Prompt Settings */}
         {identificationResult && (
-          <div className="bg-white/5 backdrop-blur-xl rounded-2xl p-8 mb-6 border-2 border-white/10 hover:border-white/20 transition-all shadow-2xl">
-            {/* Identification Result Display */}
-            <div className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-xl p-6 border border-white/10 mb-6">
-              <div className="text-2xl font-bold mb-3 text-white">{identificationResult.name}</div>
-              <div className="text-sm text-gray-300 mb-3">
-                分类: {identificationResult.category}
-              </div>
-              <div className="text-gray-200">
-                {identificationResult.brief_description}
+          <div className="tech-card p-6 mb-6">
+            {/* 识别结果展示 */}
+            <div className="bg-gradient-to-br from-cyan-900/30 to-slate-900/50 rounded-xl p-5 border border-cyan-500/20 mb-6">
+              <div className="flex items-start gap-4">
+                {identificationResult.icon && (
+                  <div className="text-4xl">{identificationResult.icon}</div>
+                )}
+                <div className="flex-1">
+                  <div className="text-2xl font-bold text-white mb-1">{identificationResult.name}</div>
+                  <div className="text-sm text-cyan-300/70 mb-2">
+                    分类: {identificationResult.category}
+                  </div>
+                  <div className="text-gray-300 text-sm leading-relaxed">
+                    {identificationResult.brief_description}
+                  </div>
+                </div>
               </div>
             </div>
 
-            {/* Prompt Settings Panel - always expanded */}
-            <div className="bg-slate-800/50 rounded-xl p-6 border border-white/10 space-y-6">
-              {/* Mode Toggle */}
-              <div className="flex gap-2">
+            {/* 参数设置面板 */}
+            <div className="bg-slate-900/50 rounded-xl p-5 border border-cyan-500/10 space-y-5">
+              {/* 模式切换 */}
+              <div className="flex gap-2 p-1 bg-slate-800/50 rounded-lg">
                 <button
                   onClick={() => setPromptMode('simple')}
-                  className={`flex-1 px-4 py-2 rounded-lg transition ${
+                  className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition ${
                     promptMode === 'simple'
-                      ? 'bg-indigo-500 text-white'
-                      : 'bg-slate-700 text-gray-300 hover:bg-slate-600'
+                      ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-500/30'
+                      : 'text-cyan-300/60 hover:text-white'
                   }`}
                 >
                   简单模式
                 </button>
                 <button
                   onClick={() => setPromptMode('advanced')}
-                  className={`flex-1 px-4 py-2 rounded-lg transition ${
+                  className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition ${
                     promptMode === 'advanced'
-                      ? 'bg-indigo-500 text-white'
-                      : 'bg-slate-700 text-gray-300 hover:bg-slate-600'
+                      ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-500/30'
+                      : 'text-cyan-300/60 hover:text-white'
                   }`}
                 >
                   高级模式
                 </button>
               </div>
 
-              {/* Simple Mode: Sliders */}
+              {/* 简单模式：滑块 */}
               {promptMode === 'simple' && (
-                <div className="space-y-4">
-                  {/* Humor Level Slider */}
+                <div className="space-y-5">
+                  {/* 幽默度 */}
                   <div>
-                    <label className="block text-sm font-medium mb-2 flex items-center justify-between">
-                      <span>😄 幽默度</span>
-                      <span className="text-indigo-400">{humorLevel}%</span>
+                    <label className="block text-sm font-medium mb-3 flex items-center justify-between">
+                      <span className="flex items-center gap-2">
+                        <span>😄</span>
+                        <span className="text-cyan-100">幽默度</span>
+                      </span>
+                      <span className="text-cyan-400 font-mono bg-cyan-500/10 px-3 py-1 rounded-full">{humorLevel}%</span>
                     </label>
                     <input
                       type="range"
@@ -419,19 +453,22 @@ function SetupContent() {
                       max="100"
                       value={humorLevel}
                       onChange={(e) => setHumorLevel(Number(e.target.value))}
-                      className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer"
+                      className="tech-slider"
                     />
-                    <div className="flex justify-between text-xs text-gray-400 mt-1">
+                    <div className="flex justify-between text-xs text-cyan-300/50 mt-2">
                       <span>严肃</span>
                       <span>幽默</span>
                     </div>
                   </div>
 
-                  {/* Professional Level Slider */}
+                  {/* 专业度 */}
                   <div>
-                    <label className="block text-sm font-medium mb-2 flex items-center justify-between">
-                      <span>🎓 专业度</span>
-                      <span className="text-indigo-400">{professionalLevel}%</span>
+                    <label className="block text-sm font-medium mb-3 flex items-center justify-between">
+                      <span className="flex items-center gap-2">
+                        <span>🎓</span>
+                        <span className="text-cyan-100">专业度</span>
+                      </span>
+                      <span className="text-cyan-400 font-mono bg-cyan-500/10 px-3 py-1 rounded-full">{professionalLevel}%</span>
                     </label>
                     <input
                       type="range"
@@ -439,19 +476,22 @@ function SetupContent() {
                       max="100"
                       value={professionalLevel}
                       onChange={(e) => setProfessionalLevel(Number(e.target.value))}
-                      className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer"
+                      className="tech-slider"
                     />
-                    <div className="flex justify-between text-xs text-gray-400 mt-1">
+                    <div className="flex justify-between text-xs text-cyan-300/50 mt-2">
                       <span>通俗</span>
                       <span>专业</span>
                     </div>
                   </div>
 
-                  {/* Detail Level Slider */}
+                  {/* 细致度 */}
                   <div>
-                    <label className="block text-sm font-medium mb-2 flex items-center justify-between">
-                      <span>🔍 细致度</span>
-                      <span className="text-indigo-400">{detailLevel}%</span>
+                    <label className="block text-sm font-medium mb-3 flex items-center justify-between">
+                      <span className="flex items-center gap-2">
+                        <span>🔍</span>
+                        <span className="text-cyan-100">细致度</span>
+                      </span>
+                      <span className="text-cyan-400 font-mono bg-cyan-500/10 px-3 py-1 rounded-full">{detailLevel}%</span>
                     </label>
                     <input
                       type="range"
@@ -459,9 +499,9 @@ function SetupContent() {
                       max="100"
                       value={detailLevel}
                       onChange={(e) => setDetailLevel(Number(e.target.value))}
-                      className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer"
+                      className="tech-slider"
                     />
-                    <div className="flex justify-between text-xs text-gray-400 mt-1">
+                    <div className="flex justify-between text-xs text-cyan-300/50 mt-2">
                       <span>简化</span>
                       <span>详细</span>
                     </div>
@@ -469,17 +509,17 @@ function SetupContent() {
                 </div>
               )}
 
-              {/* Advanced Mode: Custom Prompt */}
+              {/* 高级模式：自定义 Prompt */}
               {promptMode === 'advanced' && (
                 <div>
-                  <label className="block text-sm font-medium mb-2">
+                  <label className="block text-sm font-medium mb-3 text-cyan-100">
                     自定义 Prompt 模板
                   </label>
                   <textarea
                     value={customPrompt}
                     onChange={(e) => setCustomPrompt(e.target.value)}
-                    placeholder={`使用 {{ITEM}} 代表物品名称，{{CONTEXT}} 代表上下文\n\n示例：\n请将 {{ITEM}} 拆解为主要组成部分。要求：\n1. 使用幽默风趣的语言\n2. 每个部分提供详细说明\n3. 标注是否为原材料`}
-                    className="w-full h-40 bg-slate-900 text-white px-4 py-3 rounded-lg border border-slate-600 focus:border-indigo-500 focus:outline-none resize-none font-mono text-sm"
+                    placeholder={`使用 {{ITEM}} 代表物品名称，{{CONTEXT}} 代表上下文`}
+                    className="tech-input w-full h-40 resize-none font-mono text-sm"
                   />
                   <button
                     onClick={() => {
@@ -489,37 +529,25 @@ function SetupContent() {
 1. 列出所有主要组件或材料
 2. 每个部分提供简短描述
 3. 标注是否为原材料（is_raw_material: true/false）
-4. 为每个部分选择合适的 emoji 图标
-
-返回 JSON 格式：
-{
-  "parent_item": "{{ITEM}}",
-  "parts": [
-    {
-      "name": "组件名称",
-      "description": "功能描述",
-      "is_raw_material": false,
-      "icon": "📦"
-    }
-  ]
-}`;
+4. 为每个部分选择合适的 emoji 图标`;
                       setCustomPrompt(template);
                     }}
-                    className="mt-2 text-sm text-indigo-400 hover:text-indigo-300"
+                    className="mt-3 text-sm text-cyan-400 hover:text-cyan-300 flex items-center gap-2"
                   >
-                    📋 加载默认模板
+                    <span>📋</span>
+                    <span>加载默认模板</span>
                   </button>
                 </div>
               )}
             </div>
 
-            {/* Navigate to Canvas Button */}
+            {/* 开始按钮 */}
             <button
               onClick={navigateToCanvas}
-              className="mt-6 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 px-8 py-3 rounded-lg font-semibold transition flex items-center gap-2"
+              className="mt-6 tech-btn tech-btn-primary w-full py-4 text-lg flex items-center justify-center gap-3"
             >
-              <span>🚀</span>
-              <span>进入操作界面</span>
+              <span className="text-xl">🚀</span>
+              <span>开始拆解</span>
             </button>
           </div>
         )}
@@ -532,10 +560,12 @@ function SetupContent() {
 export default function SetupPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-gradient-to-br from-indigo-950 via-purple-950 to-slate-950 text-white flex items-center justify-center">
-        <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-16 w-16 border-4 border-purple-500 border-t-transparent mb-4"></div>
-          <p className="text-gray-400">加载中...</p>
+      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-black text-white flex items-center justify-center relative overflow-hidden">
+        {/* 背景装饰 */}
+        <div className="absolute inset-0 tech-grid opacity-30 pointer-events-none" />
+        <div className="text-center relative z-10">
+          <div className="w-16 h-16 mx-auto mb-4 rounded-full border-4 border-cyan-500/30 border-t-cyan-400 animate-spin"></div>
+          <p className="text-cyan-300/60">加载中...</p>
         </div>
       </div>
     }>

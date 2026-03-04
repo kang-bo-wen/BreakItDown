@@ -291,18 +291,24 @@ function GraphViewInner({
   }
 
   return (
-    <div className="w-full h-[900px] bg-black/30 rounded-lg overflow-hidden border-2 border-white/10 relative">
-      {/* 动态渐变背景层 */}
+    <div className="w-full h-[600px] rounded-lg overflow-hidden border border-cyan-500/20 relative tech-grid">
+      {/* 深色渐变背景层 */}
       <div
-        className="absolute inset-0 animate-gradient"
+        className="absolute inset-0"
         style={{
-          background: 'linear-gradient(-45deg, #0f172a, #1e1b4b, #134e4a, #1e1b4b, #0f172a)',
-          backgroundSize: '400% 400%',
-          animation: 'gradient 15s ease infinite',
+          background: 'radial-gradient(ellipse at center, #0a0a0a 0%, #050505 50%, #020202 100%)',
         }}
       />
 
-      {/* 自定义控制按钮 - 左上角 */}
+      {/* 青色光晕效果 */}
+      <div
+        className="absolute inset-0 opacity-30"
+        style={{
+          background: 'radial-gradient(circle at 50% 50%, rgba(6, 182, 212, 0.1) 0%, transparent 70%)',
+        }}
+      />
+
+      {/* 自定义控制按钮 - 左上角 - 青色科技风 */}
       <div className="absolute top-4 left-4 z-10 flex flex-col gap-2">
         {/* 返回按钮 */}
         <button
@@ -311,7 +317,7 @@ function GraphViewInner({
               document.exitFullscreen();
             }
           }}
-          className="w-12 h-12 bg-gradient-to-br from-slate-700 to-slate-800 hover:from-slate-600 hover:to-slate-700 backdrop-blur-sm border-2 border-white/30 rounded-xl flex items-center justify-center text-white text-xl transition-all shadow-lg hover:shadow-xl hover:scale-105"
+          className="w-12 h-12 bg-gradient-to-br from-slate-800 to-slate-900 hover:from-cyan-900 hover:to-slate-800 backdrop-blur-sm border border-cyan-500/30 hover:border-cyan-400/60 rounded-xl flex items-center justify-center text-white text-xl transition-all shadow-lg hover:shadow-cyan-500/20 hover:scale-105"
           title="返回"
         >
           ←
@@ -320,7 +326,7 @@ function GraphViewInner({
         {/* 放大 */}
         <button
           onClick={() => zoomIn()}
-          className="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 backdrop-blur-sm border-2 border-white/30 rounded-xl flex items-center justify-center text-white text-2xl font-bold transition-all shadow-lg hover:shadow-xl hover:scale-105"
+          className="w-12 h-12 bg-gradient-to-br from-cyan-900 to-slate-900 hover:from-cyan-700 hover:to-cyan-900 backdrop-blur-sm border border-cyan-500/30 hover:border-cyan-400/60 rounded-xl flex items-center justify-center text-cyan-300 text-2xl font-bold transition-all shadow-lg hover:shadow-cyan-500/30 hover:scale-105"
           title="放大"
         >
           +
@@ -329,7 +335,7 @@ function GraphViewInner({
         {/* 缩小 */}
         <button
           onClick={() => zoomOut()}
-          className="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 backdrop-blur-sm border-2 border-white/30 rounded-xl flex items-center justify-center text-white text-2xl font-bold transition-all shadow-lg hover:shadow-xl hover:scale-105"
+          className="w-12 h-12 bg-gradient-to-br from-cyan-900 to-slate-900 hover:from-cyan-700 hover:to-cyan-900 backdrop-blur-sm border border-cyan-500/30 hover:border-cyan-400/60 rounded-xl flex items-center justify-center text-cyan-300 text-2xl font-bold transition-all shadow-lg hover:shadow-cyan-500/30 hover:scale-105"
           title="缩小"
         >
           −
@@ -338,7 +344,7 @@ function GraphViewInner({
         {/* 自适应观察 */}
         <button
           onClick={() => fitView({ padding: 0.2, duration: 300 })}
-          className="w-12 h-12 bg-gradient-to-br from-purple-600 to-purple-700 hover:from-purple-500 hover:to-purple-600 backdrop-blur-sm border-2 border-white/30 rounded-xl flex items-center justify-center text-white text-xl transition-all shadow-lg hover:shadow-xl hover:scale-105"
+          className="w-12 h-12 bg-gradient-to-br from-cyan-900 to-slate-900 hover:from-cyan-700 hover:to-cyan-900 backdrop-blur-sm border border-cyan-500/30 hover:border-cyan-400/60 rounded-xl flex items-center justify-center text-cyan-300 text-xl transition-all shadow-lg hover:shadow-cyan-500/30 hover:scale-105"
           title="自适应观察"
         >
           ⊡
@@ -347,10 +353,10 @@ function GraphViewInner({
         {/* 锁定/解锁拖拽 */}
         <button
           onClick={() => setIsDraggingLocked(!isDraggingLocked)}
-          className={`w-12 h-12 backdrop-blur-sm border-2 border-white/30 rounded-xl flex items-center justify-center text-white text-xl transition-all shadow-lg hover:shadow-xl hover:scale-105 ${
+          className={`w-12 h-12 backdrop-blur-sm border rounded-xl flex items-center justify-center text-xl transition-all shadow-lg hover:scale-105 ${
             isDraggingLocked
-              ? 'bg-gradient-to-br from-red-600 to-red-700 hover:from-red-500 hover:to-red-600'
-              : 'bg-gradient-to-br from-green-600 to-green-700 hover:from-green-500 hover:to-green-600'
+              ? 'bg-gradient-to-br from-red-900/80 to-slate-900 hover:from-red-800 hover:to-red-900 border-red-500/30 hover:border-red-400/60'
+              : 'bg-gradient-to-br from-cyan-900 to-slate-900 hover:from-cyan-700 hover:to-cyan-900 border-cyan-500/30 hover:border-cyan-400/60'
           }`}
           title={isDraggingLocked ? '解锁拖拽' : '锁定拖拽'}
         >
@@ -360,10 +366,10 @@ function GraphViewInner({
         {/* 缩略图开关 */}
         <button
           onClick={() => setShowMiniMap(!showMiniMap)}
-          className={`w-12 h-12 backdrop-blur-sm border-2 border-white/30 rounded-xl flex items-center justify-center text-white text-lg transition-all shadow-lg hover:shadow-xl hover:scale-105 ${
+          className={`w-12 h-12 backdrop-blur-sm border rounded-xl flex items-center justify-center text-lg transition-all shadow-lg hover:scale-105 ${
             showMiniMap
-              ? 'bg-gradient-to-br from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600'
-              : 'bg-gradient-to-br from-slate-600 to-slate-700 hover:from-slate-500 hover:to-slate-600'
+              ? 'bg-gradient-to-br from-cyan-900 to-slate-900 hover:from-cyan-700 hover:to-cyan-900 border-cyan-500/30 hover:border-cyan-400/60'
+              : 'bg-gradient-to-br from-slate-800 to-slate-900 hover:from-slate-700 hover:to-slate-800 border-white/20 hover:border-cyan-500/40'
           }`}
           title={showMiniMap ? '隐藏缩略图' : '显示缩略图'}
         >
@@ -378,7 +384,7 @@ function GraphViewInner({
             const nextIndex = (currentIndex + 1) % types.length;
             setEdgeType(types[nextIndex]);
           }}
-          className="w-12 h-12 bg-gradient-to-br from-cyan-600 to-cyan-700 hover:from-cyan-500 hover:to-cyan-600 backdrop-blur-sm border-2 border-white/30 rounded-xl flex items-center justify-center text-white text-lg transition-all shadow-lg hover:shadow-xl hover:scale-105"
+          className="w-12 h-12 bg-gradient-to-br from-cyan-900 to-slate-900 hover:from-cyan-700 hover:to-cyan-900 backdrop-blur-sm border border-cyan-500/30 hover:border-cyan-400/60 rounded-xl flex items-center justify-center text-cyan-300 text-lg transition-all shadow-lg hover:shadow-cyan-500/30 hover:scale-105"
           title={`曲线类型: ${edgeType === 'bezier' ? '贝塞尔曲线' : edgeType === 'smoothstep' ? '阶梯线' : '直线'}`}
         >
           {edgeType === 'bezier' ? '〰' : edgeType === 'smoothstep' ? '📐' : '📏'}
@@ -387,7 +393,7 @@ function GraphViewInner({
         {/* 帮助按钮 */}
         <button
           onClick={() => setShowHelp(true)}
-          className="w-12 h-12 bg-gradient-to-br from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 backdrop-blur-sm border-2 border-white/30 rounded-xl flex items-center justify-center text-white text-2xl font-bold transition-all shadow-lg hover:shadow-xl hover:scale-105"
+          className="w-12 h-12 bg-gradient-to-br from-cyan-900 to-slate-900 hover:from-cyan-700 hover:to-cyan-900 backdrop-blur-sm border border-cyan-500/30 hover:border-cyan-400/60 rounded-xl flex items-center justify-center text-cyan-300 text-2xl font-bold transition-all shadow-lg hover:shadow-cyan-500/30 hover:scale-105"
           title="操作说明"
         >
           ?
@@ -416,11 +422,11 @@ function GraphViewInner({
         />
         {showMiniMap && (
           <MiniMap
-            className="bg-white/10 backdrop-blur-sm border border-white/20"
+            className="bg-white/5 backdrop-blur-sm border border-cyan-500/20"
             nodeColor={(node) => {
-              if (node.data.isRawMaterial) return '#10b981';
-              if (node.data.isLoading) return '#6b7280';
-              return '#3b82f6';
+              if (node.data.isRawMaterial) return '#06b6d4';
+              if (node.data.isLoading) return '#475569';
+              return '#22d3ee';
             }}
           />
         )}
@@ -429,11 +435,11 @@ function GraphViewInner({
       {/* 帮助弹窗 */}
       {showHelp && (
         <div
-          className="absolute inset-0 z-[10000] flex items-center justify-center bg-black/70 backdrop-blur-sm"
+          className="absolute inset-0 z-[10000] flex items-center justify-center bg-black/80 backdrop-blur-sm"
           onClick={() => setShowHelp(false)}
         >
           <div
-            className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-8 max-w-2xl w-full mx-4 border-2 border-white/20 shadow-2xl"
+            className="tech-card p-8 max-w-2xl w-full mx-4"
             onClick={(e) => e.stopPropagation()}
           >
             {/* 标题 */}
@@ -444,7 +450,7 @@ function GraphViewInner({
               </h2>
               <button
                 onClick={() => setShowHelp(false)}
-                className="w-10 h-10 bg-white/10 hover:bg-white/20 rounded-lg flex items-center justify-center text-white text-xl transition"
+                className="w-10 h-10 bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 hover:border-cyan-400/60 rounded-lg flex items-center justify-center text-cyan-300 text-xl transition"
               >
                 ✕
               </button>
@@ -454,25 +460,25 @@ function GraphViewInner({
             <div className="space-y-6 text-gray-200">
               {/* 节点交互 */}
               <div>
-                <h3 className="text-lg font-semibold text-indigo-400 mb-3 flex items-center gap-2">
+                <h3 className="text-lg font-semibold text-cyan-400 mb-3 flex items-center gap-2">
                   <span>🎯</span>
                   节点交互
                 </h3>
                 <ul className="space-y-2 ml-6">
                   <li className="flex items-start gap-2">
-                    <span className="text-blue-400 font-mono">•</span>
+                    <span className="text-cyan-400 font-mono">•</span>
                     <span><strong className="text-white">左键点击</strong>：查看节点的详细知识卡片</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-blue-400 font-mono">•</span>
+                    <span className="text-cyan-400 font-mono">•</span>
                     <span><strong className="text-white">右键点击</strong>：展开节点，查看其组成部分</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-blue-400 font-mono">•</span>
+                    <span className="text-cyan-400 font-mono">•</span>
                     <span><strong className="text-white">鼠标悬停</strong>：在右侧显示节点名称</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-blue-400 font-mono">•</span>
+                    <span className="text-cyan-400 font-mono">•</span>
                     <span><strong className="text-white">拖拽节点</strong>：移动节点及其所有子节点</span>
                   </li>
                 </ul>
@@ -480,17 +486,17 @@ function GraphViewInner({
 
               {/* 视图控制 */}
               <div>
-                <h3 className="text-lg font-semibold text-purple-400 mb-3 flex items-center gap-2">
+                <h3 className="text-lg font-semibold text-cyan-400 mb-3 flex items-center gap-2">
                   <span>🎮</span>
                   视图控制
                 </h3>
                 <ul className="space-y-2 ml-6">
                   <li className="flex items-start gap-2">
-                    <span className="text-purple-400 font-mono">•</span>
+                    <span className="text-cyan-400 font-mono">•</span>
                     <span><strong className="text-white">鼠标滚轮</strong>：缩放画布</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-purple-400 font-mono">•</span>
+                    <span className="text-cyan-400 font-mono">•</span>
                     <span><strong className="text-white">拖拽空白区域</strong>：平移画布</span>
                   </li>
                 </ul>
@@ -498,33 +504,33 @@ function GraphViewInner({
 
               {/* 控制按钮 */}
               <div>
-                <h3 className="text-lg font-semibold text-amber-400 mb-3 flex items-center gap-2">
+                <h3 className="text-lg font-semibold text-cyan-400 mb-3 flex items-center gap-2">
                   <span>🎛️</span>
                   控制按钮
                 </h3>
                 <ul className="space-y-2 ml-6">
                   <li className="flex items-start gap-2">
-                    <span className="text-amber-400 font-mono">•</span>
+                    <span className="text-cyan-400 font-mono">•</span>
                     <span><strong className="text-white">← 返回</strong>：退出全屏模式</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-amber-400 font-mono">•</span>
+                    <span className="text-cyan-400 font-mono">•</span>
                     <span><strong className="text-white">+ / −</strong>：放大/缩小画布</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-amber-400 font-mono">•</span>
+                    <span className="text-cyan-400 font-mono">•</span>
                     <span><strong className="text-white">⊡ 自适应</strong>：自动调整视图以显示所有节点</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-amber-400 font-mono">•</span>
+                    <span className="text-cyan-400 font-mono">•</span>
                     <span><strong className="text-white">🔓/🔒 拖拽锁</strong>：锁定/解锁节点拖拽功能</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-amber-400 font-mono">•</span>
+                    <span className="text-cyan-400 font-mono">•</span>
                     <span><strong className="text-white">🗺️ 缩略图</strong>：显示/隐藏画布缩略图</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-amber-400 font-mono">•</span>
+                    <span className="text-cyan-400 font-mono">•</span>
                     <span><strong className="text-white">? 帮助</strong>：显示此操作说明</span>
                   </li>
                 </ul>
@@ -532,7 +538,7 @@ function GraphViewInner({
 
               {/* 节点颜色说明 */}
               <div>
-                <h3 className="text-lg font-semibold text-green-400 mb-3 flex items-center gap-2">
+                <h3 className="text-lg font-semibold text-cyan-400 mb-3 flex items-center gap-2">
                   <span>🎨</span>
                   节点颜色
                 </h3>
