@@ -14,14 +14,23 @@ interface IdentificationResult {
   searchTerm?: string;
 }
 
+// 输入模式类型
+type InputMode = 'image' | 'text';
+
 function SetupContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { status } = useSession();
 
+  // 输入模式：图片或文字
+  const [inputMode, setInputMode] = useState<InputMode>('image');
+
   // Step 1: Image upload related state
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+
+  // Step 1b: Text input related state
+  const [textInput, setTextInput] = useState('');
   const [isIdentifying, setIsIdentifying] = useState(false);
 
   // Step 2: Identification result and prompt settings
@@ -124,6 +133,34 @@ function SetupContent() {
       const response = await fetch('/api/identify', {
         method: 'POST',
         body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error('识别失败');
+      }
+
+      const result: IdentificationResult = await response.json();
+      setIdentificationResult(result);
+    } catch (error) {
+      console.error('识别错误:', error);
+      alert('识别失败，请重试');
+    } finally {
+      setIsIdentifying(false);
+    }
+  };
+
+  // Identify text input
+  const identifyText = async () => {
+    if (!textInput.trim()) return;
+
+    setIsIdentifying(true);
+    try {
+      const response = await fetch('/api/identify-text', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ text: textInput.trim() }),
       });
 
       if (!response.ok) {
@@ -329,60 +366,140 @@ function SetupContent() {
           </div>
         )}
 
-        {/* Upload Image - only show if no identification result yet */}
+        {/* Upload Image / Text Input - only show if no identification result yet */}
         {!identificationResult && (
           <div className="tech-card p-8 mb-6">
-            <div className="flex flex-col items-center gap-6">
-              {/* 上传区域 */}
-              <div className="w-full">
-                <label className="cursor-pointer flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-cyan-500/30 rounded-xl hover:border-cyan-400/60 hover:bg-cyan-500/5 transition-all group">
-                  <div className="flex flex-col items-center gap-3">
-                    <div className="w-16 h-16 rounded-full bg-cyan-500/10 flex items-center justify-center group-hover:scale-110 transition-transform">
-                      <span className="text-3xl">📤</span>
-                    </div>
-                    <span className="text-cyan-300 font-medium">点击上传图片</span>
-                    <span className="text-xs text-cyan-300/50">支持 JPG, PNG, WEBP 格式</span>
-                  </div>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                    className="hidden"
-                  />
-                </label>
-              </div>
+            {/* 输入模式切换 */}
+            <div className="flex gap-2 p-1 bg-slate-800/50 rounded-lg mb-6">
+              <button
+                onClick={() => {
+                  setInputMode('image');
+                  setTextInput('');
+                }}
+                className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition ${
+                  inputMode === 'image'
+                    ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-500/30'
+                    : 'text-cyan-300/60 hover:text-white'
+                }`}
+              >
+                <span className="flex items-center justify-center gap-2">
+                  <span>🖼️</span>
+                  <span>图片上传</span>
+                </span>
+              </button>
+              <button
+                onClick={() => {
+                  setInputMode('text');
+                  setImageFile(null);
+                  setImagePreview(null);
+                }}
+                className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition ${
+                  inputMode === 'text'
+                    ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-500/30'
+                    : 'text-cyan-300/60 hover:text-white'
+                }`}
+              >
+                <span className="flex items-center justify-center gap-2">
+                  <span>✏️</span>
+                  <span>文字输入</span>
+                </span>
+              </button>
+            </div>
 
-              {/* 图片预览 */}
-              {imagePreview && (
-                <div className="relative w-full max-w-sm h-48 bg-black/40 rounded-xl overflow-hidden border border-cyan-500/20">
-                  <Image
-                    src={imagePreview}
-                    alt="预览"
-                    fill
-                    className="object-contain"
-                  />
-                </div>
+            <div className="flex flex-col items-center gap-6">
+              {/* 图片上传模式 */}
+              {inputMode === 'image' && (
+                <>
+                  {/* 上传区域 */}
+                  <div className="w-full">
+                    <label className="cursor-pointer flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-cyan-500/30 rounded-xl hover:border-cyan-400/60 hover:bg-cyan-500/5 transition-all group">
+                      <div className="flex flex-col items-center gap-3">
+                        <div className="w-16 h-16 rounded-full bg-cyan-500/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                          <span className="text-3xl">📤</span>
+                        </div>
+                        <span className="text-cyan-300 font-medium">点击上传图片</span>
+                        <span className="text-xs text-cyan-300/50">支持 JPG, PNG, WEBP 格式</span>
+                      </div>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageUpload}
+                        className="hidden"
+                      />
+                    </label>
+                  </div>
+
+                  {/* 图片预览 */}
+                  {imagePreview && (
+                    <div className="relative w-full max-w-sm h-48 bg-black/40 rounded-xl overflow-hidden border border-cyan-500/20">
+                      <Image
+                        src={imagePreview}
+                        alt="预览"
+                        fill
+                        className="object-contain"
+                      />
+                    </div>
+                  )}
+
+                  {/* 识别按钮 */}
+                  {imageFile && !identificationResult && (
+                    <button
+                      onClick={identifyImage}
+                      disabled={isIdentifying}
+                      className="tech-btn tech-btn-primary flex items-center gap-3 px-8 py-4 text-lg"
+                    >
+                      {isIdentifying ? (
+                        <>
+                          <span className="inline-block animate-spin text-xl">⚡</span>
+                          <span>AI 识别中...</span>
+                        </>
+                      ) : (
+                        <>
+                          <span>🔍</span>
+                          <span>开始识别</span>
+                        </>
+                      )}
+                    </button>
+                  )}
+                </>
               )}
 
-              {/* 识别按钮 */}
-              {imageFile && !identificationResult && (
-                <button
-                  onClick={identifyImage}
-                  disabled={isIdentifying}
-                  className="tech-btn tech-btn-primary flex items-center gap-3 px-8 py-4 text-lg"
-                >
-                  {isIdentifying ? (
-                    <>
-                      <span className="inline-block animate-spin text-xl">⚡</span>
-                      <span>AI 识别中...</span>
-                    </>
-                  ) : (
-                    <>
-                      <span>🔍</span>
-                      <span>开始识别</span>
-                    </>
+              {/* 文字输入模式 */}
+              {inputMode === 'text' && (
+                <>
+                  <div className="w-full">
+                    <label className="block text-sm font-medium mb-3 text-cyan-100">
+                      输入物品名称或描述
+                    </label>
+                    <textarea
+                      value={textInput}
+                      onChange={(e) => setTextInput(e.target.value)}
+                      placeholder="例如：iPhone 15 Pro、一杯咖啡、汽车发动机..."
+                      className="tech-input w-full h-32 resize-none"
+                    />
+                  </div>
+
+                  {/* 识别按钮 */}
+                  {textInput.trim() && !identificationResult && (
+                    <button
+                      onClick={identifyText}
+                      disabled={isIdentifying}
+                      className="tech-btn tech-btn-primary flex items-center gap-3 px-8 py-4 text-lg"
+                    >
+                      {isIdentifying ? (
+                        <>
+                          <span className="inline-block animate-spin text-xl">⚡</span>
+                          <span>AI 识别中...</span>
+                        </>
+                      ) : (
+                        <>
+                          <span>🔍</span>
+                          <span>开始识别</span>
+                        </>
+                      )}
+                    </button>
                   )}
-                </button>
+                </>
               )}
             </div>
           </div>
