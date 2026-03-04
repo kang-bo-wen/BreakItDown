@@ -46,6 +46,12 @@ model DeconstructionSession {
   // Store node positions for graph view
   nodePositions     Json?
 
+  // Breakdown mode: 'basic' or 'production'
+  breakdownMode     String?  @default("basic")
+
+  // Store production analysis data (for production mode)
+  productionAnalysis Json?
+
   // Metadata
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt

@@ -1,7 +1,12 @@
 {
   "permissions": {
     "allow": [
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Read(//c/Users/kangbowen/temp-plugin/src/api/**)",
+      "Read(//c/Users/kangbowen/temp-plugin/**)"
+    ],
+    "additionalDirectories": [
+      "C:\\Users\\kangbowen\\temp-plugin"
     ]
   }
 }
