@@ -211,6 +211,7 @@ export default function Sidebar() {
                 localStorage.removeItem('knowledgeCache');
                 localStorage.removeItem('nodePositions');
                 localStorage.removeItem('setupState');
+                localStorage.removeItem('fromSetup');
 
                 // 使用 window.location 强制刷新到新页面
                 window.location.href = '/setup';

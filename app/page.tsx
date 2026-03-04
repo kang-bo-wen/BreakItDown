@@ -273,6 +273,8 @@ export default function Home() {
                   localStorage.removeItem('professionalLevel');
                   localStorage.removeItem('promptMode');
                   localStorage.removeItem('customPrompt');
+                  localStorage.removeItem('setupState');
+                  localStorage.removeItem('fromSetup');
                   // 导航到拆解页面
                   router.push('/deconstruct');
                 }}
