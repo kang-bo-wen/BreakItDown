@@ -280,7 +280,7 @@ export default function Sidebar() {
                     key={item.id}
                     onClick={() => {
                       setIsOpen(false); // 关闭侧边栏
-                      router.push(`/deconstruct?sessionId=${item.id}`);
+                      router.push(`/canvas?sessionId=${item.id}`);
                     }}
                     className="group relative bg-gray-800 hover:bg-gray-700 rounded-lg p-3 cursor-pointer transition-all"
                   >

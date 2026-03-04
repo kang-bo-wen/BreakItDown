@@ -221,7 +221,7 @@ export default function About() {
                 localStorage.removeItem('promptMode');
                 localStorage.removeItem('customPrompt');
                 // 导航到拆解页面
-                router.push('/deconstruct');
+                router.push('/setup');
               }}
             >
               🚀 新建拆解

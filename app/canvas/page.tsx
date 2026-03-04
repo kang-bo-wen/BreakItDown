@@ -77,6 +77,7 @@ function CanvasContent() {
   // State loaded from setup page
   const [identificationResult, setIdentificationResult] = useState<IdentificationResult | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [breakdownMode, setBreakdownMode] = useState<'basic' | 'production'>('basic');
   const [humorLevel, setHumorLevel] = useState(50);
   const [professionalLevel, setProfessionalLevel] = useState(70);
   const [detailLevel, setDetailLevel] = useState(50);
@@ -109,19 +110,24 @@ function CanvasContent() {
   // Edge type state
   const [edgeType, setEdgeType] = useState<'bezier' | 'smoothstep' | 'straight'>('bezier');
 
-  // Theme state (true = dark, false = light) - read from localStorage
-  const [isDarkTheme, setIsDarkTheme] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('theme');
-      return saved ? saved === 'dark' : true;
-    }
-    return true;
-  });
+  // Theme state (true = dark, false = light)
+  // Default to dark theme to match SSR, then sync with localStorage after mount
+  const [isDarkTheme, setIsDarkTheme] = useState<boolean>(true);
+  const [themeLoaded, setThemeLoaded] = useState(false);
+
+  // Load theme from localStorage after mount (client-only)
+  useEffect(() => {
+    const saved = localStorage.getItem('theme');
+    setIsDarkTheme(saved ? saved === 'dark' : true);
+    setThemeLoaded(true);
+  }, []);
 
   // Persist theme to localStorage when it changes
   useEffect(() => {
-    localStorage.setItem('theme', isDarkTheme ? 'dark' : 'light');
-  }, [isDarkTheme]);
+    if (themeLoaded) {
+      localStorage.setItem('theme', isDarkTheme ? 'dark' : 'light');
+    }
+  }, [isDarkTheme, themeLoaded]);
 
   // Hovered node state for tree view synchronization
   const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
@@ -193,6 +199,9 @@ function CanvasContent() {
           setDetailLevel(parsed.promptSettings.detailLevel ?? 50);
           setPromptMode(parsed.promptSettings.promptMode ?? 'simple');
           setCustomPrompt(parsed.promptSettings.customPrompt ?? '');
+        }
+        if (parsed.breakdownMode) {
+          setBreakdownMode(parsed.breakdownMode);
         }
       } catch (error) {
         console.error('恢复设置状态失败:', error);
@@ -940,6 +949,15 @@ function CanvasContent() {
                   tree={deconstructionTree}
                   hoveredNodeId={hoveredNodeId}
                   onNodeHover={setHoveredNodeId}
+                  breakdownMode={breakdownMode}
+                  onProductionAnalysisClick={(node) => {
+                    // 跳转到生产分析页面
+                    const params = new URLSearchParams({
+                      partName: node.name,
+                      partId: node.id
+                    });
+                    router.push(`/production-analysis?${params.toString()}`);
+                  }}
                   onNodeCollapse={(nodeId) => {
                     // 折叠节点
                     setDeconstructionTree(prevTree => {

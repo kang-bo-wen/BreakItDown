@@ -21,6 +21,8 @@ interface DecompositionTreeProps {
   onNodeExpand: (nodeId: string) => void;
   onNodeReexpand: (nodeId: string, nodeName: string, parentContext?: string) => void;
   onNodeClick: (node: TreeNode) => void;
+  breakdownMode?: 'basic' | 'production';
+  onProductionAnalysisClick?: (node: TreeNode) => void;
 }
 
 export default function DecompositionTree({
@@ -31,6 +33,8 @@ export default function DecompositionTree({
   onNodeExpand,
   onNodeReexpand,
   onNodeClick,
+  breakdownMode = 'basic',
+  onProductionAnalysisClick,
 }: DecompositionTreeProps) {
   if (!tree) {
     return (
@@ -51,6 +55,8 @@ export default function DecompositionTree({
         onNodeExpand={onNodeExpand}
         onNodeReexpand={onNodeReexpand}
         onNodeClick={onNodeClick}
+        breakdownMode={breakdownMode}
+        onProductionAnalysisClick={onProductionAnalysisClick}
       />
     </div>
   );
@@ -65,6 +71,8 @@ interface TreeNodeItemProps {
   onNodeExpand: (nodeId: string) => void;
   onNodeReexpand: (nodeId: string, nodeName: string, parentContext?: string) => void;
   onNodeClick: (node: TreeNode) => void;
+  breakdownMode?: 'basic' | 'production';
+  onProductionAnalysisClick?: (node: TreeNode) => void;
 }
 
 function TreeNodeItem({
@@ -76,6 +84,8 @@ function TreeNodeItem({
   onNodeExpand,
   onNodeReexpand,
   onNodeClick,
+  breakdownMode = 'basic',
+  onProductionAnalysisClick,
 }: TreeNodeItemProps) {
   const hasChildren = node.children.length > 0;
   const isHovered = hoveredNodeId === node.id;
@@ -170,6 +180,20 @@ function TreeNodeItem({
             原料
           </span>
         )}
+
+        {/* 生产模式：显示生产分析按钮 */}
+        {breakdownMode === 'production' && onProductionAnalysisClick && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onProductionAnalysisClick(node);
+            }}
+            className="ml-1 p-1 hover:bg-white/20 rounded transition-colors text-xs"
+            title="查看生产分析"
+          >
+            🏭
+          </button>
+        )}
       </div>
 
       {/* 子节点 */}
@@ -195,6 +219,8 @@ function TreeNodeItem({
               onNodeExpand={onNodeExpand}
               onNodeReexpand={onNodeReexpand}
               onNodeClick={onNodeClick}
+              breakdownMode={breakdownMode}
+              onProductionAnalysisClick={onProductionAnalysisClick}
             />
           ))}
         </div>

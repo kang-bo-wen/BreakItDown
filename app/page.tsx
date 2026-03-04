@@ -276,7 +276,7 @@ export default function Home() {
                   localStorage.removeItem('setupState');
                   localStorage.removeItem('fromSetup');
                   // 导航到拆解页面
-                  router.push('/deconstruct');
+                  router.push('/setup');
                 }}
               >
                 <span className="relative z-10">🚀 新建拆解</span>

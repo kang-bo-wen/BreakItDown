@@ -29,7 +29,7 @@ export default function SessionCard({
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
 
   const handleLoad = () => {
-    router.push(`/deconstruct?sessionId=${id}`)
+    router.push(`/canvas?sessionId=${id}`)
   }
 
   const handleDelete = async () => {

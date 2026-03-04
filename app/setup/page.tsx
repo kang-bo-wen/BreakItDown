@@ -25,14 +25,18 @@ function SetupContent() {
   // 输入模式：图片或文字
   const [inputMode, setInputMode] = useState<InputMode>('image');
 
-  // Theme state (true = dark, false = light) - read from localStorage
-  const [isDarkTheme, setIsDarkTheme] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('theme');
-      return saved ? saved === 'dark' : true;
-    }
-    return true;
-  });
+  // 拆解模式：基础模式 或 生产模式
+  const [breakdownMode, setBreakdownMode] = useState<'basic' | 'production'>('basic');
+
+  // Theme state (true = dark, false = light)
+  // Default to dark theme to match SSR, then sync with localStorage after mount
+  const [isDarkTheme, setIsDarkTheme] = useState<boolean>(true);
+
+  // Load theme from localStorage after mount (client-only)
+  useEffect(() => {
+    const saved = localStorage.getItem('theme');
+    setIsDarkTheme(saved ? saved === 'dark' : true);
+  }, []);
 
   // Sync theme with localStorage and listen for changes from other pages
   useEffect(() => {
@@ -43,9 +47,6 @@ function SetupContent() {
 
     // Check for theme changes periodically (since storage event doesn't work in same window)
     const interval = setInterval(handleStorageChange, 500);
-
-    // Also check on mount
-    handleStorageChange();
 
     return () => clearInterval(interval);
   }, []);
@@ -213,7 +214,8 @@ function SetupContent() {
         detailLevel,
         promptMode,
         customPrompt
-      }
+      },
+      breakdownMode
     };
     localStorage.setItem('setupState', JSON.stringify(setupState));
 
@@ -251,6 +253,9 @@ function SetupContent() {
           setDetailLevel(parsed.promptSettings.detailLevel ?? 50);
           setPromptMode(parsed.promptSettings.promptMode ?? 'simple');
           setCustomPrompt(parsed.promptSettings.customPrompt ?? '');
+        }
+        if (parsed.breakdownMode) {
+          setBreakdownMode(parsed.breakdownMode);
         }
       } catch (error) {
         console.error('恢复设置状态失败:', error);
@@ -775,10 +780,41 @@ function SetupContent() {
               )}
             </div>
 
+            {/* 拆解模式选择 */}
+            <div className="mt-6 p-4 bg-slate-800/50 rounded-xl border border-slate-700">
+              <div className="text-sm text-slate-400 mb-3">选择拆解模式</div>
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  onClick={() => setBreakdownMode('basic')}
+                  className={`p-3 rounded-lg border transition-all ${
+                    breakdownMode === 'basic'
+                      ? 'bg-cyan-500/20 border-cyan-500 text-cyan-300'
+                      : 'bg-slate-700/50 border-slate-600 text-slate-400 hover:bg-slate-700'
+                  }`}
+                >
+                  <div className="text-lg mb-1">📦</div>
+                  <div className="font-medium">基础模式</div>
+                  <div className="text-xs text-slate-500">知识卡片展示</div>
+                </button>
+                <button
+                  onClick={() => setBreakdownMode('production')}
+                  className={`p-3 rounded-lg border transition-all ${
+                    breakdownMode === 'production'
+                      ? 'bg-emerald-500/20 border-emerald-500 text-emerald-300'
+                      : 'bg-slate-700/50 border-slate-600 text-slate-400 hover:bg-slate-700'
+                  }`}
+                >
+                  <div className="text-lg mb-1">🏭</div>
+                  <div className="font-medium">生产模式</div>
+                  <div className="text-xs text-slate-500">含供应链分析</div>
+                </button>
+              </div>
+            </div>
+
             {/* 开始按钮 */}
             <button
               onClick={navigateToCanvas}
-              className={`mt-6 tech-btn ${isDarkTheme ? 'tech-btn-primary' : 'tech-btn-primary-light'} w-full py-4 text-lg flex items-center justify-center gap-3`}
+              className={`mt-4 tech-btn ${isDarkTheme ? 'tech-btn-primary' : 'tech-btn-primary-light'} w-full py-4 text-lg flex items-center justify-center gap-3`}
             >
               <span className="text-xl">🚀</span>
               <span>开始拆解</span>

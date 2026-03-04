@@ -36,6 +36,8 @@ interface GraphViewProps {
   onNodePositionsChange?: () => void;
   edgeType?: 'bezier' | 'smoothstep' | 'straight';
   hoveredNodeId?: string | null;
+  isDarkTheme?: boolean;
+  onThemeChange?: (isDark: boolean) => void;
 }
 
 const nodeTypes = {
@@ -52,6 +54,8 @@ function GraphViewInner({
   onNodePositionsChange,
   edgeType: initialEdgeType = 'bezier',
   hoveredNodeId: externalHoveredNodeId,
+  isDarkTheme = true,
+  onThemeChange,
 }: GraphViewProps) {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
@@ -66,6 +70,9 @@ function GraphViewInner({
   const [showMiniMap, setShowMiniMap] = useState(true);
   const [isDraggingLocked, setIsDraggingLocked] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showStats, setShowStats] = useState(false);
+  const [showSearch, setShowSearch] = useState(false);
   const { zoomIn, zoomOut, fitView } = useReactFlow();
 
   // 保存用户手动调整的节点位置
@@ -291,20 +298,26 @@ function GraphViewInner({
   }
 
   return (
-    <div className="w-full h-[600px] rounded-lg overflow-hidden border border-cyan-500/20 relative tech-grid">
-      {/* 深色渐变背景层 */}
+    <div className={`w-full h-[600px] rounded-lg overflow-hidden border relative tech-grid ${
+      isDarkTheme ? 'border-cyan-500/20' : 'border-blue-300/30'
+    }`}>
+      {/* 渐变背景层 */}
       <div
         className="absolute inset-0"
         style={{
-          background: 'radial-gradient(ellipse at center, #0a0a0a 0%, #050505 50%, #020202 100%)',
+          background: isDarkTheme
+            ? 'radial-gradient(ellipse at center, #0a0a0a 0%, #050505 50%, #020202 100%)'
+            : 'radial-gradient(ellipse at center, #eff6ff 0%, #dbeafe 50%, #bfdbfe 100%)',
         }}
       />
 
-      {/* 青色光晕效果 */}
+      {/* 光晕效果 */}
       <div
         className="absolute inset-0 opacity-30"
         style={{
-          background: 'radial-gradient(circle at 50% 50%, rgba(6, 182, 212, 0.1) 0%, transparent 70%)',
+          background: isDarkTheme
+            ? 'radial-gradient(circle at 50% 50%, rgba(6, 182, 212, 0.1) 0%, transparent 70%)'
+            : 'radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.1) 0%, transparent 70%)',
         }}
       />
 
@@ -376,6 +389,21 @@ function GraphViewInner({
           🗺️
         </button>
 
+        {/* 主题切换 */}
+        {onThemeChange && (
+          <button
+            onClick={() => onThemeChange(!isDarkTheme)}
+            className={`w-12 h-12 backdrop-blur-sm border rounded-xl flex items-center justify-center text-lg transition-all shadow-lg hover:scale-105 ${
+              isDarkTheme
+                ? 'bg-gradient-to-br from-cyan-900 to-slate-900 hover:from-cyan-700 hover:to-cyan-900 border-cyan-500/30 hover:border-cyan-400/60'
+                : 'bg-gradient-to-br from-blue-200 to-blue-300 hover:from-blue-300 hover:to-blue-400 border-blue-400/50 hover:border-blue-500/60'
+            }`}
+            title={isDarkTheme ? '切换浅色主题' : '切换深色主题'}
+          >
+            {isDarkTheme ? '☀️' : '🌙'}
+          </button>
+        )}
+
         {/* 曲线类型切换 */}
         <button
           onClick={() => {
@@ -397,6 +425,24 @@ function GraphViewInner({
           title="操作说明"
         >
           ?
+        </button>
+
+        {/* 统计面板 */}
+        <button
+          onClick={() => setShowStats(true)}
+          className="w-12 h-12 bg-gradient-to-br from-cyan-900 to-slate-900 hover:from-cyan-700 hover:to-cyan-900 backdrop-blur-sm border border-cyan-500/30 hover:border-cyan-400/60 rounded-xl flex items-center justify-center text-cyan-300 text-xl font-bold transition-all shadow-lg hover:shadow-cyan-500/30 hover:scale-105"
+          title="统计面板"
+        >
+          📊
+        </button>
+
+        {/* 搜索节点 */}
+        <button
+          onClick={() => setShowSearch(true)}
+          className="w-12 h-12 bg-gradient-to-br from-cyan-900 to-slate-900 hover:from-cyan-700 hover:to-cyan-900 backdrop-blur-sm border border-cyan-500/30 hover:border-cyan-400/60 rounded-xl flex items-center justify-center text-cyan-300 text-xl font-bold transition-all shadow-lg hover:shadow-cyan-500/30 hover:scale-105"
+          title="搜索节点"
+        >
+          🔍
         </button>
       </div>
 
@@ -568,6 +614,103 @@ function GraphViewInner({
                 我知道了
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* 统计面板弹窗 */}
+      {showStats && (
+        <div
+          className="absolute inset-0 z-[10000] flex items-center justify-center bg-black/80 backdrop-blur-sm"
+          onClick={() => setShowStats(false)}
+        >
+          <div
+            className="tech-card p-8 max-w-lg w-full mx-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold text-white flex items-center gap-3">
+                <span className="text-3xl">📊</span>
+                统计面板
+              </h2>
+              <button
+                onClick={() => setShowStats(false)}
+                className="w-10 h-10 bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 hover:border-cyan-400/60 rounded-lg flex items-center justify-center text-cyan-300 text-xl transition"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="space-y-4">
+              <div className="flex justify-between items-center p-3 bg-cyan-500/10 rounded-lg">
+                <span className="text-gray-300">节点总数</span>
+                <span className="text-2xl font-bold text-cyan-400">{nodes.length}</span>
+              </div>
+              <div className="flex justify-between items-center p-3 bg-purple-500/10 rounded-lg">
+                <span className="text-gray-300">边总数</span>
+                <span className="text-2xl font-bold text-purple-400">{edges.length}</span>
+              </div>
+              <div className="flex justify-between items-center p-3 bg-emerald-500/10 rounded-lg">
+                <span className="text-gray-300">当前缩放</span>
+                <span className="text-2xl font-bold text-emerald-400">{Math.round(currentZoom * 100)}%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 搜索节点弹窗 */}
+      {showSearch && (
+        <div
+          className="absolute inset-0 z-[10000] flex items-center justify-center bg-black/80 backdrop-blur-sm"
+          onClick={() => setShowSearch(false)}
+        >
+          <div
+            className="tech-card p-8 max-w-lg w-full mx-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold text-white flex items-center gap-3">
+                <span className="text-3xl">🔍</span>
+                搜索节点
+              </h2>
+              <button
+                onClick={() => setShowSearch(false)}
+                className="w-10 h-10 bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 hover:border-cyan-400/60 rounded-lg flex items-center justify-center text-cyan-300 text-xl transition"
+              >
+                ✕
+              </button>
+            </div>
+            <input
+              type="text"
+              placeholder="输入节点名称搜索..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full px-4 py-3 bg-slate-800 border border-cyan-500/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500"
+              autoFocus
+            />
+            {searchQuery && (
+              <div className="mt-4 max-h-60 overflow-y-auto">
+                {nodes
+                  .filter(node => (node.data?.label || node.data?.name || node.id)?.toLowerCase().includes(searchQuery.toLowerCase()))
+                  .map(node => (
+                    <div
+                      key={node.id}
+                      className="p-3 hover:bg-cyan-500/10 rounded-lg cursor-pointer transition"
+                      onClick={() => {
+                        // 跳转到选中的节点
+                        fitView({ nodes: [node], padding: 0.5, duration: 300 });
+                        setShowSearch(false);
+                        setSearchQuery('');
+                      }}
+                    >
+                      <span className="text-white">{node.data?.label || node.data?.name || node.id}</span>
+                    </div>
+                  ))}
+                {nodes.filter(node => (node.data?.label || node.data?.name || node.id)?.toLowerCase().includes(searchQuery.toLowerCase())).length === 0 && (
+                  <p className="text-gray-500 text-center py-4">未找到匹配的节点</p>
+                )}
+              </div>
+            )}
           </div>
         </div>
       )}
