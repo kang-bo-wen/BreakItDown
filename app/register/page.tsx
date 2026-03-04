@@ -60,7 +60,7 @@ export default function RegisterPage() {
         setTimeout(() => router.push('/login'), 2000)
       } else {
         // 使用 window.location.href 强制刷新页面，确保认证状态正确加载
-        window.location.href = '/deconstruct'
+        window.location.href = '/setup'
       }
     } catch (err) {
       setError('注册失败，请稍后重试')

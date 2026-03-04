@@ -212,11 +212,11 @@ export default function Sidebar() {
                 localStorage.removeItem('nodePositions');
 
                 // 如果当前在拆解页面，使用 window.location 强制刷新
-                if (pathname === '/deconstruct' || pathname.startsWith('/deconstruct?')) {
-                  window.location.href = '/deconstruct';
+                if (pathname === '/setup' || pathname.startsWith('/setup?')) {
+                  window.location.href = '/setup';
                 } else {
                   // 否则使用 router 导航
-                  router.push('/deconstruct');
+                  router.push('/setup');
                 }
               }}
               className="w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors bg-blue-600 hover:bg-blue-700 text-white"
@@ -282,7 +282,7 @@ export default function Sidebar() {
                     key={item.id}
                     onClick={() => {
                       setIsOpen(false); // 关闭侧边栏
-                      router.push(`/deconstruct?sessionId=${item.id}`);
+                      router.push(`/canvas?sessionId=${item.id}`);
                     }}
                     className="group relative bg-gray-800 hover:bg-gray-750 rounded-lg p-3 cursor-pointer transition-all"
                   >
