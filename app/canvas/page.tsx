@@ -183,6 +183,13 @@ function CanvasContent() {
       return;
     }
 
+    // Only load cached data if we just came from setup (indicated by fromSetup flag)
+    const fromSetup = localStorage.getItem('fromSetup');
+    if (!fromSetup) {
+      // User is coming in fresh (e.g., after login), don't load old cache
+      return;
+    }
+
     const savedSetup = localStorage.getItem('setupState');
     if (savedSetup) {
       try {
@@ -208,31 +215,31 @@ function CanvasContent() {
       }
     }
 
-    // Also restore other states
-    const savedTree = localStorage.getItem('deconstructionTree');
-    const savedKnowledgeCache = localStorage.getItem('knowledgeCache');
+    // Also restore other states (only if coming from setup)
+    if (fromSetup) {
+      const savedTree = localStorage.getItem('deconstructionTree');
+      const savedKnowledgeCache = localStorage.getItem('knowledgeCache');
 
-    if (savedTree) {
-      try {
-        setDeconstructionTree(JSON.parse(savedTree));
-      } catch (error) {
-        console.error('恢复拆解树失败:', error);
+      if (savedTree) {
+        try {
+          setDeconstructionTree(JSON.parse(savedTree));
+        } catch (error) {
+          console.error('恢复拆解树失败:', error);
+        }
       }
-    }
 
-    if (savedKnowledgeCache) {
-      try {
-        const cacheArray = JSON.parse(savedKnowledgeCache);
-        setKnowledgeCache(new Map(cacheArray));
-      } catch (error) {
-        console.error('恢复知识卡片缓存失败:', error);
+      if (savedKnowledgeCache) {
+        try {
+          const cacheArray = JSON.parse(savedKnowledgeCache);
+          setKnowledgeCache(new Map(cacheArray));
+        } catch (error) {
+          console.error('恢复知识卡片缓存失败:', error);
+        }
       }
     }
 
     // Mark initialization as complete
     isInitializedRef.current = true;
-    // Clear fromSetup flag if we're not creating a new session
-    localStorage.removeItem('fromSetup');
   }, [searchParams]);
 
   // Save deconstruction tree to localStorage
