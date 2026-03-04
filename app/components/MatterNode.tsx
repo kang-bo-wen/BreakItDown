@@ -17,6 +17,7 @@ interface MatterNodeData {
   zoom?: number;
   icon?: string;
   imageUrl?: string;
+  isHovered?: boolean;
   onExpand: () => void;
   onShowKnowledge: () => void;
   onHover?: (isHovered: boolean) => void;
@@ -34,10 +35,15 @@ function MatterNode({ data }: NodeProps<MatterNodeData>) {
     zoom = 1,
     icon,
     imageUrl,
+    isHovered: externalIsHovered,
     onExpand,
     onShowKnowledge,
     onHover,
   } = data;
+
+  // 内部或外部 hover 状态
+  const [internalIsHovered, setInternalIsHovered] = useState(false);
+  const isHovered = externalIsHovered || internalIsHovered;
 
   const [showTooltip, setShowTooltip] = useState(false);
   const [showHoverLabel, setShowHoverLabel] = useState(false);
@@ -112,17 +118,19 @@ function MatterNode({ data }: NodeProps<MatterNodeData>) {
     onHover?.(!showTooltip);
   };
 
-  // 右键点击：展开/折叠节点
+  // 右键点击：重新分解节点
   const handleContextMenu = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     if (!isRawMaterial && !isLoading) {
+      // 重新分解：清空子节点并重新展开
       onExpand();
     }
   };
 
   // 鼠标悬停：显示简单的名称标签
   const handleMouseEnter = () => {
+    setInternalIsHovered(true);
     if (!showTooltip) { // 只在没有显示完整悬浮框时显示标签
       setShowHoverLabel(true);
       if (nodeRef.current) {
@@ -137,6 +145,7 @@ function MatterNode({ data }: NodeProps<MatterNodeData>) {
 
   // 鼠标离开：隐藏名称标签
   const handleMouseLeave = () => {
+    setInternalIsHovered(false);
     setShowHoverLabel(false);
   };
 
@@ -190,7 +199,7 @@ function MatterNode({ data }: NodeProps<MatterNodeData>) {
       <div
         className={`
           rounded-full flex items-center justify-center
-          shadow-2xl backdrop-blur-sm border-4
+          backdrop-blur-sm border-4
           transition-all duration-300 cursor-pointer
           ${getNodeColor()}
           ${showTooltip ? 'z-50' : 'z-10'}
@@ -198,6 +207,11 @@ function MatterNode({ data }: NodeProps<MatterNodeData>) {
         style={{
           width: `${nodeSize}px`,
           height: `${nodeSize}px`,
+          // 增强悬浮时的发光效果
+          boxShadow: isHovered
+            ? `0 0 30px currentColor, 0 0 60px currentColor, 0 0 90px currentColor, 0 4px 20px rgba(0,0,0,0.4)`
+            : `0 4px 20px rgba(0,0,0,0.3)`,
+          transform: isHovered ? 'scale(1.15)' : 'scale(1)',
         }}
         onClick={handleClick}
         onContextMenu={handleContextMenu}

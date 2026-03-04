@@ -15,6 +15,11 @@ const GraphView = dynamic(() => import('../components/GraphView'), {
   ),
 });
 
+// Dynamic import DecompositionTree to avoid SSR issues
+const DecompositionTree = dynamic(() => import('../components/DecompositionTree'), {
+  ssr: false,
+});
+
 interface IdentificationResult {
   name: string;
   category: string;
@@ -97,6 +102,12 @@ function CanvasContent() {
 
   // Fullscreen state
   const [isFullscreen, setIsFullscreen] = useState(false);
+
+  // Edge type state
+  const [edgeType, setEdgeType] = useState<'bezier' | 'smoothstep' | 'straight'>('bezier');
+
+  // Hovered node state for tree view synchronization
+  const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
 
   // Knowledge request queue
   const knowledgeRequestQueue = useState(() => {
@@ -872,7 +883,71 @@ function CanvasContent() {
 
         {/* Deconstruction Graph */}
         {deconstructionTree && (
-          <div className="bg-white/5 backdrop-blur-xl rounded-2xl p-8 border-2 border-white/10 hover:border-white/20 transition-all shadow-2xl">
+          <div className="flex gap-6">
+            {/* 左侧分解结构栏 */}
+            <div className="w-80 flex-shrink-0 bg-white/5 backdrop-blur-xl rounded-2xl p-4 border-2 border-white/10 hover:border-white/20 transition-all shadow-xl max-h-[700px] overflow-hidden flex flex-col">
+              <h3 className="text-lg font-bold flex items-center gap-2 mb-4">
+                <span>📋</span>
+                <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+                  分解结构
+                </span>
+              </h3>
+              <div className="flex-1 overflow-y-auto custom-scrollbar">
+                <DecompositionTree
+                  tree={deconstructionTree}
+                  hoveredNodeId={hoveredNodeId}
+                  onNodeHover={setHoveredNodeId}
+                  onNodeCollapse={(nodeId) => {
+                    // 折叠节点
+                    setDeconstructionTree(prevTree => {
+                      if (!prevTree) return null;
+                      const updateNode = (node: TreeNode): TreeNode => {
+                        if (node.id === nodeId) {
+                          return { ...node, isExpanded: false };
+                        }
+                        return { ...node, children: node.children.map(updateNode) };
+                      };
+                      return updateNode(prevTree);
+                    });
+                  }}
+                  onNodeExpand={(nodeId) => {
+                    // 展开节点（只是展开，不重新分解）
+                    setDeconstructionTree(prevTree => {
+                      if (!prevTree) return null;
+                      const updateNode = (node: TreeNode): TreeNode => {
+                        if (node.id === nodeId) {
+                          return { ...node, isExpanded: true };
+                        }
+                        return { ...node, children: node.children.map(updateNode) };
+                      };
+                      return updateNode(prevTree);
+                    });
+                  }}
+                  onNodeReexpand={(nodeId, nodeName, parentContext) => {
+                    // 重新分解：先清空子节点再展开
+                    setDeconstructionTree(prevTree => {
+                      if (!prevTree) return null;
+                      const updateNode = (node: TreeNode): TreeNode => {
+                        if (node.id === nodeId) {
+                          return { ...node, children: [], isExpanded: true };
+                        }
+                        return { ...node, children: node.children.map(updateNode) };
+                      };
+                      return updateNode(prevTree);
+                    });
+                    // 然后调用 handleNodeClick 重新分解
+                    handleNodeClick(nodeId, nodeName, parentContext);
+                  }}
+                  onNodeClick={(node) => {
+                    // 点击节点显示知识卡片
+                    fetchKnowledgeCard(node, true);
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* 右侧图谱区域 */}
+            <div className="flex-1 bg-white/5 backdrop-blur-xl rounded-2xl p-8 border-2 border-white/10 hover:border-white/20 transition-all shadow-2xl">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-3xl font-bold flex items-center gap-3">
                 <span className="text-4xl">🌌</span>
@@ -916,6 +991,8 @@ function CanvasContent() {
                     saveSessionToDatabase(false);
                   }
                 }}
+                edgeType={edgeType}
+                hoveredNodeId={hoveredNodeId}
               />
 
               {/* Fullscreen knowledge card modal */}
@@ -1016,6 +1093,7 @@ function CanvasContent() {
                   </div>
                 </div>
               )}
+            </div>
             </div>
           </div>
         )}

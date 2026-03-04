@@ -34,6 +34,8 @@ interface GraphViewProps {
   onNodeExpand: (nodeId: string, nodeName: string, parentContext?: string) => void;
   onShowKnowledge: (node: TreeNode) => void;
   onNodePositionsChange?: () => void;
+  edgeType?: 'bezier' | 'smoothstep' | 'straight';
+  hoveredNodeId?: string | null;
 }
 
 const nodeTypes = {
@@ -48,10 +50,18 @@ function GraphViewInner({
   onNodeExpand,
   onShowKnowledge,
   onNodePositionsChange,
+  edgeType: initialEdgeType = 'bezier',
+  hoveredNodeId: externalHoveredNodeId,
 }: GraphViewProps) {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
-  const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
+  const [internalHoveredNodeId, setInternalHoveredNodeId] = useState<string | null>(null);
+  // 使用外部传入的 hoveredNodeId 或内部状态
+  const hoveredNodeId = externalHoveredNodeId !== undefined ? externalHoveredNodeId : internalHoveredNodeId;
+  const setHoveredNodeId = externalHoveredNodeId !== undefined
+    ? () => {} // 外部控制时不需要内部状态更新
+    : setInternalHoveredNodeId;
+  const [edgeType, setEdgeType] = useState<'bezier' | 'smoothstep' | 'straight'>(initialEdgeType);
   const [currentZoom, setCurrentZoom] = useState(1);
   const [showMiniMap, setShowMiniMap] = useState(true);
   const [isDraggingLocked, setIsDraggingLocked] = useState(false);
@@ -149,6 +159,7 @@ function GraphViewInner({
       radiusStep: 180, // 减小层级间距，避免节点展开太远
       angleOffset: 0,
       savedPositions: userPositions.current, // 传递保存的位置
+      edgeType: edgeType, // 传递边的连接类型
     });
 
     // 为每个节点添加交互回调，并应用用户保存的位置
@@ -169,6 +180,7 @@ function GraphViewInner({
           hasKnowledgeCard: knowledgeCache.has(node.id),
           isLoadingKnowledge: loadingKnowledgeIds.has(node.id),
           zoom: currentZoom,
+          isHovered: hoveredNodeId === node.id,
           onExpand: () => {
             const parentName = findParentName(tree, node.id);
             onNodeExpand(node.id, treeNode.name, parentName);
@@ -183,39 +195,7 @@ function GraphViewInner({
 
     setNodes(enhancedNodes);
     setEdges(layoutEdges);
-  }, [tree, loadingNodeIds, knowledgeCache, loadingKnowledgeIds, currentZoom, findNodeById, findParentName, onNodeExpand, onShowKnowledge]);
-
-  // 根据悬停状态更新边的样式
-  useEffect(() => {
-    if (!hoveredNodeId) {
-      // 没有悬停节点时，恢复所有边的默认样式
-      setEdges((eds) =>
-        eds.map((edge) => ({
-          ...edge,
-          style: {
-            ...edge.style,
-            strokeWidth: 2,
-            opacity: 1,
-          },
-        }))
-      );
-    } else {
-      // 有悬停节点时，高亮相关的边
-      setEdges((eds) =>
-        eds.map((edge) => {
-          const isRelated = edge.source === hoveredNodeId;
-          return {
-            ...edge,
-            style: {
-              ...edge.style,
-              strokeWidth: isRelated ? 4 : 2,
-              opacity: isRelated ? 1 : 0.3,
-            },
-          };
-        })
-      );
-    }
-  }, [hoveredNodeId, setEdges]);
+  }, [tree, loadingNodeIds, knowledgeCache, loadingKnowledgeIds, currentZoom, findNodeById, findParentName, onNodeExpand, onShowKnowledge, edgeType]);
 
   // 根据悬停状态更新节点的 zIndex
   useEffect(() => {
@@ -312,6 +292,16 @@ function GraphViewInner({
 
   return (
     <div className="w-full h-[900px] bg-black/30 rounded-lg overflow-hidden border-2 border-white/10 relative">
+      {/* 动态渐变背景层 */}
+      <div
+        className="absolute inset-0 animate-gradient"
+        style={{
+          background: 'linear-gradient(-45deg, #0f172a, #1e1b4b, #134e4a, #1e1b4b, #0f172a)',
+          backgroundSize: '400% 400%',
+          animation: 'gradient 15s ease infinite',
+        }}
+      />
+
       {/* 自定义控制按钮 - 左上角 */}
       <div className="absolute top-4 left-4 z-10 flex flex-col gap-2">
         {/* 返回按钮 */}
@@ -380,6 +370,20 @@ function GraphViewInner({
           🗺️
         </button>
 
+        {/* 曲线类型切换 */}
+        <button
+          onClick={() => {
+            const types: Array<'bezier' | 'smoothstep' | 'straight'> = ['bezier', 'smoothstep', 'straight'];
+            const currentIndex = types.indexOf(edgeType);
+            const nextIndex = (currentIndex + 1) % types.length;
+            setEdgeType(types[nextIndex]);
+          }}
+          className="w-12 h-12 bg-gradient-to-br from-cyan-600 to-cyan-700 hover:from-cyan-500 hover:to-cyan-600 backdrop-blur-sm border-2 border-white/30 rounded-xl flex items-center justify-center text-white text-lg transition-all shadow-lg hover:shadow-xl hover:scale-105"
+          title={`曲线类型: ${edgeType === 'bezier' ? '贝塞尔曲线' : edgeType === 'smoothstep' ? '阶梯线' : '直线'}`}
+        >
+          {edgeType === 'bezier' ? '〰' : edgeType === 'smoothstep' ? '📐' : '📏'}
+        </button>
+
         {/* 帮助按钮 */}
         <button
           onClick={() => setShowHelp(true)}
@@ -408,7 +412,7 @@ function GraphViewInner({
           variant={BackgroundVariant.Dots}
           gap={20}
           size={1}
-          color="#ffffff20"
+          color="#ffffff30"
         />
         {showMiniMap && (
           <MiniMap

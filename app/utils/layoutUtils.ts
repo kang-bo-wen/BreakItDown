@@ -17,6 +17,7 @@ interface RadialLayoutOptions {
   radiusStep: number;
   angleOffset: number;
   savedPositions?: Map<string, { x: number; y: number }>; // 保存的节点位置
+  edgeType?: 'bezier' | 'smoothstep' | 'straight'; // 边的连接类型
 }
 
 /**
@@ -80,9 +81,9 @@ export function calculateRadialLayout(
       y = parentY + radius * Math.sin(angle);
     }
 
-    // 计算节点大小（与 MatterNode.tsx 中的逻辑一致）
-    const baseSize = 120;
-    const sizeReduction = level * 15;
+    // 计算节点大小（层级递减，等比放大1.5倍）
+    const baseSize = 180;
+    const sizeReduction = level * 18;
     const nodeSize = Math.max(baseSize - sizeReduction, 60);
     const offset = nodeSize / 2;
 
@@ -105,11 +106,12 @@ export function calculateRadialLayout(
 
     // 添加边
     if (parentId) {
+      const edgeType = options.edgeType || 'bezier';
       edges.push({
         id: `${parentId}-${node.id}`,
         source: parentId,
         target: node.id,
-        type: 'smoothstep',
+        type: edgeType,
         animated: !node.isRawMaterial,
         style: {
           stroke: node.isRawMaterial ? '#10b981' : '#3b82f6',
@@ -156,7 +158,8 @@ export function calculateRadialLayout(
  * 计算力导向布局（备用方案）
  */
 export function calculateForceLayout(
-  tree: TreeNode
+  tree: TreeNode,
+  edgeType: 'bezier' | 'smoothstep' | 'straight' = 'bezier'
 ): { nodes: Node[]; edges: Edge[] } {
   const nodes: Node[] = [];
   const edges: Edge[] = [];
@@ -187,7 +190,7 @@ export function calculateForceLayout(
         id: `${parentId}-${node.id}`,
         source: parentId,
         target: node.id,
-        type: 'smoothstep',
+        type: edgeType,
         animated: !node.isRawMaterial,
         style: {
           stroke: node.isRawMaterial ? '#10b981' : '#3b82f6',
