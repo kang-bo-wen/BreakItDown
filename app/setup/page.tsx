@@ -25,6 +25,31 @@ function SetupContent() {
   // 输入模式：图片或文字
   const [inputMode, setInputMode] = useState<InputMode>('image');
 
+  // Theme state (true = dark, false = light) - read from localStorage
+  const [isDarkTheme, setIsDarkTheme] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('theme');
+      return saved ? saved === 'dark' : true;
+    }
+    return true;
+  });
+
+  // Sync theme with localStorage and listen for changes from other pages
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const saved = localStorage.getItem('theme');
+      setIsDarkTheme(saved ? saved === 'dark' : true);
+    };
+
+    // Check for theme changes periodically (since storage event doesn't work in same window)
+    const interval = setInterval(handleStorageChange, 500);
+
+    // Also check on mount
+    handleStorageChange();
+
+    return () => clearInterval(interval);
+  }, []);
+
   // Step 1: Image upload related state
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -331,31 +356,49 @@ function SetupContent() {
   }, [humorLevel, professionalLevel, detailLevel, promptMode, customPrompt, identificationResult, imagePreview]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-black text-white p-8 relative overflow-hidden">
+    <div className={`min-h-screen p-8 relative overflow-hidden transition-colors duration-300 ${
+      isDarkTheme
+        ? 'bg-gradient-to-br from-slate-950 via-slate-900 to-black text-white'
+        : 'bg-gradient-to-br from-blue-50 via-white to-blue-100 text-slate-800'
+    }`}>
       {/* 背景装饰 */}
-      <div className="absolute inset-0 tech-grid opacity-30 pointer-events-none" />
+      <div className={`absolute inset-0 tech-grid pointer-events-none transition-opacity duration-300 ${isDarkTheme ? 'opacity-30' : 'opacity-10'}`} />
       <div className="absolute inset-0 pointer-events-none" style={{
-        background: 'radial-gradient(circle at 50% 0%, rgba(6, 182, 212, 0.1) 0%, transparent 50%)',
+        background: isDarkTheme
+          ? 'radial-gradient(circle at 50% 0%, rgba(6, 182, 212, 0.1) 0%, transparent 50%)'
+          : 'radial-gradient(circle at 50% 0%, rgba(59, 130, 246, 0.1) 0%, transparent 50%)',
       }} />
 
       <div className="max-w-4xl mx-auto relative z-10">
         {/* Title area */}
         <div className="text-center mb-10">
           <div className="flex items-center justify-center gap-3 mb-4">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500 to-cyan-700 flex items-center justify-center shadow-lg shadow-cyan-500/30">
+            <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300 ${
+              isDarkTheme
+                ? 'bg-gradient-to-br from-cyan-500 to-cyan-700 shadow-lg shadow-cyan-500/30'
+                : 'bg-gradient-to-br from-blue-500 to-blue-600 shadow-lg shadow-blue-500/30'
+            }`}>
               <span className="text-2xl">⚙️</span>
             </div>
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-cyan-400 via-cyan-300 to-cyan-500 bg-clip-text text-transparent">
+            <h1 className={`text-4xl font-bold bg-clip-text text-transparent transition-colors duration-300 ${
+              isDarkTheme
+                ? 'bg-gradient-to-r from-cyan-400 via-cyan-300 to-cyan-500'
+                : 'bg-gradient-to-r from-blue-600 via-blue-500 to-blue-600'
+            }`}>
               调制界面
             </h1>
           </div>
-          <p className="text-cyan-300/60 text-sm">上传图片，识别物体，调整参数，开始拆解</p>
+          <p className={`text-sm transition-colors duration-300 ${isDarkTheme ? 'text-cyan-300/60' : 'text-blue-600/70'}`}>上传图片，识别物体，调整参数，开始拆解</p>
         </div>
 
         {/* Image Preview - always show if available */}
         {imagePreview && (
-          <div className="tech-card p-6 mb-6 transition-all">
-            <div className="relative w-full max-w-sm h-48 mx-auto bg-black/40 rounded-xl overflow-hidden border border-cyan-500/20">
+          <div className={`tech-card ${isDarkTheme ? '' : 'tech-card-light'} p-6 mb-6 transition-all ${isDarkTheme ? '' : 'bg-white/80'}`}>
+            <div className={`relative w-full max-w-sm h-48 mx-auto rounded-xl overflow-hidden border transition-colors duration-300 ${
+              isDarkTheme
+                ? 'bg-black/40 border-cyan-500/20'
+                : 'bg-blue-50 border-blue-200'
+            }`}>
               <Image
                 src={imagePreview}
                 alt="预览"
@@ -368,9 +411,11 @@ function SetupContent() {
 
         {/* Upload Image / Text Input - only show if no identification result yet */}
         {!identificationResult && (
-          <div className="tech-card p-8 mb-6">
+          <div className={`tech-card ${isDarkTheme ? '' : 'tech-card-light'} p-8 mb-6 ${isDarkTheme ? '' : 'bg-white/80'}`}>
             {/* 输入模式切换 */}
-            <div className="flex gap-2 p-1 bg-slate-800/50 rounded-lg mb-6">
+            <div className={`flex gap-2 p-1 rounded-lg mb-6 transition-colors duration-300 ${
+              isDarkTheme ? 'bg-slate-800/70' : 'bg-blue-200'
+            }`}>
               <button
                 onClick={() => {
                   setInputMode('image');
@@ -378,8 +423,12 @@ function SetupContent() {
                 }}
                 className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition ${
                   inputMode === 'image'
-                    ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-500/30'
-                    : 'text-cyan-300/60 hover:text-white'
+                    ? isDarkTheme
+                      ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-500/30'
+                      : 'bg-blue-600 text-white shadow-lg shadow-blue-500/30'
+                    : isDarkTheme
+                      ? 'text-cyan-300/60 hover:text-white'
+                      : 'text-blue-600/70 hover:text-blue-800'
                 }`}
               >
                 <span className="flex items-center justify-center gap-2">
@@ -395,8 +444,12 @@ function SetupContent() {
                 }}
                 className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition ${
                   inputMode === 'text'
-                    ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-500/30'
-                    : 'text-cyan-300/60 hover:text-white'
+                    ? isDarkTheme
+                      ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-500/30'
+                      : 'bg-blue-600 text-white shadow-lg shadow-blue-500/30'
+                    : isDarkTheme
+                      ? 'text-cyan-300/60 hover:text-white'
+                      : 'text-blue-600/70 hover:text-blue-800'
                 }`}
               >
                 <span className="flex items-center justify-center gap-2">
@@ -412,13 +465,23 @@ function SetupContent() {
                 <>
                   {/* 上传区域 */}
                   <div className="w-full">
-                    <label className="cursor-pointer flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-cyan-500/30 rounded-xl hover:border-cyan-400/60 hover:bg-cyan-500/5 transition-all group">
+                    <label className={`cursor-pointer flex flex-col items-center justify-center w-full h-40 border-2 border-dashed rounded-xl transition-all group ${
+                      isDarkTheme
+                        ? 'border-cyan-500/30 hover:border-cyan-400/60 hover:bg-cyan-500/5'
+                        : 'border-blue-300 hover:border-blue-400 hover:bg-blue-500/5'
+                    }`}>
                       <div className="flex flex-col items-center gap-3">
-                        <div className="w-16 h-16 rounded-full bg-cyan-500/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <div className={`w-16 h-16 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform ${
+                          isDarkTheme ? 'bg-cyan-500/10' : 'bg-blue-500/10'
+                        }`}>
                           <span className="text-3xl">📤</span>
                         </div>
-                        <span className="text-cyan-300 font-medium">点击上传图片</span>
-                        <span className="text-xs text-cyan-300/50">支持 JPG, PNG, WEBP 格式</span>
+                        <span className={`font-medium transition-colors duration-300 ${
+                          isDarkTheme ? 'text-cyan-300' : 'text-blue-600'
+                        }`}>点击上传图片</span>
+                        <span className={`text-xs transition-colors duration-300 ${
+                          isDarkTheme ? 'text-cyan-300/50' : 'text-blue-500/70'
+                        }`}>支持 JPG, PNG, WEBP 格式</span>
                       </div>
                       <input
                         type="file"
@@ -431,7 +494,11 @@ function SetupContent() {
 
                   {/* 图片预览 */}
                   {imagePreview && (
-                    <div className="relative w-full max-w-sm h-48 bg-black/40 rounded-xl overflow-hidden border border-cyan-500/20">
+                    <div className={`relative w-full max-w-sm h-48 rounded-xl overflow-hidden border transition-colors duration-300 ${
+                      isDarkTheme
+                        ? 'bg-black/40 border-cyan-500/20'
+                        : 'bg-blue-50 border-blue-200'
+                    }`}>
                       <Image
                         src={imagePreview}
                         alt="预览"
@@ -446,7 +513,7 @@ function SetupContent() {
                     <button
                       onClick={identifyImage}
                       disabled={isIdentifying}
-                      className="tech-btn tech-btn-primary flex items-center gap-3 px-8 py-4 text-lg"
+                      className={`tech-btn ${isDarkTheme ? 'tech-btn-primary' : 'tech-btn-primary-light'} flex items-center gap-3 px-8 py-4 text-lg`}
                     >
                       {isIdentifying ? (
                         <>
@@ -468,14 +535,16 @@ function SetupContent() {
               {inputMode === 'text' && (
                 <>
                   <div className="w-full">
-                    <label className="block text-sm font-medium mb-3 text-cyan-100">
+                    <label className={`block text-sm font-medium mb-3 transition-colors duration-300 ${
+                      isDarkTheme ? 'text-cyan-100' : 'text-slate-700'
+                    }`}>
                       输入物品名称或描述
                     </label>
                     <textarea
                       value={textInput}
                       onChange={(e) => setTextInput(e.target.value)}
                       placeholder="例如：iPhone 15 Pro、一杯咖啡、汽车发动机..."
-                      className="tech-input w-full h-32 resize-none"
+                      className={`tech-input ${isDarkTheme ? '' : 'tech-input-light'} w-full h-32 resize-none`}
                     />
                   </div>
 
@@ -484,7 +553,7 @@ function SetupContent() {
                     <button
                       onClick={identifyText}
                       disabled={isIdentifying}
-                      className="tech-btn tech-btn-primary flex items-center gap-3 px-8 py-4 text-lg"
+                      className={`tech-btn ${isDarkTheme ? 'tech-btn-primary' : 'tech-btn-primary-light'} flex items-center gap-3 px-8 py-4 text-lg`}
                     >
                       {isIdentifying ? (
                         <>
@@ -507,19 +576,29 @@ function SetupContent() {
 
         {/* Identification Result and Prompt Settings */}
         {identificationResult && (
-          <div className="tech-card p-6 mb-6">
+          <div className={`tech-card ${isDarkTheme ? '' : 'tech-card-light'} p-6 mb-6 ${isDarkTheme ? '' : 'bg-white/80'}`}>
             {/* 识别结果展示 */}
-            <div className="bg-gradient-to-br from-cyan-900/30 to-slate-900/50 rounded-xl p-5 border border-cyan-500/20 mb-6">
+            <div className={`rounded-xl p-5 border mb-6 transition-colors duration-300 ${
+              isDarkTheme
+                ? 'bg-gradient-to-br from-cyan-950/40 to-slate-900/70 border-cyan-500/30'
+                : 'bg-gradient-to-br from-blue-100 to-white border-blue-300'
+            }`}>
               <div className="flex items-start gap-4">
                 {identificationResult.icon && (
                   <div className="text-4xl">{identificationResult.icon}</div>
                 )}
                 <div className="flex-1">
-                  <div className="text-2xl font-bold text-white mb-1">{identificationResult.name}</div>
-                  <div className="text-sm text-cyan-300/70 mb-2">
+                  <div className={`text-2xl font-bold mb-1 transition-colors duration-300 ${
+                    isDarkTheme ? 'text-white' : 'text-slate-800'
+                  }`}>{identificationResult.name}</div>
+                  <div className={`text-sm mb-2 transition-colors duration-300 ${
+                    isDarkTheme ? 'text-cyan-300/70' : 'text-blue-600/70'
+                  }`}>
                     分类: {identificationResult.category}
                   </div>
-                  <div className="text-gray-300 text-sm leading-relaxed">
+                  <div className={`text-sm leading-relaxed transition-colors duration-300 ${
+                    isDarkTheme ? 'text-gray-300' : 'text-slate-600'
+                  }`}>
                     {identificationResult.brief_description}
                   </div>
                 </div>
@@ -527,15 +606,25 @@ function SetupContent() {
             </div>
 
             {/* 参数设置面板 */}
-            <div className="bg-slate-900/50 rounded-xl p-5 border border-cyan-500/10 space-y-5">
+            <div className={`rounded-xl p-5 space-y-5 transition-colors duration-300 ${
+              isDarkTheme
+                ? 'bg-slate-900/70 border-cyan-500/20'
+                : 'bg-blue-100 border-blue-300'
+            } border`}>
               {/* 模式切换 */}
-              <div className="flex gap-2 p-1 bg-slate-800/50 rounded-lg">
+              <div className={`flex gap-2 p-1 rounded-lg transition-colors duration-300 ${
+                isDarkTheme ? 'bg-slate-800/70' : 'bg-blue-200'
+              }`}>
                 <button
                   onClick={() => setPromptMode('simple')}
                   className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition ${
                     promptMode === 'simple'
-                      ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-500/30'
-                      : 'text-cyan-300/60 hover:text-white'
+                      ? isDarkTheme
+                        ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-500/30'
+                        : 'bg-blue-600 text-white shadow-lg shadow-blue-500/30'
+                      : isDarkTheme
+                        ? 'text-cyan-300/60 hover:text-white'
+                        : 'text-blue-600/70 hover:text-blue-800'
                   }`}
                 >
                   简单模式
@@ -544,8 +633,12 @@ function SetupContent() {
                   onClick={() => setPromptMode('advanced')}
                   className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition ${
                     promptMode === 'advanced'
-                      ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-500/30'
-                      : 'text-cyan-300/60 hover:text-white'
+                      ? isDarkTheme
+                        ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-500/30'
+                        : 'bg-blue-600 text-white shadow-lg shadow-blue-500/30'
+                      : isDarkTheme
+                        ? 'text-cyan-300/60 hover:text-white'
+                        : 'text-blue-600/70 hover:text-blue-800'
                   }`}
                 >
                   高级模式
@@ -560,9 +653,13 @@ function SetupContent() {
                     <label className="block text-sm font-medium mb-3 flex items-center justify-between">
                       <span className="flex items-center gap-2">
                         <span>😄</span>
-                        <span className="text-cyan-100">幽默度</span>
+                        <span className={isDarkTheme ? 'text-cyan-100' : 'text-slate-700'}>幽默度</span>
                       </span>
-                      <span className="text-cyan-400 font-mono bg-cyan-500/10 px-3 py-1 rounded-full">{humorLevel}%</span>
+                      <span className={`font-mono px-3 py-1 rounded-full transition-colors duration-300 ${
+                        isDarkTheme
+                          ? 'text-cyan-400 bg-cyan-500/10'
+                          : 'text-blue-600 bg-blue-100'
+                      }`}>{humorLevel}%</span>
                     </label>
                     <input
                       type="range"
@@ -570,9 +667,11 @@ function SetupContent() {
                       max="100"
                       value={humorLevel}
                       onChange={(e) => setHumorLevel(Number(e.target.value))}
-                      className="tech-slider"
+                      className={`tech-slider ${isDarkTheme ? '' : 'tech-slider-light'}`}
                     />
-                    <div className="flex justify-between text-xs text-cyan-300/50 mt-2">
+                    <div className={`flex justify-between text-xs mt-2 transition-colors duration-300 ${
+                      isDarkTheme ? 'text-cyan-300/50' : 'text-blue-500/70'
+                    }`}>
                       <span>严肃</span>
                       <span>幽默</span>
                     </div>
@@ -583,9 +682,13 @@ function SetupContent() {
                     <label className="block text-sm font-medium mb-3 flex items-center justify-between">
                       <span className="flex items-center gap-2">
                         <span>🎓</span>
-                        <span className="text-cyan-100">专业度</span>
+                        <span className={isDarkTheme ? 'text-cyan-100' : 'text-slate-700'}>专业度</span>
                       </span>
-                      <span className="text-cyan-400 font-mono bg-cyan-500/10 px-3 py-1 rounded-full">{professionalLevel}%</span>
+                      <span className={`font-mono px-3 py-1 rounded-full transition-colors duration-300 ${
+                        isDarkTheme
+                          ? 'text-cyan-400 bg-cyan-500/10'
+                          : 'text-blue-600 bg-blue-100'
+                      }`}>{professionalLevel}%</span>
                     </label>
                     <input
                       type="range"
@@ -593,9 +696,11 @@ function SetupContent() {
                       max="100"
                       value={professionalLevel}
                       onChange={(e) => setProfessionalLevel(Number(e.target.value))}
-                      className="tech-slider"
+                      className={`tech-slider ${isDarkTheme ? '' : 'tech-slider-light'}`}
                     />
-                    <div className="flex justify-between text-xs text-cyan-300/50 mt-2">
+                    <div className={`flex justify-between text-xs mt-2 transition-colors duration-300 ${
+                      isDarkTheme ? 'text-cyan-300/50' : 'text-blue-500/70'
+                    }`}>
                       <span>通俗</span>
                       <span>专业</span>
                     </div>
@@ -606,9 +711,13 @@ function SetupContent() {
                     <label className="block text-sm font-medium mb-3 flex items-center justify-between">
                       <span className="flex items-center gap-2">
                         <span>🔍</span>
-                        <span className="text-cyan-100">细致度</span>
+                        <span className={isDarkTheme ? 'text-cyan-100' : 'text-slate-700'}>细致度</span>
                       </span>
-                      <span className="text-cyan-400 font-mono bg-cyan-500/10 px-3 py-1 rounded-full">{detailLevel}%</span>
+                      <span className={`font-mono px-3 py-1 rounded-full transition-colors duration-300 ${
+                        isDarkTheme
+                          ? 'text-cyan-400 bg-cyan-500/10'
+                          : 'text-blue-600 bg-blue-100'
+                      }`}>{detailLevel}%</span>
                     </label>
                     <input
                       type="range"
@@ -616,9 +725,11 @@ function SetupContent() {
                       max="100"
                       value={detailLevel}
                       onChange={(e) => setDetailLevel(Number(e.target.value))}
-                      className="tech-slider"
+                      className={`tech-slider ${isDarkTheme ? '' : 'tech-slider-light'}`}
                     />
-                    <div className="flex justify-between text-xs text-cyan-300/50 mt-2">
+                    <div className={`flex justify-between text-xs mt-2 transition-colors duration-300 ${
+                      isDarkTheme ? 'text-cyan-300/50' : 'text-blue-500/70'
+                    }`}>
                       <span>简化</span>
                       <span>详细</span>
                     </div>
@@ -629,14 +740,16 @@ function SetupContent() {
               {/* 高级模式：自定义 Prompt */}
               {promptMode === 'advanced' && (
                 <div>
-                  <label className="block text-sm font-medium mb-3 text-cyan-100">
+                  <label className={`block text-sm font-medium mb-3 transition-colors duration-300 ${
+                    isDarkTheme ? 'text-cyan-100' : 'text-slate-700'
+                  }`}>
                     自定义 Prompt 模板
                   </label>
                   <textarea
                     value={customPrompt}
                     onChange={(e) => setCustomPrompt(e.target.value)}
                     placeholder={`使用 {{ITEM}} 代表物品名称，{{CONTEXT}} 代表上下文`}
-                    className="tech-input w-full h-40 resize-none font-mono text-sm"
+                    className={`tech-input ${isDarkTheme ? '' : 'tech-input-light'} w-full h-40 resize-none font-mono text-sm`}
                   />
                   <button
                     onClick={() => {
@@ -649,7 +762,11 @@ function SetupContent() {
 4. 为每个部分选择合适的 emoji 图标`;
                       setCustomPrompt(template);
                     }}
-                    className="mt-3 text-sm text-cyan-400 hover:text-cyan-300 flex items-center gap-2"
+                    className={`mt-3 text-sm flex items-center gap-2 transition-colors duration-300 ${
+                      isDarkTheme
+                        ? 'text-cyan-400 hover:text-cyan-300'
+                        : 'text-blue-600 hover:text-blue-700'
+                    }`}
                   >
                     <span>📋</span>
                     <span>加载默认模板</span>
@@ -661,7 +778,7 @@ function SetupContent() {
             {/* 开始按钮 */}
             <button
               onClick={navigateToCanvas}
-              className="mt-6 tech-btn tech-btn-primary w-full py-4 text-lg flex items-center justify-center gap-3"
+              className={`mt-6 tech-btn ${isDarkTheme ? 'tech-btn-primary' : 'tech-btn-primary-light'} w-full py-4 text-lg flex items-center justify-center gap-3`}
             >
               <span className="text-xl">🚀</span>
               <span>开始拆解</span>
@@ -675,17 +792,30 @@ function SetupContent() {
 
 // Wrapper with Suspense for useSearchParams support
 export default function SetupPage() {
+  // Read theme from localStorage on server/initial render
+  const isDarkTheme = typeof window !== 'undefined'
+    ? (localStorage.getItem('theme') !== 'light')
+    : true;
+
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-black text-white flex items-center justify-center relative overflow-hidden">
-        {/* 背景装饰 */}
-        <div className="absolute inset-0 tech-grid opacity-30 pointer-events-none" />
-        <div className="text-center relative z-10">
-          <div className="w-16 h-16 mx-auto mb-4 rounded-full border-4 border-cyan-500/30 border-t-cyan-400 animate-spin"></div>
-          <p className="text-cyan-300/60">加载中...</p>
-        </div>
+      <div className={`min-h-screen flex items-center justify-center relative overflow-hidden transition-colors duration-300 ${
+        isDarkTheme
+          ? 'bg-gradient-to-br from-slate-950 via-slate-900 to-black text-white'
+          : 'bg-gradient-to-br from-blue-50 via-white to-blue-100 text-slate-800'
+      }`}>
+      {/* 背景装饰 */}
+      <div className={`absolute inset-0 tech-grid pointer-events-none transition-opacity duration-300 ${isDarkTheme ? 'opacity-30' : 'opacity-10'}`} />
+      <div className="text-center relative z-10">
+        <div className={`w-16 h-16 mx-auto mb-4 rounded-full border-4 animate-spin transition-colors duration-300 ${
+          isDarkTheme
+            ? 'border-cyan-500/30 border-t-cyan-400'
+            : 'border-blue-300 border-t-blue-500'
+        }`}></div>
+        <p className={isDarkTheme ? 'text-cyan-300/60' : 'text-blue-600/70'}>加载中...</p>
       </div>
-    }>
+    </div>
+  }>
       <SetupContent />
     </Suspense>
   );
