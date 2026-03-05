@@ -40,6 +40,9 @@ model DeconstructionSession {
   // Store prompt settings
   promptSettings    Json?
 
+  // Store breakdown mode (basic or production)
+  breakdownMode     String?
+
   // Store knowledge card cache
   knowledgeCache    Json?
 
@@ -53,6 +56,45 @@ model DeconstructionSession {
 
   user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  // 生产分析进度（每个节点独立）
+  productionAnalysisProgress ProductionAnalysisProgress[]
+
   @@index([userId, updatedAt])
   @@index([userId, lastAccessedAt])
+}
+
+// 生产分析进度
+model ProductionAnalysisProgress {
+  id                    String   @id @default(cuid())
+  sessionId             String
+  partId                String
+  partName              String
+
+  // 当前步骤
+  currentStep           String   @default("supplier-select")
+
+  // 供应商信息
+  suppliers             Json?
+  selectedSupplier      Json?
+
+  // 定制问题
+  customizationQuestions Json?
+  customizationAnswers  Json?
+
+  // 工艺方案
+  processes             Json?
+  selectedProcess       Json?
+
+  // 分析结果
+  analysisResult        Json?
+
+  // 是否完成
+  isCompleted           Boolean  @default(false)
+
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  session              DeconstructionSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@unique([sessionId, partId])
 }

@@ -1,177 +1,161 @@
 'use client';
 
-import { useState, Suspense } from 'react';
+import { useState, Suspense, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 
-// Agent 分析状态
-interface AgentStatus {
+// 步骤类型
+type AnalysisStep =
+  | 'supplier-select'  // 选择供应商
+  | 'customization'     // 回答定制问题
+  | 'process-select'   // 选择工艺方案
+  | 'analyzing'        // 分析中
+  | 'result';          // 显示结果
+
+// 供应商
+interface Supplier {
   name: string;
-  status: 'idle' | 'running' | 'completed' | 'error';
-  content: string;
+  specs: string;
+  price: number;
+  reliability: number;
+  leadTime: number;
 }
 
-// 生产分析结果
-interface ProductionResult {
-  suppliers?: {
-    name: string;
-    specs: string;
-    price: number;
-    reliability: number;
-    leadTime: number;
-  }[];
-  customization?: {
-    questions: {
-      question: string;
-      type: string;
-      options?: string[];
-    }[];
-  };
-  processes?: {
-    name: string;
-    description: string;
-    cost: number;
-    risk: string;
-    carbonEmission: number;
-  }[];
-  cost?: {
+// 定制问题
+interface CustomizationQuestion {
+  question: string;
+  type: string;
+  options?: string[];
+}
+
+// 工艺方案
+interface Process {
+  name: string;
+  description: string;
+  cost: number;
+  risk: string;
+  carbonEmission: number;
+}
+
+// 分析结果
+interface AnalysisResult {
+  cost: {
     totalCost: number;
     breakdown: { material: number; processing: number; shipping: number; other: number };
     analysis: string;
-  };
-  risk?: {
+  } | null;
+  risk: {
     riskLevel: string;
     risks: { type: string; description: string; impact: string; mitigation: string }[];
     overallAssessment: string;
-  };
-  carbon?: {
+  } | null;
+  carbon: {
     totalEmission: number;
     breakdown: { production: number; transportation: number; material: number };
     rating: string;
     analysis: string;
-  };
-  breaking?: {
+  } | null;
+  breaking: {
     recommendation: string;
     confidence: number;
     reasoning: string;
     keyFactors: string[];
-  };
-}
-
-// 各个 Agent 的状态
-interface AllAgentStates {
-  supplier: AgentStatus;
-  customization: AgentStatus;
-  process: AgentStatus;
-  cost: AgentStatus;
-  risk: AgentStatus;
-  carbon: AgentStatus;
-  breaking: AgentStatus;
+  } | null;
 }
 
 function ProductionAnalysisPage() {
   const searchParams = useSearchParams();
+
+  const sessionId = searchParams.get('sessionId') || '';
   const partName = searchParams.get('partName') || '';
   const partId = searchParams.get('partId') || '';
 
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [currentStep, setCurrentStep] = useState<string>('supplier');
+  // 当前步骤
+  const [currentStep, setCurrentStep] = useState<AnalysisStep>('supplier-select');
 
-  // 各个 Agent 的状态
-  const [agentStates, setAgentStates] = useState<AllAgentStates>({
-    supplier: { name: '供应商分析', status: 'idle', content: '' },
-    customization: { name: '定制化咨询', status: 'idle', content: '' },
-    process: { name: '工艺方案', status: 'idle', content: '' },
-    cost: { name: '成本分析', status: 'idle', content: '' },
-    risk: { name: '风险评估', status: 'idle', content: '' },
-    carbon: { name: '碳排放评估', status: 'idle', content: '' },
-    breaking: { name: '综合决策', status: 'idle', content: '' },
-  });
+  // 数据状态
+  const [suppliers, setSuppliers] = useState<Supplier[]>([]);
+  const [selectedSupplier, setSelectedSupplier] = useState<Supplier | null>(null);
 
-  const [result, setResult] = useState<ProductionResult | null>(null);
-  const [error, setError] = useState<string | null>(null);
-
-  // 选择供应商后的定制参数
-  const [selectedSupplier, setSelectedSupplier] = useState<any>(null);
+  const [customizationQuestions, setCustomizationQuestions] = useState<CustomizationQuestion[]>([]);
   const [customizationAnswers, setCustomizationAnswers] = useState<Record<string, string>>({});
-  const [selectedProcess, setSelectedProcess] = useState<any>(null);
 
-  // 开始完整分析流程
-  const startFullAnalysis = async () => {
-    setIsAnalyzing(true);
-    setError(null);
-    setResult(null);
-    setCurrentStep('supplier');
+  const [processes, setProcesses] = useState<Process[]>([]);
+  const [selectedProcess, setSelectedProcess] = useState<Process | null>(null);
 
-    // 重置所有状态
-    setAgentStates({
-      supplier: { name: '供应商分析', status: 'running', content: '🔍 正在搜索供应商信息...' },
-      customization: { name: '定制化咨询', status: 'idle', content: '' },
-      process: { name: '工艺方案', status: 'idle', content: '' },
-      cost: { name: '成本分析', status: 'idle', content: '' },
-      risk: { name: '风险评估', status: 'idle', content: '' },
-      carbon: { name: '碳排放评估', status: 'idle', content: '' },
-      breaking: { name: '综合决策', status: 'idle', content: '' },
-    });
+  const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  // 加载进度
+  useEffect(() => {
+    if (!sessionId || !partId || isLoaded) return;
+
+    const loadProgress = async () => {
+      try {
+        const res = await fetch(`/api/production-analysis-progress?sessionId=${sessionId}&partId=${partId}`);
+        const data = await res.json();
+        if (data.data) {
+          const progress = data.data;
+          setCurrentStep(progress.currentStep as AnalysisStep || 'supplier-select');
+          setSuppliers(progress.suppliers || []);
+          setSelectedSupplier(progress.selectedSupplier || null);
+          setCustomizationQuestions(progress.customizationQuestions || []);
+          setCustomizationAnswers(progress.customizationAnswers || {});
+          setProcesses(progress.processes || []);
+          setSelectedProcess(progress.selectedProcess || null);
+          setAnalysisResult(progress.analysisResult || null);
+        }
+        setIsLoaded(true);
+      } catch (err) {
+        console.error('加载进度失败:', err);
+        setIsLoaded(true);
+      }
+    };
+
+    loadProgress();
+  }, [sessionId, partId, isLoaded]);
+
+  // 保存进度到数据库
+  const saveProgress = useCallback(async (completed: boolean = false) => {
+    if (!sessionId) return;
 
     try {
-      // 步骤1: 供应商分析
-      const supplierRes = await callAPI('find_suppliers', { partName });
-      await updateAgentState('supplier', 'completed', formatSupplierContent(supplierRes));
-
-      // 步骤2: 定制化咨询
-      setCurrentStep('customization');
-      setAgentStates(prev => ({ ...prev, customization: { ...prev.customization, status: 'running', content: '🔍 正在生成定制问题...' } }));
-      const customRes = await callAPI('start_customization', { partName });
-      await updateAgentState('customization', 'completed', formatCustomizationContent(customRes));
-
-      // 步骤3: 工艺方案（如果已有定制参数）
-      setCurrentStep('process');
-      setAgentStates(prev => ({ ...prev, process: { ...prev.process, status: 'running', content: '🔍 正在生成工艺方案...' } }));
-      const processRes = await callAPI('generate_processes', { partName, customizedParams: customizationAnswers });
-      await updateAgentState('process', 'completed', formatProcessContent(processRes));
-
-      // 步骤4: 成本分析
-      setCurrentStep('cost');
-      setAgentStates(prev => ({ ...prev, cost: { ...prev.cost, status: 'running', content: '🔍 正在分析成本...' } }));
-      const option = selectedSupplier || selectedProcess || { price: 200 };
-      const costRes = await callAPI('analyze_cost', { option, optionType: selectedSupplier ? 'supplier' : 'process' });
-      await updateAgentState('cost', 'completed', formatCostContent(costRes));
-
-      // 步骤5: 风险评估
-      setCurrentStep('risk');
-      setAgentStates(prev => ({ ...prev, risk: { ...prev.risk, status: 'running', content: '🔍 正在评估风险...' } }));
-      const riskRes = await callAPI('assess_risk', { option, optionType: selectedSupplier ? 'supplier' : 'process' });
-      await updateAgentState('risk', 'completed', formatRiskContent(riskRes));
-
-      // 步骤6: 碳排放评估
-      setCurrentStep('carbon');
-      setAgentStates(prev => ({ ...prev, carbon: { ...prev.carbon, status: 'running', content: '🔍 正在评估碳排放...' } }));
-      const carbonRes = await callAPI('assess_carbon', { option, optionType: selectedSupplier ? 'supplier' : 'process' });
-      await updateAgentState('carbon', 'completed', formatCarbonContent(carbonRes));
-
-      // 步骤7: 综合决策
-      setCurrentStep('breaking');
-      setAgentStates(prev => ({ ...prev, breaking: { ...prev.breaking, status: 'running', content: '🔍 正在进行综合分析...' } }));
-      const breakingRes = await callAPI('recommend', { costData: costRes, riskData: riskRes, carbonData: carbonRes });
-      await updateAgentState('breaking', 'completed', formatBreakingContent(breakingRes));
-
-      setResult({
-        suppliers: supplierRes?.suppliers || supplierRes,
-        customization: customRes,
-        processes: processRes?.processes || processRes,
-        cost: costRes?.cost || costRes,
-        risk: riskRes?.risk || riskRes,
-        carbon: carbonRes?.carbon || carbonRes,
-        breaking: breakingRes
+      await fetch('/api/production-analysis-progress', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sessionId,
+          partId,
+          partName,
+          currentStep,
+          suppliers,
+          selectedSupplier,
+          customizationQuestions,
+          customizationAnswers,
+          processes,
+          selectedProcess,
+          analysisResult,
+          isCompleted: completed
+        })
       });
-
     } catch (err) {
-      setError(err instanceof Error ? err.message : '分析失败');
-    } finally {
-      setIsAnalyzing(false);
+      console.error('保存进度失败:', err);
     }
-  };
+  }, [sessionId, partId, partName, currentStep, suppliers, selectedSupplier, customizationQuestions, customizationAnswers, processes, selectedProcess, analysisResult]);
+
+  // 自动保存进度（当状态变化时）
+  useEffect(() => {
+    if (!isLoaded || !sessionId || !partId) return;
+
+    const timer = setTimeout(() => {
+      saveProgress(false);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [currentStep, suppliers, selectedSupplier, customizationQuestions, customizationAnswers, processes, selectedProcess, analysisResult, isLoaded, sessionId, partId, saveProgress]);
 
   // 调用 API
   const callAPI = async (action: string, data: any) => {
@@ -185,81 +169,478 @@ function ProductionAnalysisPage() {
     return result.data;
   };
 
-  // 更新 Agent 状态
-  const updateAgentState = (key: keyof AllAgentStates, status: AgentStatus['status'], content: string) => {
-    setAgentStates(prev => ({
-      ...prev,
-      [key]: { ...prev[key], status, content }
-    }));
-    return new Promise<void>(resolve => setTimeout(resolve, 800));
+  // 步骤1: 搜索供应商
+  const handleFindSuppliers = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const result = await callAPI('find_suppliers', { partName });
+      setSuppliers(result.suppliers || []);
+    } catch (err) {
+      setError('搜索供应商失败，请重试');
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  // 格式化供应商内容
-  const formatSupplierContent = (data: any) => {
-    const suppliers = data?.suppliers || data || [];
-    return `✅ 已找到 ${suppliers.length} 个潜在供应商\n\n` +
-      suppliers.map((s: any) => `• ${s.name}\n  规格: ${s.specs}\n  价格: ¥${s.price}\n  可靠性: ${s.reliability}/10\n  交货期: ${s.leadTime}天\n`).join('\n');
+  // 选择供应商后，进入下一步
+  const handleSelectSupplier = (supplier: Supplier) => {
+    setSelectedSupplier(supplier);
+    setCurrentStep('customization');
   };
 
-  // 格式化定制化内容
-  const formatCustomizationContent = (data: any) => {
-    const questions = data?.questions || [];
-    return `✅ 定制问题已生成\n\n` +
-      questions.map((q: any, i: number) => `${i + 1}. ${q.question}${q.options ? `\n   选项: ${q.options.join(', ')}` : ''}`).join('\n\n');
+  // 步骤2: 生成定制问题
+  const handleGenerateQuestions = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const result = await callAPI('start_customization', { partName });
+      setCustomizationQuestions(result.questions || []);
+    } catch (err) {
+      setError('生成定制问题失败，请重试');
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  // 格式化工艺方案内容
-  const formatProcessContent = (data: any) => {
-    const processes = data?.processes || data || [];
-    return `✅ 工艺方案已生成\n\n` +
-      processes.map((p: any) => `• ${p.name}\n  ${p.description}\n  成本: ¥${p.cost} | 风险: ${p.risk} | 碳排放: ${p.carbonEmission}kg`).join('\n\n');
+  // 提交定制答案后，进入下一步
+  const handleSubmitCustomization = () => {
+    setCurrentStep('process-select');
   };
 
-  // 格式化成本内容
-  const formatCostContent = (data: any) => {
-    const cost = data?.cost || data || {};
-    return `✅ 成本分析完成\n\n总成本: ¥${cost.totalCost?.toFixed?.(2) || 0}\n\n` +
-      `材料: ¥${cost.breakdown?.material?.toFixed?.(0) || 0}\n` +
-      `加工: ¥${cost.breakdown?.processing?.toFixed?.(0) || 0}\n` +
-      `运输: ¥${cost.breakdown?.shipping?.toFixed?.(0) || 0}\n` +
-      `其他: ¥${cost.breakdown?.other?.toFixed?.(0) || 0}\n\n` +
-      `${cost.analysis || ''}`;
+  // 步骤3: 生成工艺方案
+  const handleGenerateProcesses = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const result = await callAPI('generate_processes', {
+        partName,
+        customizedParams: customizationAnswers
+      });
+      setProcesses(result.processes || []);
+    } catch (err) {
+      setError('生成工艺方案失败，请重试');
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  // 格式化风险内容
-  const formatRiskContent = (data: any) => {
-    const risk = data?.risk || data || {};
-    return `✅ 风险评估完成\n\n风险等级: ${risk.riskLevel || '低'}\n\n` +
-      (risk.risks || []).map((r: any) => `• ${r.type}\n  ${r.description}\n  影响: ${r.impact}\n  应对: ${r.mitigation}`).join('\n\n') +
-      `\n\n${risk.overallAssessment || ''}`;
+  // 选择工艺后，开始分析
+  const handleSelectProcess = (process: Process) => {
+    setSelectedProcess(process);
+    setCurrentStep('analyzing');
+    runAnalysis(process);
   };
 
-  // 格式化碳排放内容
-  const formatCarbonContent = (data: any) => {
-    const carbon = data?.carbon || data || {};
-    return `✅ 碳排放评估完成\n\n总排放: ${carbon.totalEmission?.toFixed?.(1) || 0} kg CO₂\n\n` +
-      `生产: ${carbon.breakdown?.production?.toFixed?.(1) || 0}kg\n` +
-      `运输: ${carbon.breakdown?.transportation?.toFixed?.(1) || 0}kg\n` +
-      `材料: ${carbon.breakdown?.material?.toFixed?.(1) || 0}kg\n\n` +
-      `等级: ${carbon.rating || 'A'}\n\n${carbon.analysis || ''}`;
+  // 步骤4: 运行分析（成本、风险、碳排放）
+  const runAnalysis = async (process: Process) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      // 并行执行成本、风险、碳排放分析
+      const [costRes, riskRes, carbonRes] = await Promise.all([
+        callAPI('analyze_cost', { option: process, optionType: 'process' }),
+        callAPI('assess_risk', { option: process, optionType: 'process' }),
+        callAPI('assess_carbon', { option: process, optionType: 'process' })
+      ]);
+
+      // 综合决策
+      const breakingRes = await callAPI('recommend', {
+        costData: costRes,
+        riskData: riskRes,
+        carbonData: carbonRes
+      });
+
+      setAnalysisResult({
+        cost: costRes?.cost || null,
+        risk: riskRes?.risk || null,
+        carbon: carbonRes?.carbon || null,
+        breaking: breakingRes?.recommendation || null
+      });
+
+      setCurrentStep('result');
+
+      // 保存为已完成
+      if (sessionId) {
+        try {
+          await fetch('/api/production-analysis-progress', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              sessionId,
+              partId,
+              partName,
+              currentStep: 'result',
+              suppliers,
+              selectedSupplier,
+              customizationQuestions,
+              customizationAnswers,
+              processes,
+              selectedProcess: process,
+              analysisResult: {
+                cost: costRes?.cost || null,
+                risk: riskRes?.risk || null,
+                carbon: carbonRes?.carbon || null,
+                breaking: breakingRes?.recommendation || null
+              },
+              isCompleted: true
+            })
+          });
+        } catch (err) {
+          console.error('保存完成状态失败:', err);
+        }
+      }
+    } catch (err) {
+      setError('分析失败，请重试');
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  // 格式化综合决策内容
-  const formatBreakingContent = (data: any) => {
-    const breaking = data || {};
-    return `✅ 综合分析完成\n\n` +
-      `建议: ${breaking.recommendation === 'break' ? '🔨 建议继续拆分' : '📦 建议保持当前'}\n` +
-      `置信度: ${breaking.confidence || 0}%\n\n` +
-      `${breaking.reasoning || ''}\n\n` +
-      `关键因素: ${(breaking.keyFactors || []).join(', ')}`;
+  // 重新开始
+  const handleRestart = async () => {
+    setCurrentStep('supplier-select');
+    setSuppliers([]);
+    setSelectedSupplier(null);
+    setCustomizationQuestions([]);
+    setCustomizationAnswers({});
+    setProcesses([]);
+    setSelectedProcess(null);
+    setAnalysisResult(null);
+    setError(null);
+
+    // 删除数据库中的进度
+    if (sessionId && partId) {
+      try {
+        await fetch(`/api/production-analysis-progress?sessionId=${sessionId}&partId=${partId}`, {
+          method: 'DELETE'
+        });
+      } catch (err) {
+        console.error('删除进度失败:', err);
+      }
+    }
   };
 
+  // 渲染步骤指示器
+  const renderStepIndicator = () => {
+    const steps = [
+      { key: 'supplier-select', label: '1. 选择供应商' },
+      { key: 'customization', label: '2. 定制参数' },
+      { key: 'process-select', label: '3. 选择工艺' },
+      { key: 'analyzing', label: '4. 分析中' },
+      { key: 'result', label: '5. 结果' }
+    ];
+
+    return (
+      <div className="flex items-center justify-center gap-2 mb-6 flex-wrap">
+        {steps.map((step, index) => (
+          <div key={step.key} className="flex items-center">
+            <div className={`px-3 py-1 rounded-full text-sm ${
+              currentStep === step.key
+                ? 'bg-purple-500 text-white'
+                : steps.findIndex(s => s.key === currentStep) > index
+                  ? 'bg-green-500/30 text-green-300'
+                  : 'bg-white/10 text-gray-400'
+            }`}>
+              {step.label}
+            </div>
+            {index < steps.length - 1 && <span className="text-gray-600 mx-1">→</span>}
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  // 渲染供应商选择
+  const renderSupplierSelect = () => (
+    <div className="space-y-4">
+      <div className="text-center">
+        <h2 className="text-2xl font-bold text-white mb-2">选择供应商</h2>
+        <p className="text-gray-400">为 "{partName}" 选择供应商</p>
+      </div>
+
+      {!suppliers.length ? (
+        <div className="text-center py-8">
+          <button
+            onClick={handleFindSuppliers}
+            disabled={isLoading}
+            className="px-6 py-3 bg-purple-500 hover:bg-purple-600 disabled:bg-gray-500 rounded-lg text-white font-medium transition-colors"
+          >
+            {isLoading ? '搜索中...' : '🔍 搜索供应商'}
+          </button>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {suppliers.map((supplier, index) => (
+            <button
+              key={index}
+              onClick={() => handleSelectSupplier(supplier)}
+              className="w-full p-4 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-purple-500/50 rounded-xl text-left transition-all"
+            >
+              <div className="flex justify-between items-start">
+                <div>
+                  <div className="font-medium text-white">{supplier.name}</div>
+                  <div className="text-sm text-gray-400">{supplier.specs}</div>
+                </div>
+                <div className="text-right">
+                  <div className="text-lg font-bold text-emerald-400">¥{supplier.price}</div>
+                  <div className="text-xs text-gray-500">可靠性: {supplier.reliability}/10</div>
+                  <div className="text-xs text-gray-500">交货: {supplier.leadTime}天</div>
+                </div>
+              </div>
+            </button>
+          ))}
+
+          <button
+            onClick={handleFindSuppliers}
+            className="w-full py-2 text-gray-400 hover:text-white text-sm"
+          >
+            🔄 重新搜索
+          </button>
+        </div>
+      )}
+    </div>
+  );
+
+  // 渲染定制问题
+  const renderCustomization = () => (
+    <div className="space-y-4">
+      <div className="text-center">
+        <h2 className="text-2xl font-bold text-white mb-2">定制参数</h2>
+        <p className="text-gray-400">回答以下问题以优化方案</p>
+      </div>
+
+      {!customizationQuestions.length ? (
+        <div className="text-center py-8">
+          <button
+            onClick={handleGenerateQuestions}
+            disabled={isLoading}
+            className="px-6 py-3 bg-purple-500 hover:bg-purple-600 disabled:bg-gray-500 rounded-lg text-white font-medium transition-colors"
+          >
+            {isLoading ? '生成中...' : '❓ 生成定制问题'}
+          </button>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {customizationQuestions.map((q, index) => (
+            <div key={index} className="bg-white/5 rounded-xl p-4">
+              <div className="text-white mb-2">{q.question}</div>
+              {q.type === 'select' && q.options ? (
+                <div className="flex flex-wrap gap-2">
+                  {q.options.map((opt, optIndex) => (
+                    <button
+                      key={optIndex}
+                      onClick={() => setCustomizationAnswers(prev => ({ ...prev, [index]: opt }))}
+                      className={`px-3 py-1 rounded-lg text-sm transition-colors ${
+                        customizationAnswers[index] === opt
+                          ? 'bg-purple-500 text-white'
+                          : 'bg-white/10 text-gray-300 hover:bg-white/20'
+                      }`}
+                    >
+                      {opt}
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <input
+                  type={q.type === 'number' ? 'number' : 'text'}
+                  placeholder="请输入..."
+                  value={customizationAnswers[index] || ''}
+                  onChange={(e) => setCustomizationAnswers(prev => ({ ...prev, [index]: e.target.value }))}
+                  className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white placeholder-gray-500"
+                />
+              )}
+            </div>
+          ))}
+
+          <button
+            onClick={handleSubmitCustomization}
+            className="w-full py-3 bg-purple-500 hover:bg-purple-600 rounded-lg text-white font-medium transition-colors"
+          >
+            继续 →
+          </button>
+        </div>
+      )}
+    </div>
+  );
+
+  // 渲染工艺方案选择
+  const renderProcessSelect = () => (
+    <div className="space-y-4">
+      <div className="text-center">
+        <h2 className="text-2xl font-bold text-white mb-2">选择工艺方案</h2>
+        <p className="text-gray-400">选择最适合的制造工艺</p>
+      </div>
+
+      {!processes.length ? (
+        <div className="text-center py-8">
+          <button
+            onClick={handleGenerateProcesses}
+            disabled={isLoading}
+            className="px-6 py-3 bg-purple-500 hover:bg-purple-600 disabled:bg-gray-500 rounded-lg text-white font-medium transition-colors"
+          >
+            {isLoading ? '生成中...' : '⚙️ 生成工艺方案'}
+          </button>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {processes.map((process, index) => (
+            <button
+              key={index}
+              onClick={() => handleSelectProcess(process)}
+              className="w-full p-4 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-orange-500/50 rounded-xl text-left transition-all"
+            >
+              <div className="font-medium text-white">{process.name}</div>
+              <div className="text-sm text-gray-400 mb-2">{process.description}</div>
+              <div className="flex gap-4 text-sm">
+                <span className="text-emerald-400">¥{process.cost}</span>
+                <span className="text-yellow-400">{process.risk}</span>
+                <span className="text-cyan-400">{process.carbonEmission}kg CO₂</span>
+              </div>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+
+  // 渲染分析中
+  const renderAnalyzing = () => (
+    <div className="text-center py-12">
+      <div className="inline-block animate-spin rounded-full h-16 w-16 border-4 border-purple-500 border-t-transparent mb-6"></div>
+      <h2 className="text-2xl font-bold text-white mb-2">分析中...</h2>
+      <p className="text-gray-400">正在分析成本、风险和碳排放</p>
+    </div>
+  );
+
+  // 渲染结果
+  const renderResult = () => (
+    <div className="space-y-4">
+      {/* 综合决策 */}
+      {analysisResult?.breaking && (
+        <div className={`rounded-xl p-6 border ${
+          analysisResult.breaking.recommendation === 'break'
+            ? 'bg-gradient-to-r from-purple-500/20 to-pink-500/20 border-purple-500/50'
+            : 'bg-gradient-to-r from-amber-500/20 to-orange-500/20 border-amber-500/50'
+        }`}>
+          <div className="flex items-center justify-between mb-4">
+            <div className={`text-2xl font-bold ${
+              analysisResult.breaking.recommendation === 'break' ? 'text-purple-300' : 'text-amber-300'
+            }`}>
+              {analysisResult.breaking.recommendation === 'break' ? '🔨 建议继续拆分' : '📦 建议保持当前'}
+            </div>
+            <div className="text-gray-400">置信度: {analysisResult.breaking.confidence}%</div>
+          </div>
+          <div className="text-gray-300 mb-4">{analysisResult.breaking.reasoning}</div>
+          <div className="flex flex-wrap gap-2">
+            {analysisResult.breaking.keyFactors?.map((factor, i) => (
+              <span key={i} className="px-2 py-1 bg-white/10 rounded text-sm text-gray-300">{factor}</span>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* 成本分析 */}
+      {analysisResult?.cost && (
+        <div className="bg-gradient-to-r from-emerald-500/10 to-teal-500/10 rounded-xl p-4 border border-emerald-500/30">
+          <div className="text-lg font-bold text-emerald-300 mb-3">💰 成本分析</div>
+          <div className="text-3xl font-bold text-white mb-3">¥{analysisResult.cost.totalCost?.toFixed(0)}</div>
+          <div className="grid grid-cols-2 gap-2 text-sm">
+            <div className="bg-black/30 rounded p-2">
+              <div className="text-gray-500">材料</div>
+              <div className="text-white">¥{analysisResult.cost.breakdown?.material?.toFixed(0)}</div>
+            </div>
+            <div className="bg-black/30 rounded p-2">
+              <div className="text-gray-500">加工</div>
+              <div className="text-white">¥{analysisResult.cost.breakdown?.processing?.toFixed(0)}</div>
+            </div>
+            <div className="bg-black/30 rounded p-2">
+              <div className="text-gray-500">运输</div>
+              <div className="text-white">¥{analysisResult.cost.breakdown?.shipping?.toFixed(0)}</div>
+            </div>
+            <div className="bg-black/30 rounded p-2">
+              <div className="text-gray-500">其他</div>
+              <div className="text-white">¥{analysisResult.cost.breakdown?.other?.toFixed(0)}</div>
+            </div>
+          </div>
+          <div className="mt-3 text-sm text-gray-400">{analysisResult.cost.analysis}</div>
+        </div>
+      )}
+
+      {/* 风险评估 */}
+      {analysisResult?.risk && (
+        <div className="bg-gradient-to-r from-red-500/10 to-orange-500/10 rounded-xl p-4 border border-red-500/30">
+          <div className="flex items-center justify-between mb-3">
+            <div className="text-lg font-bold text-red-300">⚠️ 风险评估</div>
+            <span className={`px-3 py-1 rounded-full text-sm ${
+              analysisResult.risk.riskLevel === '低' ? 'bg-green-500/30 text-green-300' :
+              analysisResult.risk.riskLevel === '中' ? 'bg-yellow-500/30 text-yellow-300' :
+              'bg-red-500/30 text-red-300'
+            }`}>
+              {analysisResult.risk.riskLevel}风险
+            </span>
+          </div>
+          <div className="space-y-2">
+            {analysisResult.risk.risks?.map((r, i) => (
+              <div key={i} className="bg-black/30 rounded-lg p-2 text-sm">
+                <div className="text-white">{r.type}</div>
+                <div className="text-gray-400">{r.description}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* 碳排放 */}
+      {analysisResult?.carbon && (
+        <div className="bg-gradient-to-r from-cyan-500/10 to-blue-500/10 rounded-xl p-4 border border-cyan-500/30">
+          <div className="flex items-center justify-between mb-3">
+            <div className="text-lg font-bold text-cyan-300">🌍 碳排放</div>
+            <span className="px-3 py-1 rounded-full bg-cyan-500/30 text-cyan-300">
+              等级 {analysisResult.carbon.rating}
+            </span>
+          </div>
+          <div className="text-2xl font-bold text-white mb-3">{analysisResult.carbon.totalEmission?.toFixed(1)} kg CO₂</div>
+          <div className="text-sm text-gray-400">{analysisResult.carbon.analysis}</div>
+        </div>
+      )}
+
+      {/* 操作按钮 */}
+      <div className="flex gap-3 pt-4">
+        <button
+          onClick={handleRestart}
+          className="flex-1 py-3 bg-white/10 hover:bg-white/20 rounded-lg text-white font-medium transition-colors"
+        >
+          🔄 重新分析
+        </button>
+        <Link
+          href={sessionId ? `/canvas?sessionId=${sessionId}` : '/canvas'}
+          className="flex-1 py-3 bg-purple-500 hover:bg-purple-600 rounded-lg text-white font-medium text-center transition-colors"
+        >
+          ← 返回画布
+        </Link>
+      </div>
+    </div>
+  );
+
+  // 错误提示
+  const renderError = () => error ? (
+    <div className="bg-red-500/20 border border-red-500/50 rounded-lg p-4 text-red-300 text-center">
+      {error}
+    </div>
+  ) : null;
+
+  // 没有零件信息
   if (!partName) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-indigo-950 via-purple-950 to-slate-950 text-white flex items-center justify-center">
         <div className="text-center">
-          <p className="text-gray-400">缺少零件信息</p>
-          <Link href="/setup" className="text-purple-400 hover:text-purple-300 mt-4 inline-block">
+          <p className="text-gray-400 mb-4">缺少零件信息</p>
+          <Link href="/setup" className="text-purple-400 hover:text-purple-300">
             返回调制界面
           </Link>
         </div>
@@ -271,257 +652,37 @@ function ProductionAnalysisPage() {
     <div className="min-h-screen bg-gradient-to-br from-indigo-950 via-purple-950 to-slate-950 text-white">
       {/* 头部 */}
       <header className="border-b border-white/10 bg-black/20 backdrop-blur-xl">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+        <div className="max-w-3xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Link href="/canvas" className="text-gray-400 hover:text-white transition-colors">
+            <Link
+              href={sessionId ? `/canvas?sessionId=${sessionId}` : '/canvas'}
+              className="text-gray-400 hover:text-white transition-colors"
+            >
               ← 返回
             </Link>
             <div className="w-px h-8 bg-white/20" />
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-emerald-400 via-cyan-400 to-blue-400 bg-clip-text text-transparent">
-              🏭 生产分析
-            </h1>
+            <h1 className="text-xl font-bold">🏭 生产分析</h1>
           </div>
           <div className="text-gray-400">
-            分析对象: <span className="text-white font-medium">{partName}</span>
+            {partName}
           </div>
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-6 py-8">
-        {/* 开始分析按钮 */}
-        {!result && !isAnalyzing && (
-          <div className="text-center mb-8">
-            <button
-              onClick={startFullAnalysis}
-              className="bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 px-8 py-4 rounded-xl font-semibold text-lg transition-all shadow-lg hover:shadow-xl"
-            >
-              🚀 开始完整生产分析
-            </button>
-            <p className="text-gray-400 mt-4">
-              将依次执行：供应商分析 → 定制化咨询 → 工艺方案 → 成本分析 → 风险评估 → 碳排放评估 → 综合决策
-            </p>
-          </div>
-        )}
+      <main className="max-w-3xl mx-auto px-6 py-8">
+        {/* 步骤指示器 */}
+        {renderStepIndicator()}
 
-        {/* 分析进度 */}
-        {isAnalyzing && (
-          <div className="mb-8">
-            <div className="flex items-center justify-center gap-2 mb-4">
-              <div className="animate-spin rounded-full h-6 w-6 border-2 border-emerald-500 border-t-transparent"></div>
-              <span className="text-emerald-400 font-medium">分析中...</span>
-            </div>
-            <div className="flex flex-wrap justify-center gap-2">
-              {Object.entries(agentStates).map(([key, state]) => (
-                <span
-                  key={key}
-                  className={`px-3 py-1 rounded-full text-sm ${
-                    state.status === 'completed' ? 'bg-emerald-500/30 text-emerald-300' :
-                    state.status === 'running' ? 'bg-blue-500/30 text-blue-300 animate-pulse' :
-                    'bg-gray-500/30 text-gray-400'
-                  }`}
-                >
-                  {state.status === 'completed' ? '✅' : state.status === 'running' ? '🔄' : '⏳'} {state.name}
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
+        {/* 错误提示 */}
+        {renderError()}
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* 左侧: Agent 分析过程 */}
-          <div className="space-y-4">
-            <h2 className="text-xl font-semibold text-gray-300 mb-4">🤖 Agent 分析过程</h2>
-
-            {Object.entries(agentStates).map(([key, agent]) => (
-              <div
-                key={key}
-                className={`rounded-xl border-2 p-4 transition-all ${
-                  agent.status === 'running'
-                    ? 'border-blue-500/50 bg-blue-500/10'
-                    : agent.status === 'completed'
-                    ? 'border-emerald-500/50 bg-emerald-500/10'
-                    : agent.status === 'error'
-                    ? 'border-red-500/50 bg-red-500/10'
-                    : 'border-white/10 bg-white/5'
-                }`}
-              >
-                <div className="flex items-center gap-3 mb-2">
-                  <span className={`text-xl ${agent.status === 'running' ? 'animate-spin' : ''}`}>
-                    {agent.status === 'idle' ? '⏳' :
-                     agent.status === 'running' ? '🔄' :
-                     agent.status === 'completed' ? '✅' : '❌'}
-                  </span>
-                  <span className="font-medium">{agent.name}</span>
-                </div>
-                {agent.content && (
-                  <pre className="text-sm text-gray-300 whitespace-pre-wrap font-mono mt-2 bg-black/30 p-3 rounded-lg">
-                    {agent.content}
-                  </pre>
-                )}
-              </div>
-            ))}
-          </div>
-
-          {/* 右侧: 分析结果 */}
-          <div className="space-y-4">
-            <h2 className="text-xl font-semibold text-gray-300 mb-4">📊 分析结果</h2>
-
-            {error && (
-              <div className="bg-red-500/20 border border-red-500/50 rounded-xl p-4 text-red-300">
-                ❌ {error}
-              </div>
-            )}
-
-            {result ? (
-              <div className="space-y-4">
-                {/* 供应商 */}
-                {result.suppliers && (
-                  <div className="bg-gradient-to-r from-blue-500/10 to-cyan-500/10 rounded-xl p-4 border border-blue-500/30">
-                    <div className="text-lg font-bold text-blue-300 mb-3">🏢 供应商</div>
-                    <div className="space-y-2">
-                      {result.suppliers.map((s: any, i: number) => (
-                        <div key={i} className="bg-black/30 rounded-lg p-3">
-                          <div className="font-medium text-white">{s.name}</div>
-                          <div className="text-sm text-gray-400">{s.specs}</div>
-                          <div className="flex justify-between mt-2 text-sm">
-                            <span className="text-emerald-400">¥{s.price}</span>
-                            <span className="text-gray-400">可靠性: {s.reliability}/10</span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* 定制化问题 */}
-                {result.customization && (
-                  <div className="bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-xl p-4 border border-purple-500/30">
-                    <div className="text-lg font-bold text-purple-300 mb-3">❓ 定制问题</div>
-                    <div className="space-y-2">
-                      {result.customization.questions?.map((q: any, i: number) => (
-                        <div key={i} className="bg-black/30 rounded-lg p-3">
-                          <div className="text-white">{q.question}</div>
-                          {q.options && (
-                            <div className="flex flex-wrap gap-2 mt-2">
-                              {q.options.map((opt: string, j: number) => (
-                                <span key={j} className="text-xs bg-gray-700 px-2 py-1 rounded">{opt}</span>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* 工艺方案 */}
-                {result.processes && (
-                  <div className="bg-gradient-to-r from-orange-500/10 to-amber-500/10 rounded-xl p-4 border border-orange-500/30">
-                    <div className="text-lg font-bold text-orange-300 mb-3">⚙️ 工艺方案</div>
-                    <div className="space-y-2">
-                      {result.processes.map((p: any, i: number) => (
-                        <div key={i} className="bg-black/30 rounded-lg p-3">
-                          <div className="font-medium text-white">{p.name}</div>
-                          <div className="text-sm text-gray-400">{p.description}</div>
-                          <div className="flex gap-4 mt-2 text-sm">
-                            <span className="text-emerald-400">¥{p.cost}</span>
-                            <span className="text-yellow-400">{p.risk}</span>
-                            <span className="text-cyan-400">{p.carbonEmission}kg CO₂</span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* 成本 */}
-                {result.cost && (
-                  <div className="bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-xl p-4 border border-green-500/30">
-                    <div className="text-lg font-bold text-green-300 mb-3">💰 成本: ¥{result.cost.totalCost?.toFixed(2)}</div>
-                    <div className="grid grid-cols-4 gap-2 text-sm">
-                      <div className="text-center">
-                        <div className="text-gray-400">材料</div>
-                        <div className="text-white">¥{result.cost.breakdown?.material?.toFixed(0)}</div>
-                      </div>
-                      <div className="text-center">
-                        <div className="text-gray-400">加工</div>
-                        <div className="text-white">¥{result.cost.breakdown?.processing?.toFixed(0)}</div>
-                      </div>
-                      <div className="text-center">
-                        <div className="text-gray-400">运输</div>
-                        <div className="text-white">¥{result.cost.breakdown?.shipping?.toFixed(0)}</div>
-                      </div>
-                      <div className="text-center">
-                        <div className="text-gray-400">其他</div>
-                        <div className="text-white">¥{result.cost.breakdown?.other?.toFixed(0)}</div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* 风险 */}
-                {result.risk && (
-                  <div className="bg-gradient-to-r from-red-500/10 to-orange-500/10 rounded-xl p-4 border border-red-500/30">
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="text-lg font-bold text-red-300">⚠️ 风险: {result.risk.riskLevel}</div>
-                    </div>
-                    <div className="space-y-2">
-                      {result.risk.risks?.map((r: any, i: number) => (
-                        <div key={i} className="bg-black/30 rounded-lg p-2 text-sm">
-                          <span className="text-white">{r.type}</span>
-                          <span className="text-gray-400 ml-2">- {r.description}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* 碳排放 */}
-                {result.carbon && (
-                  <div className="bg-gradient-to-r from-emerald-500/10 to-teal-500/10 rounded-xl p-4 border border-emerald-500/30">
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="text-lg font-bold text-emerald-300">🌍 {result.carbon.totalEmission?.toFixed(1)} kg CO₂</div>
-                      <span className="px-3 py-1 rounded-full bg-emerald-500/30 text-emerald-300">等级 {result.carbon.rating}</span>
-                    </div>
-                  </div>
-                )}
-
-                {/* 拆分建议 */}
-                {result.breaking && (
-                  <div className={`rounded-xl p-4 border ${
-                    result.breaking.recommendation === 'break'
-                      ? 'bg-gradient-to-r from-purple-500/10 to-pink-500/10 border-purple-500/30'
-                      : 'bg-gradient-to-r from-amber-500/10 to-orange-500/10 border-amber-500/30'
-                  }`}>
-                    <div className="flex items-center justify-between mb-2">
-                      <div className={`text-lg font-bold ${
-                        result.breaking.recommendation === 'break' ? 'text-purple-300' : 'text-amber-300'
-                      }`}>
-                        {result.breaking.recommendation === 'break' ? '🔨 建议继续拆分' : '📦 建议保持当前'}
-                      </div>
-                      <span className="text-gray-400">置信度: {result.breaking.confidence}%</span>
-                    </div>
-                    <div className="text-gray-300 text-sm">{result.breaking.reasoning}</div>
-                  </div>
-                )}
-
-                {/* 重新分析按钮 */}
-                <button
-                  onClick={startFullAnalysis}
-                  className="w-full py-3 bg-white/10 hover:bg-white/20 rounded-xl transition-colors"
-                >
-                  🔄 重新分析
-                </button>
-              </div>
-            ) : (
-              <div className="bg-white/5 rounded-xl p-8 border border-white/10 text-center">
-                <div className="text-4xl mb-4">📊</div>
-                <div className="text-gray-400">点击上方按钮开始生产分析</div>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
+        {/* 步骤内容 */}
+        {currentStep === 'supplier-select' && renderSupplierSelect()}
+        {currentStep === 'customization' && renderCustomization()}
+        {currentStep === 'process-select' && renderProcessSelect()}
+        {currentStep === 'analyzing' && renderAnalyzing()}
+        {currentStep === 'result' && renderResult()}
+      </main>
     </div>
   );
 }

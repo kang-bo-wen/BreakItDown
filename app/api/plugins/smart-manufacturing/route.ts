@@ -1,171 +1,283 @@
 import { NextRequest, NextResponse } from 'next/server';
+import deepseek from '@/lib/deepseek';
 
-// 模拟供应商数据
-const mockSuppliers = [
-  { name: '精密制造有限公司', specs: '高精度CNC加工,公差±0.01mm', price: 150, reliability: 9.2, leadTime: 7 },
-  { name: '智造供应链', specs: '快速成型,3D打印服务', price: 200, reliability: 8.8, leadTime: 3 },
-  { name: '工业零件厂商', specs: '大规模生产,性价比高', price: 80, reliability: 7.5, leadTime: 14 },
-  { name: '高端定制工作室', specs: '军工级品质,特殊材料', price: 350, reliability: 9.5, leadTime: 10 },
-  { name: '新手小作坊', specs: '价格实惠,适合打样', price: 50, reliability: 6.0, leadTime: 5 },
-];
+// 供应商 Agent System Prompt
+const SUPPLIER_AGENT_PROMPT = `你是一个专业的供应商检索专家。
+你的任务是根据零件的名称和规格，生成3-5个可能的供应商选项。
+每个供应商应包含：
+- 供应商名称
+- 零件规格描述
+- 价格估算（人民币）
+- 可靠性评分（1-10）
+- 交货周期（天数）
 
-// 模拟定制问题
-const mockCustomizationQuestions = [
-  { question: '您对零件的精度要求是什么？', type: 'select', options: ['普通精度(±0.1mm)', '高精度(±0.05mm)', '超精度(±0.01mm)'] },
-  { question: '需要的材料类型？', type: 'select', options: ['铝合金', '不锈钢', '钛合金', '塑料', '碳纤维'] },
-  { question: '批量大小？', type: 'select', options: ['1-10件(打样)', '10-100件(小批量)', '100-1000件(中批量)', '1000件以上(大批量)'] },
-  { question: '是否需要表面处理？', type: 'select', options: ['无需处理', '阳极氧化', '喷砂', '电镀', '喷漆'] },
-  { question: '交货时间要求？', type: 'select', options: ['加急(3天内)', '正常(7天)', '宽松(14天以上)'] },
-];
+请以JSON格式返回结果，格式如下：
+{
+  "suppliers": [
+    {
+      "name": "供应商名称",
+      "specs": "规格描述",
+      "price": 价格数字,
+      "reliability": 可靠性评分,
+      "leadTime": 交货周期
+    }
+  ]
+}
 
-// 模拟工艺方案
-const mockProcesses = [
-  { name: 'CNC精密加工', description: '使用五轴CNC机床进行精密加工,适合复杂几何形状', cost: 180, risk: '低', carbonEmission: 12.5 },
-  { name: '3D打印成型', description: '选择性激光熔化技术,适合小批量定制', cost: 250, risk: '中', carbonEmission: 8.2 },
-  { name: '冲压成型', description: '大批量金属板材成型,成本效率高', cost: 90, risk: '低', carbonEmission: 18.3 },
-  { name: '铸造工艺', description: '失蜡铸造,适合复杂内部结构', cost: 320, risk: '高', carbonEmission: 25.6 },
-];
+注意：不要硬编码结果，要根据零件特性生成多样化的供应商选项。`;
+
+// 定制化 Agent System Prompt
+const CUSTOMIZED_AGENT_PROMPT = `你是一个专业的零件定制顾问。
+你的任务是引导用户定制零件，询问必要的参数和需求。
+请生成3-5个关键问题，帮助用户明确定制需求。
+
+以JSON格式返回：
+{
+  "questions": [
+    {
+      "question": "问题内容",
+      "type": "text|number|select",
+      "options": ["选项1", "选项2"] // 仅当type为select时
+    }
+  ]
+}`;
+
+// 工艺 Agent System Prompt
+const PROCESS_AGENT_PROMPT = `你是一个专业的制造工艺专家。
+根据零件信息和用户的定制需求，生成3-4种可行的工艺方案。
+每个方案应包含：
+- 工艺名称
+- 工艺描述
+- 预估成本（人民币）
+- 风险评估
+- 碳排放估算（kg CO2）
+
+以JSON格式返回：
+{
+  "processes": [
+    {
+      "name": "工艺名称",
+      "description": "详细描述",
+      "cost": 成本数字,
+      "risk": "风险描述",
+      "carbonEmission": 碳排放数字
+    }
+  ]
+}`;
+
+// 成本 Agent System Prompt
+const COST_AGENT_PROMPT = `你是一个专业的成本分析师。
+根据选择的供应商或工艺方案，计算总成本。
+考虑因素：
+- 材料成本
+- 加工成本
+- 运输成本
+- 其他附加成本
+
+以JSON格式返回：
+{
+  "totalCost": 总成本数字,
+  "breakdown": {
+    "material": 材料成本,
+    "processing": 加工成本,
+    "shipping": 运输成本,
+    "other": 其他成本
+  },
+  "analysis": "成本分析说明"
+}`;
+
+// 风险 Agent System Prompt
+const RISK_AGENT_PROMPT = `你是一个专业的工程风险评估专家。
+评估选项的潜在风险，包括：
+- 技术风险
+- 供应链风险
+- 质量风险
+- 时间风险
+
+以JSON格式返回：
+{
+  "riskLevel": "低|中|高",
+  "risks": [
+    {
+      "type": "风险类型",
+      "description": "风险描述",
+      "impact": "影响程度",
+      "mitigation": "缓解措施"
+    }
+  ],
+  "overallAssessment": "总体评估"
+}`;
+
+// 碳排放 Agent System Prompt
+const CARBON_AGENT_PROMPT = `你是一个专业的碳排放评估专家。
+评估选项的碳排放，包括：
+- 生产过程碳排放
+- 运输碳排放
+- 材料碳足迹
+
+以JSON格式返回：
+{
+  "totalEmission": 总排放量（kg CO2）,
+  "breakdown": {
+    "production": 生产排放,
+    "transportation": 运输排放,
+    "material": 材料排放
+  },
+  "rating": "A|B|C|D|E",
+  "analysis": "碳排放分析"
+}`;
+
+// 综合决策 Agent System Prompt
+const BREAKING_AGENT_PROMPT = `你是一个专业的生产决策专家。
+根据成本分析、风险评估和碳排放评估，给出是否继续生产的建议。
+考虑因素：
+- 成本效益
+- 风险可控性
+- 环保要求
+- 质量标准
+- 交货时间
+
+以JSON格式返回：
+{
+  "recommendation": "break|keep",
+  "confidence": 置信度(0-100),
+  "reasoning": "决策理由",
+  "keyFactors": ["关键因素1", "关键因素2"]
+}`;
+
+// 调用 DeepSeek AI 并解析 JSON
+async function callDeepSeek(systemPrompt: string, userMessage: string): Promise<any> {
+  const messages: { role: 'system' | 'user' | 'assistant'; content: string }[] = [
+    { role: 'system', content: systemPrompt },
+    { role: 'user', content: userMessage }
+  ];
+
+  console.log('Calling DeepSeek API...');
+
+  const response = await deepseek.chat(messages, {
+    temperature: 0.8,
+    max_tokens: 3000
+  });
+
+  const result = response.choices?.[0]?.message?.content || '';
+
+  try {
+    // 尝试提取 JSON
+    const jsonMatch = result.match(/\{[\s\S]*\}/);
+    if (jsonMatch) {
+      return JSON.parse(jsonMatch[0]);
+    }
+    throw new Error('无法解析AI返回的数据');
+  } catch (error) {
+    console.error('解析DeepSeek返回数据失败:', error, result);
+    return null;
+  }
+}
 
 // 处理各个 Agent 请求
-async function handleAgentRequest(action: string, data: any) {
+async function handleAgentRequest(action: string, data: any): Promise<any> {
+  const { partName, partSpecs, option, optionType, customizedParams, costData, riskData, carbonData } = data;
+
   switch (action) {
     case 'find_suppliers': {
-      // 模拟供应商搜索
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      const suppliers = mockSuppliers.filter(() => Math.random() > 0.2);
-      return { suppliers: suppliers.length > 0 ? suppliers : mockSuppliers.slice(0, 3) };
+      const userMessage = `请为以下零件寻找供应商：
+零件名称：${partName}
+${partSpecs ? `规格要求：${partSpecs}` : ''}
+
+请生成3-5个可能的供应商选项。`;
+
+      const result = await callDeepSeek(SUPPLIER_AGENT_PROMPT, userMessage);
+      return { suppliers: result?.suppliers || [] };
     }
 
     case 'start_customization': {
-      // 模拟定制问题生成
-      await new Promise(resolve => setTimeout(resolve, 1200));
-      return { questions: mockCustomizationQuestions };
+      const userMessage = `用户想要定制零件：${partName}
+请生成3-5个关键问题，帮助明确定制需求。`;
+
+      const result = await callDeepSeek(CUSTOMIZED_AGENT_PROMPT, userMessage);
+      return { questions: result?.questions || [] };
     }
 
     case 'generate_processes': {
-      // 模拟工艺方案生成
-      await new Promise(resolve => setTimeout(resolve, 1800));
-      return { processes: mockProcesses };
+      const userMessage = `零件名称：${partName}
+定制参数：${JSON.stringify(customizedParams || {}, null, 2)}
+
+请生成3-4种可行的工艺方案。`;
+
+      const result = await callDeepSeek(PROCESS_AGENT_PROMPT, userMessage);
+      return { processes: result?.processes || [] };
     }
 
     case 'analyze_cost': {
-      // 模拟成本分析
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      const baseCost = data.option?.price || 200;
-      return {
-        cost: {
-          totalCost: baseCost * 1.5,
-          breakdown: {
-            material: baseCost * 0.5,
-            processing: baseCost * 0.6,
-            shipping: baseCost * 0.2,
-            other: baseCost * 0.2
-          },
-          analysis: `基于 ${data.optionType || '标准'} 方案的综合成本分析。材料成本占比最大，建议优化材料选择以降低整体成本。`
-        }
-      };
+      const userMessage = `选项类型：${optionType || '标准'}
+选项详情：${JSON.stringify(option || {}, null, 2)}
+
+请分析总成本并给出详细分解。`;
+
+      const result = await callDeepSeek(COST_AGENT_PROMPT, userMessage);
+      return { cost: result };
     }
 
     case 'assess_risk': {
-      // 模拟风险评估
-      await new Promise(resolve => setTimeout(resolve, 1100));
-      const riskLevel = Math.random() > 0.5 ? '中等' : '低';
-      return {
-        risk: {
-          riskLevel,
-          risks: [
-            { type: '供应链风险', description: '原材料供应可能出现延迟', impact: '中', mitigation: '建立备选供应商机制' },
-            { type: '质量风险', description: '加工精度可能不达要求', impact: '高', mitigation: '增加质检环节' },
-            { type: '时间风险', description: '交货期可能因不可抗力延误', impact: '低', mitigation: '预留缓冲时间' },
-          ],
-          overallAssessment: `整体风险等级为${riskLevel}，建议重点关注供应链和质量控制环节。`
-        }
-      };
+      const userMessage = `选项类型：${optionType || '标准'}
+选项详情：${JSON.stringify(option || {}, null, 2)}
+
+请评估工程风险。`;
+
+      const result = await callDeepSeek(RISK_AGENT_PROMPT, userMessage);
+      return { risk: result };
     }
 
     case 'assess_carbon': {
-      // 模拟碳排放评估
-      await new Promise(resolve => setTimeout(resolve, 900));
-      const emission = (data.option?.price || 200) * 0.15;
-      return {
-        carbon: {
-          totalEmission: emission,
-          breakdown: {
-            production: emission * 0.6,
-            transportation: emission * 0.25,
-            material: emission * 0.15
-          },
-          rating: emission < 20 ? 'A' : emission < 35 ? 'B' : 'C',
-          analysis: `碳排放等级${emission < 20 ? 'A' : emission < 35 ? 'B' : 'C'}，生产环节是主要排放源，建议优化生产工艺。`
-        }
-      };
+      const userMessage = `选项类型：${optionType || '标准'}
+选项详情：${JSON.stringify(option || {}, null, 2)}
+
+请评估碳排放。`;
+
+      const result = await callDeepSeek(CARBON_AGENT_PROMPT, userMessage);
+      return { carbon: result };
     }
 
     case 'recommend': {
-      // 模拟综合决策
-      await new Promise(resolve => setTimeout(resolve, 800));
-      const costData = data.costData?.cost || {};
-      const riskData = data.riskData?.risk || {};
-      const carbonData = data.carbonData?.carbon || {};
+      const userMessage = `成本分析：${JSON.stringify(costData?.cost || {}, null, 2)}
+风险评估：${JSON.stringify(riskData?.risk || {}, null, 2)}
+碳排放评估：${JSON.stringify(carbonData?.carbon || {}, null, 2)}
 
-      const score = (10 - (costData.totalCost || 200) / 50) + (riskData.riskLevel === '低' ? 3 : 0) + (carbonData.rating === 'A' ? 3 : carbonData.rating === 'B' ? 1 : 0);
+请给出是否继续生产的建议。`;
 
-      return {
-        recommendation: score > 12 ? 'break' : 'keep',
-        confidence: Math.min(95, 60 + score),
-        reasoning: `综合分析得分${score.toFixed(1)}分。成本得分${(10 - (costData.totalCost || 200) / 50).toFixed(1)}，风险评估为${riskData.riskLevel || '中等'}，碳排放等级${carbonData.rating || 'B'}。`,
-        keyFactors: ['生产成本', '供应链稳定性', '环保要求', '质量标准', '交货时间']
-      };
-    }
-
-    case 'full_analysis': {
-      // 完整分析 - 包含所有步骤
-      const [suppliers, customRes, processRes, costRes, riskRes, carbonRes, breakingRes] = await Promise.all([
-        handleAgentRequest('find_suppliers', data),
-        handleAgentRequest('start_customization', data),
-        handleAgentRequest('generate_processes', data),
-        handleAgentRequest('analyze_cost', { option: { price: 200 }, optionType: 'process' }),
-        handleAgentRequest('assess_risk', { option: { price: 200 }, optionType: 'process' }),
-        handleAgentRequest('assess_carbon', { option: { price: 200 }, optionType: 'process' }),
-        handleAgentRequest('recommend', { costData: { cost: { totalCost: 300 } }, riskData: { risk: { riskLevel: '低' } }, carbonData: { carbon: { rating: 'A' } } }),
-      ]);
-
-      return {
-        suppliers,
-        customization: customRes,
-        processes: processRes,
-        cost: costRes,
-        risk: riskRes,
-        carbon: carbonRes,
-        breaking: breakingRes
-      };
+      const result = await callDeepSeek(BREAKING_AGENT_PROMPT, userMessage);
+      return { recommendation: result };
     }
 
     case 'deep_production_analysis': {
-      // 深度生产分析 - 包含供应商、定制问题、工艺方案、成本、风险、碳排放
-      const [deepSuppliers, customQuestions, processResult, deepCost, deepRisk, deepCarbon] = await Promise.all([
-        handleAgentRequest('find_suppliers', data),
-        handleAgentRequest('start_customization', data),
-        handleAgentRequest('generate_processes', data),
-        handleAgentRequest('analyze_cost', { option: { price: 200 }, optionType: 'process' }),
-        handleAgentRequest('assess_risk', { option: { price: 200 }, optionType: 'process' }),
-        handleAgentRequest('assess_carbon', { option: { price: 200 }, optionType: 'process' }),
-      ]);
-
-      const deepBreaking = await handleAgentRequest('recommend', {
-        costData: deepCost,
-        riskData: deepRisk,
-        carbonData: deepCarbon
+      // 深度生产分析 - 顺序执行各个 agent
+      // 1. 供应商搜索
+      const supplierResult = await handleAgentRequest('find_suppliers', { partName, partSpecs });
+      // 2. 定制问题
+      const customResult = await handleAgentRequest('start_customization', { partName });
+      // 3. 工艺方案
+      const processResult = await handleAgentRequest('generate_processes', { partName, customizedParams });
+      // 4. 成本分析
+      const costResult = await handleAgentRequest('analyze_cost', { option: processResult.processes?.[0], optionType: 'process' });
+      // 5. 风险评估
+      const riskResult = await handleAgentRequest('assess_risk', { option: processResult.processes?.[0], optionType: 'process' });
+      // 6. 碳排放评估
+      const carbonResult = await handleAgentRequest('assess_carbon', { option: processResult.processes?.[0], optionType: 'process' });
+      // 7. 综合决策
+      const breakingResult = await handleAgentRequest('recommend', {
+        costData: costResult,
+        riskData: riskResult,
+        carbonData: carbonResult
       });
 
       return {
-        suppliers: deepSuppliers,
-        customization: { questions: customQuestions.questions },
-        processes: processResult,
-        cost: deepCost,
-        risk: deepRisk,
-        carbon: deepCarbon,
-        breaking: deepBreaking
+        suppliers: supplierResult.suppliers,
+        customization: { questions: customResult.questions },
+        processes: processResult.processes,
+        cost: costResult.cost,
+        risk: riskResult.risk,
+        carbon: carbonResult.carbon,
+        breaking: breakingResult.recommendation
       };
     }
 

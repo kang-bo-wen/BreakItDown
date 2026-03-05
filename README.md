@@ -26,9 +26,12 @@ tags:
 - 🎮 **交互式图谱**: 可拖拽、缩放、全屏查看的树状结构，节点位置自动保存
 - 🎭 **自定义AI风格**: 调节幽默度和专业度，或使用自定义prompt模板
 - 🗺️ **智能控制面板**: 缩略图、锁定拖拽、自适应视图等功能
+- 🏭 **智能生产分析**: 基于DeepSeek AI的多智能体生产分析（供应商选择、定制参数、工艺方案、成本/风险/碳排放评估）
+- 🌐 **跨页面浅色/深色主题**: 统一的浅色/深色主题切换，支持所有页面
 - 👤 **用户认证系统**: 支持邮箱登录，安全管理个人数据
 - 📚 **历史记录管理**: 自动保存拆解历史，支持快速加载和恢复
 - 💾 **智能缓存**: 会话缓存和知识卡片缓存，提升加载速度
+- 💾 **进度保存**: 生产分析进度自动保存到数据库，每个节点独立进度
 
 ## 🎮 项目概述
 
@@ -44,7 +47,8 @@ tags:
 - **语言**: TypeScript
 - **样式**: Tailwind CSS
 - **可视化**: React Flow
-- **AI**: 阿里云通义千问 (Qwen) / 自定义OpenAI兼容接口
+- **AI**: 阿里云通义千问 (Qwen) / DeepSeek / 自定义OpenAI兼容接口
+- **多智能体系统**: DeepSeek驱动的生产分析（供应商、定制、工艺、成本、风险、碳排放、决策）
 - **动画**: Framer Motion
 - **数据库**: PostgreSQL (Neon)
 - **ORM**: Prisma 6
@@ -75,11 +79,15 @@ DATABASE_URL="postgresql://user:password@host/database?sslmode=require"
 NEXTAUTH_URL="http://localhost:3000"
 NEXTAUTH_SECRET="your-secret-here"  # 使用 openssl rand -base64 32 生成
 
-# AI API 配置 (二选一)
+# AI API 配置 (多选一)
 # 方式1: 阿里云通义千问
 DASHSCOPE_API_KEY=your_dashscope_api_key_here
 
-# 方式2: 自定义OpenAI兼容接口
+# 方式2: DeepSeek (用于生产分析)
+DEEPSEEK_API_KEY=your_deepseek_api_key_here
+DEEPSEEK_BASE_URL=https://api.deepseek.com
+
+# 方式3: 自定义OpenAI兼容接口
 AI_BASE_URL=https://your-api-endpoint.com/v1
 AI_API_KEY=your_api_key_here
 AI_MODEL_VISION=gpt-4-vision-preview
@@ -91,6 +99,7 @@ PIXABAY_API_KEY=your_pixabay_api_key_here
 
 获取API Key:
 - 通义千问: https://dashscope.console.aliyun.com/apiKey
+- DeepSeek: https://platform.deepseek.com/api-keys
 - Neon数据库: https://neon.tech
 - Pixabay: https://pixabay.com/api/docs/
 
@@ -141,24 +150,28 @@ npm start
 break-it-down/
 ├── app/
 │   ├── api/
-│   │   ├── auth/              # NextAuth 认证端点
-│   │   ├── identify/          # 图片识别API
-│   │   ├── deconstruct/       # 物体拆解API
-│   │   ├── knowledge/         # 知识卡片API
-│   │   └── sessions/          # 会话管理API
-│   ├── components/
-│   │   ├── GraphView.tsx      # 主可视化组件
-│   │   ├── MatterNode.tsx     # 自定义节点组件
-│   │   ├── Sidebar.tsx        # 侧边栏历史记录
-│   │   └── KnowledgeCard.tsx  # 知识卡片组件
-│   ├── deconstruct/           # 拆解游戏页面
-│   └── about/                 # 关于页面
+│   │   ├── auth/                           # NextAuth 认证端点
+│   │   ├── identify/                       # 图片识别API
+│   │   ├── deconstruct/                    # 物体拆解API
+│   │   ├── knowledge-card/                # 知识卡片API
+│   │   ├── sessions/                      # 会话管理API
+│   │   ├── plugins/smart-manufacturing/   # 智能生产分析API
+│   │   └── production-analysis-progress/  # 生产分析进度API
+│   ├── setup/                              # 调制界面（上传/识别）
+│   ├── canvas/                             # 操作界面（图谱交互）
+│   ├── production-analysis/               # 生产分析页面
+│   └── components/
+│       ├── GraphView.tsx                  # 主可视化组件
+│       ├── MatterNode.tsx                 # 自定义节点组件
+│       ├── Sidebar.tsx                    # 侧边栏历史记录
+│       └── KnowledgeCard.tsx              # 知识卡片组件
 ├── lib/
-│   ├── ai-client.ts           # AI客户端配置
-│   ├── auth.ts                # NextAuth配置
-│   └── db.ts                  # Prisma数据库客户端
+│   ├── ai-client.ts                       # AI客户端配置（通义千问）
+│   ├── deepseek.ts                        # DeepSeek API客户端
+│   ├── auth.ts                            # NextAuth配置
+│   └── db.ts                              # Prisma数据库客户端
 ├── prisma/
-│   └── schema.prisma          # 数据库模型定义
+│   └── schema.prisma                      # 数据库模型定义
 └── package.json
 ```
 
@@ -262,7 +275,45 @@ NextAuth.js 认证端点
 - PUT: 更新会话（自动保存）
 - DELETE: 删除会话
 
+### POST /api/plugins/smart-manufacturing
+智能生产分析（基于DeepSeek AI）
+```typescript
+// Request:
+{
+  "action": "find_suppliers" | "start_customization" | "generate_processes" |
+            "analyze_cost" | "assess_risk" | "assess_carbon" | "recommend",
+  "data": {
+    "partName": "零件名称",
+    "partSpecs": "规格要求",
+    "customizedParams": {},
+    "option": {},
+    "optionType": "process",
+    "costData": {},
+    "riskData": {},
+    "carbonData": {}
+  }
+}
+```
+
+### GET/POST/DELETE /api/production-analysis-progress
+生产分析进度管理
+- GET: 获取指定节点的生产分析进度
+- POST: 保存/更新生产分析进度
+- DELETE: 删除生产分析进度
+
 ## 📝 最新更新
+
+### v2.2 (2026-03-05)
+- ✅ DeepSeek AI 集成的智能生产分析
+- ✅ 多智能体系统（供应商检索、定制顾问、工艺方案、成本分析、风险评估、碳排放评估、综合决策）
+- ✅ 交互式生产分析流程（选择供应商→定制参数→选择工艺→分析结果）
+- ✅ 生产分析进度独立保存（每个节点独立进度）
+- ✅ 页面结构优化（setup/canvas 分离）
+- ✅ 跨页面主题切换支持
+
+### v2.1 (2026-02-27)
+- ✅ 跨页面浅色/深色主题切换
+- ✅ 知识卡片显示优化
 
 ### v2.0 (2026-02-20)
 - ✅ 完整的用户认证系统（NextAuth.js + 邮箱登录）

@@ -178,18 +178,7 @@ function CanvasContent() {
 
   // Load setup state from localStorage
   useEffect(() => {
-    const sessionId = searchParams.get('sessionId');
-    if (sessionId) {
-      return;
-    }
-
-    // Only load cached data if we just came from setup (indicated by fromSetup flag)
-    const fromSetup = localStorage.getItem('fromSetup');
-    if (!fromSetup) {
-      // User is coming in fresh (e.g., after login), don't load old cache
-      return;
-    }
-
+    // Always load setup state (for breakdownMode and other settings)
     const savedSetup = localStorage.getItem('setupState');
     if (savedSetup) {
       try {
@@ -215,7 +204,8 @@ function CanvasContent() {
       }
     }
 
-    // Also restore other states (only if coming from setup)
+    // Also restore tree and knowledge cache (only if coming from setup)
+    const fromSetup = localStorage.getItem('fromSetup');
     if (fromSetup) {
       const savedTree = localStorage.getItem('deconstructionTree');
       const savedKnowledgeCache = localStorage.getItem('knowledgeCache');
@@ -291,6 +281,7 @@ function CanvasContent() {
             promptSettings: {
               humorLevel,
               professionalLevel,
+              detailLevel,
               promptMode,
               customPrompt: promptMode === 'advanced' ? customPrompt : undefined
             },
@@ -384,8 +375,6 @@ function CanvasContent() {
 
       // Check if session has treeData - if not, redirect to setup page
       if (!session.treeData || (typeof session.treeData === 'object' && Object.keys(session.treeData).length === 0)) {
-        // No tree data yet, redirect to setup page with sessionId
-        console.log('🔄 会话暂无拆解数据，跳转到调制界面');
         router.push(`/setup?sessionId=${sessionId}`);
         return;
       }
@@ -408,7 +397,9 @@ function CanvasContent() {
           detailLevel: 50,
           promptMode: 'simple',
           customPrompt: ''
-        }
+        },
+        breakdownMode: session.breakdownMode || 'basic',
+        existingSessionId: sessionId
       };
       localStorage.setItem('setupState', JSON.stringify(setupState));
 
@@ -516,6 +507,7 @@ function CanvasContent() {
             promptMode,
             customPrompt: promptMode === 'advanced' ? customPrompt : undefined
           },
+          breakdownMode,
           knowledgeCache: knowledgeCache.size > 0
             ? Array.from(knowledgeCache.entries())
             : undefined,
@@ -851,8 +843,57 @@ function CanvasContent() {
   };
 
   // Return to setup page
-  const returnToSetup = () => {
-    router.push('/setup');
+  const returnToSetup = async () => {
+    // If we have a session, save to database first
+    if (currentSessionId && identificationResult) {
+      try {
+        const response = await fetch(`/api/sessions/${currentSessionId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            promptSettings: {
+              humorLevel,
+              professionalLevel,
+              detailLevel,
+              promptMode,
+              customPrompt: promptMode === 'advanced' ? customPrompt : undefined
+            },
+            breakdownMode,
+            identificationResult: identificationResult
+          })
+        });
+
+        if (!response.ok) {
+          console.error('返回时保存会话失败');
+        }
+      } catch (error) {
+        console.error('保存会话错误:', error);
+      }
+    }
+
+    // Save to localStorage as backup
+    const setupState = {
+      identificationResult,
+      imagePreview,
+      promptSettings: {
+        humorLevel,
+        professionalLevel,
+        detailLevel,
+        promptMode,
+        customPrompt
+      },
+      breakdownMode,
+      existingSessionId: currentSessionId
+    };
+    localStorage.setItem('setupState', JSON.stringify(setupState));
+    // Clear fromSetup to prevent loading old data
+    localStorage.removeItem('fromSetup');
+    // Include sessionId in URL if exists
+    if (currentSessionId) {
+      router.push(`/setup?sessionId=${currentSessionId}`);
+    } else {
+      router.push('/setup');
+    }
   };
 
   return (
@@ -961,7 +1002,8 @@ function CanvasContent() {
                     // 跳转到生产分析页面
                     const params = new URLSearchParams({
                       partName: node.name,
-                      partId: node.id
+                      partId: node.id,
+                      sessionId: currentSessionId || ''
                     });
                     router.push(`/production-analysis?${params.toString()}`);
                   }}
@@ -1059,7 +1101,6 @@ function CanvasContent() {
                 onShowKnowledge={(node) => fetchKnowledgeCard(node, true)}
                 onNodePositionsChange={() => {
                   if (currentSessionId) {
-                    console.log('节点位置已更改，触发数据库保存');
                     saveSessionToDatabase(false);
                   }
                 }}

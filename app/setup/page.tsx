@@ -204,7 +204,18 @@ function SetupContent() {
   };
 
   // Save state to localStorage and navigate to canvas
-  const navigateToCanvas = () => {
+  const navigateToCanvas = async () => {
+    // Get existingSessionId if any
+    const existingSetupData = localStorage.getItem('setupState');
+    let existingSessionId = null;
+    if (existingSetupData) {
+      try {
+        const parsed = JSON.parse(existingSetupData);
+        existingSessionId = parsed.existingSessionId || null;
+      } catch (e) {}
+    }
+
+    // Always save current setup state first (including breakdownMode and existingSessionId)
     const setupState = {
       identificationResult,
       imagePreview,
@@ -215,9 +226,52 @@ function SetupContent() {
         promptMode,
         customPrompt
       },
-      breakdownMode
+      breakdownMode,
+      existingSessionId
     };
     localStorage.setItem('setupState', JSON.stringify(setupState));
+
+    // If we have an existing session, save to database first
+    const urlSessionId = searchParams.get('sessionId');
+    const sessionIdToUse = urlSessionId || existingSessionId;
+
+    if (sessionIdToUse && identificationResult) {
+      try {
+        await fetch(`/api/sessions/${sessionIdToUse}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            promptSettings: {
+              humorLevel,
+              professionalLevel,
+              detailLevel,
+              promptMode,
+              customPrompt: promptMode === 'advanced' ? customPrompt : undefined
+            },
+            breakdownMode,
+            identificationResult
+          })
+        });
+
+      } catch (error) {
+        console.error('保存设置失败:', error);
+      }
+    }
+
+    // Check URL for sessionId first (higher priority)
+    if (urlSessionId) {
+      // Go directly to existing session
+      router.push(`/canvas?sessionId=${urlSessionId}`);
+      return;
+    }
+
+    // Check localStorage for existingSessionId
+    if (existingSessionId) {
+      router.push(`/canvas?sessionId=${existingSessionId}`);
+      return;
+    }
+
+    // New session - mark and navigate
 
     // Mark that this is a fresh navigation from setup (to prevent duplicate session creation)
     localStorage.setItem('fromSetup', 'true');
@@ -228,15 +282,8 @@ function SetupContent() {
     router.push('/canvas');
   };
 
-  // Load from localStorage on mount (only if no sessionId - meaning it's a new session)
+  // Load from localStorage on mount
   useEffect(() => {
-    const sessionId = searchParams.get('sessionId');
-
-    // If there's a sessionId, we'll load from database instead
-    if (sessionId) {
-      return;
-    }
-
     const savedSetup = localStorage.getItem('setupState');
     if (savedSetup) {
       try {
@@ -261,7 +308,7 @@ function SetupContent() {
         console.error('恢复设置状态失败:', error);
       }
     }
-  }, [searchParams]);
+  }, []); // Run on mount - empty array ensures it runs when returning from canvas
 
   // Check for sessionId in URL and load session from database
   useEffect(() => {
@@ -274,6 +321,7 @@ function SetupContent() {
   // Load session from database
   const loadSession = async (sessionId: string) => {
     try {
+      // Fetch from database
       const response = await fetch(`/api/sessions/${sessionId}`);
 
       if (!response.ok) {
@@ -314,6 +362,11 @@ function SetupContent() {
         }
       }
 
+      // Restore breakdown mode from session
+      if (session.breakdownMode) {
+        setBreakdownMode(session.breakdownMode);
+      }
+
       // Save to localStorage
       const setupState = {
         identificationResult: session.identificationResult || {
@@ -330,11 +383,11 @@ function SetupContent() {
           detailLevel: 50,
           promptMode: 'simple',
           customPrompt: ''
-        }
+        },
+        breakdownMode: session.breakdownMode || 'basic',
+        existingSessionId: sessionId
       };
       localStorage.setItem('setupState', JSON.stringify(setupState));
-
-      console.log('✅ 已从历史会话加载数据到调制界面');
     } catch (error) {
       console.error('加载会话错误:', error);
     }
@@ -342,6 +395,16 @@ function SetupContent() {
 
   // Auto-save prompt settings to localStorage (debounced)
   useEffect(() => {
+    // Get existingSessionId from localStorage
+    const existingSetupData = localStorage.getItem('setupState');
+    let existingSessionId = null;
+    if (existingSetupData) {
+      try {
+        const parsed = JSON.parse(existingSetupData);
+        existingSessionId = parsed.existingSessionId || null;
+      } catch (e) {}
+    }
+
     const timer = setTimeout(() => {
       const setupState = {
         identificationResult,
@@ -352,13 +415,15 @@ function SetupContent() {
           detailLevel,
           promptMode,
           customPrompt
-        }
+        },
+        breakdownMode,
+        existingSessionId
       };
       localStorage.setItem('setupState', JSON.stringify(setupState));
     }, 500);
 
     return () => clearTimeout(timer);
-  }, [humorLevel, professionalLevel, detailLevel, promptMode, customPrompt, identificationResult, imagePreview]);
+  }, [humorLevel, professionalLevel, detailLevel, promptMode, customPrompt, identificationResult, imagePreview, breakdownMode]);
 
   return (
     <div className={`min-h-screen p-8 relative overflow-hidden transition-colors duration-300 ${
