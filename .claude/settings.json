@@ -1,0 +1,33 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx tsc --noEmit)",
+      "Bash(git checkout app/setup/page.tsx)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000/setup)",
+      "Bash(npx next dev)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3005/setup)",
+      "Bash(netstat -ano)",
+      "Bash(taskkill //F //PID 38128)",
+      "Read(//c/Users/12393/Desktop/Breakapp/setup/**)",
+      "WebFetch(domain:www.unrealengine.com)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" \"https://www.unrealengine.com/zh-CN/unreal-engine-5\")",
+      "Bash(git add app/page.tsx)",
+      "Bash(git commit:*)",
+      "Bash(npx tsc --noEmit --skipLibCheck)",
+      "Bash(git add app/canvas/page.tsx app/components/DecompositionTree.tsx app/components/GraphView.tsx app/components/MatterNode.tsx app/components/Sidebar.tsx app/globals.css app/layout.tsx app/page.tsx app/setup/page.tsx app/components/ThemeSwitcher.tsx app/hooks/useTheme.ts app/lib/theme-config.ts)",
+      "Bash(git add app/components/TopNavBar.tsx app/components/Footer.tsx app/api/production-process/)",
+      "Bash(ping github.com)",
+      "Bash(git config --global http.postBuffer 524288000)",
+      "Bash(GIT_CURL_VERBOSE=1 git push origin main)",
+      "Bash(ssh -T git@github.com)",
+      "Bash(gh auth status)",
+      "Bash(git remote set-url origin https://github.com/kang-bo-wen/BreakItDown.git)",
+      "Bash(git reset --hard f719ddf)",
+      "Bash(ffprobe -v error -show_entries format=duration,size -show_entries stream=codec_name,width,height \"c:\\\\Users\\\\12393\\\\Desktop\\\\BreakItDown-main\\\\public\\\\videos\\\\hero-background.mp4\")",
+      "Bash(powershell -Command \"\\(Get-Item ''c:\\\\Users\\\\12393\\\\Desktop\\\\BreakItDown-main\\\\public\\\\videos\\\\hero-background.mp4''\\).Length\")"
+    ],
+    "additionalDirectories": [
+      "c:\\Users\\12393\\Desktop\\BreakItDown-main\\public"
+    ]
+  }
+}

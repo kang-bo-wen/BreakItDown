@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>AI技能协作市场 - 首页</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.iconify.design/3/3.1.1/iconify.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        /* 新增：页面切换核心动画样式 */
+        /* 1. 页面容器：默认隐藏，用于入场动画 */
+        html, body {
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden; /* 防止动画时出现横向滚动条 */
+            opacity: 0; /* 初始隐藏 */
+            transition: opacity 0.3s ease-in-out; /* 入场/退场淡入淡出动画，300毫秒流畅无卡顿 */
+        }
+
+            /* 2. 页面加载完成后的激活状态（用于入场动画） */
+            html.page-active, body.page-active {
+                opacity: 1; /* 显示页面 */
+            }
+
+        /* 可选：新增滑入动画（替代淡入淡出，按需选择） */
+        /* 页面初始状态：向右偏移+隐藏 */
+        /* html, body {
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    opacity: 0;
+    transform: translateX(20px);
+    transition: all 0.3s ease-in-out;
+} */
+
+        /* 页面激活状态：回到原位+显示 */
+        /* html.page-active, body.page-active {
+    opacity: 1;
+    transform: translateX(0);
+} */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        @keyframes pulse-soft {
+            0%, 100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.8;
+            }
+        }
+
+        .animate-pulse-soft {
+            animation: pulse-soft 3s infinite;
+        }
+        /* 卡片hover动画 */
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+
+            .card-hover:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.1), 0 8px 10px -6px rgba(79, 70, 229, 0.1);
+            }
+        /* 视角容器显隐样式（核心：控制三个视角切换） */
+        .view-angle-container {
+            display: none; /* 默认所有视角隐藏 */
+            width: 100%;
+        }
+
+        .view-angle-active {
+            display: block; /* 激活的视角显示 */
+        }
+        /* 视角切换按钮高亮样式 */
+        .angle-btn-active {
+            background-color: #4f46e5 !important;
+            color: white !important;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2) !important;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen font-sans relative">
+    <!-- 顶部导航栏（页面跳转，当前首页激活） -->
+    <nav class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200">
+        <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="bg-indigo-600 p-2 rounded-lg">
+                    <span class="iconify text-white text-2xl" data-icon="heroicons:bolt-20-solid"></span>
+                </div>
+                <span class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-violet-600">AI-Hub Market</span>
+            </div>
+            <div class="hidden md:flex items-center space-x-8 text-sm font-medium text-slate-600">
+                <a href="index.html" class="text-indigo-600">首页</a>
+                <a href="skill.html" class="hover:text-indigo-600 transition-colors">技能广场</a>
+                <a href="task.html" class="hover:text-indigo-600 transition-colors">任务中心</a>
+                <a href="rank.html" class="hover:text-indigo-600 transition-colors">排行榜</a>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div class="text-xs text-slate-400 mr-2">2026年02月04日</div>
+                <button class="bg-slate-100 p-2 rounded-full text-slate-600 hover:bg-slate-200 transition-colors">
+                    <span class="iconify text-xl" data-icon="heroicons:bell"></span>
+                </button>
+                <img alt="User Avatar" class="w-8 h-8 rounded-full border border-slate-200" src="https://modao.cc/agent-py/media/generated_images/2026-02-04/a0f08c2e1b2b4f6ebb974bc66179d867.jpg" />
+            </div>
+        </div>
+    </nav>
+
+    <!-- 首页核心内容 -->
+    <main class="max-w-7xl mx-auto px-6 py-8">
+        <!-- 视角切换器（改造：添加点击事件，绑定切换函数） -->
+        <div class="mb-8 bg-white p-1 rounded-2xl shadow-sm border border-slate-200 inline-flex">
+            <button id="angle-admin" class="px-6 py-2 rounded-xl bg-indigo-600 text-white font-medium text-sm transition-all shadow-md angle-btn-active" onclick="switchViewAngle('admin')">
+                管理者中心
+            </button>
+            <button id="angle-dev" class="px-6 py-2 rounded-xl text-slate-500 hover:bg-slate-100 font-medium text-sm transition-all" onclick="switchViewAngle('dev')">
+                开发者视野
+            </button>
+            <button id="angle-demand" class="px-6 py-2 rounded-xl text-slate-500 hover:bg-slate-100 font-medium text-sm transition-all" onclick="switchViewAngle('demand')">
+                需求方门户
+            </button>
+        </div>
+
+        <!-- 视角1：管理者中心（原有内容，放入专属容器，默认激活） -->
+        <div id="view-admin" class="view-angle-container view-angle-active">
+            <!-- 顶部统计与趋势 -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-bold text-slate-800 text-lg">市场技能热度趋势</h3>
+                        <span class="text-xs text-slate-400">更新于 2026-02-04</span>
+                    </div>
+                    <div class="w-full h-48" id="trend-chart"></div>
+                </div>
+                <div class="space-y-6">
+                    <div class="bg-gradient-to-br from-indigo-500 to-indigo-700 p-6 rounded-3xl text-white shadow-lg relative overflow-hidden">
+                        <div class="relative z-10">
+                            <p class="text-indigo-100 text-sm">当前活跃协作总数</p>
+                            <h2 class="text-3xl font-bold mt-2">14,285</h2>
+                            <div class="mt-3 flex items-center text-xs text-indigo-200">
+                                <span class="iconify mr-1" data-icon="heroicons:arrow-trending-up"></span>
+                                较上月增长 12.5%
+                            </div>
+                        </div>
+                        <span class="iconify absolute -right-4 -bottom-4 text-white/10 text-8xl" data-icon="heroicons:rocket-launch"></span>
+                    </div>
+                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-bold text-slate-800">平台系统状态</h3>
+                            <div class="flex items-center space-x-1">
+                                <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse-soft"></div>
+                                <span class="text-[10px] text-emerald-500 font-bold uppercase">Healthy</span>
+                            </div>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center text-sm">
+                                <span class="text-slate-500">技能撮合速度</span>
+                                <span class="text-slate-900 font-medium">0.8s</span>
+                            </div>
+                            <div class="w-full bg-slate-100 rounded-full h-1.5">
+                                <div class="bg-indigo-500 h-1.5 rounded-full" style="width: 85%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- 双排名系统（跳转至排行榜完整页面） -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+                <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+                        <div class="flex items-center space-x-2">
+                            <span class="iconify text-amber-500 text-xl" data-icon="heroicons:trophy-solid"></span>
+                            <h3 class="font-bold text-slate-800">开发者贡献值排行榜</h3>
+                        </div>
+                        <a href="rank.html" class="text-indigo-600 text-xs font-semibold hover:underline">查看全部</a>
+                    </div>
+                    <div class="p-2">
+                        <table class="w-full text-left">
+                            <thead>
+                                <tr class="text-[10px] uppercase text-slate-400 font-bold tracking-wider">
+                                    <th class="px-4 py-3">排位</th>
+                                    <th class="px-4 py-3">开发者</th>
+                                    <th class="px-4 py-3">贡献值</th>
+                                    <th class="px-4 py-3">核心技能组</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-sm divide-y divide-slate-50">
+                                <tr class="hover:bg-slate-50 transition-colors card-hover">
+                                    <td class="px-4 py-3 font-bold text-slate-700">01</td>
+                                    <td class="px-4 py-3 flex items-center space-x-3">
+                                        <img alt="Dev 1" class="w-8 h-8 rounded-lg" src="https://modao.cc/agent-py/media/generated_images/2026-02-04/2aa121ed4319448a874b5761129e2f98.jpg" />
+                                        <span class="font-medium text-slate-900">Dr. Neural</span>
+                                    </td>
+                                    <td class="px-4 py-3 text-indigo-600 font-bold">12,840</td>
+                                    <td class="px-4 py-3"><span class="bg-indigo-50 text-indigo-600 text-[10px] px-2 py-0.5 rounded-full font-bold">LLM-FineTuning</span></td>
+                                </tr>
+                                <tr class="hover:bg-slate-50 transition-colors card-hover">
+                                    <td class="px-4 py-3 font-bold text-slate-500">02</td>
+                                    <td class="px-4 py-3 flex items-center space-x-3">
+                                        <img alt="Dev 2" class="w-8 h-8 rounded-lg" src="https://modao.cc/agent-py/media/generated_images/2026-02-04/b1f7efdeea774c7093e0160b8375b154.jpg" />
+                                        <span class="font-medium text-slate-900">PixelMind</span>
+                                    </td>
+                                    <td class="px-4 py-3 text-indigo-600 font-bold">11,200</td>
+                                    <td class="px-4 py-3"><span class="bg-emerald-50 text-emerald-600 text-[10px] px-2 py-0.5 rounded-full font-bold">DiffusionArt</span></td>
+                                </tr>
+                                <tr class="hover:bg-slate-50 transition-colors card-hover">
+                                    <td class="px-4 py-3 font-bold text-slate-500">03</td>
+                                    <td class="px-4 py-3 flex items-center space-x-3">
+                                        <img alt="Dev 3" class="w-8 h-8 rounded-lg" src="https://modao.cc/agent-py/media/generated_images/2026-02-04/e3395902005d4adabbfa6652ff0768b6.jpg" />
+                                        <span class="font-medium text-slate-900">CodeFlow</span>
+                                    </td>
+                                    <td class="px-4 py-3 text-indigo-600 font-bold">9,850</td>
+                                    <td class="px-4 py-3"><span class="bg-sky-50 text-sky-600 text-[10px] px-2 py-0.5 rounded-full font-bold">PyTorch</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+                        <div class="flex items-center space-x-2">
+                            <span class="iconify text-rose-500 text-xl" data-icon="heroicons:sparkles-solid"></span>
+                            <h3 class="font-bold text-slate-800">AI 技能体验打分榜</h3>
+                        </div>
+                        <a href="rank.html" class="text-indigo-600 text-xs font-semibold hover:underline">参与评分</a>
+                    </div>
+                    <div class="p-2">
+                        <table class="w-full text-left">
+                            <thead>
+                                <tr class="text-[10px] uppercase text-slate-400 font-bold tracking-wider">
+                                    <th class="px-4 py-3">技能模型</th>
+                                    <th class="px-4 py-3">响应</th>
+                                    <th class="px-4 py-3">评分</th>
+                                    <th class="px-4 py-3">用户反馈</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-sm divide-y divide-slate-50">
+                                <tr class="hover:bg-slate-50 transition-colors card-hover">
+                                    <td class="px-4 py-3 font-medium text-slate-900 italic">Vision-Pro-X</td>
+                                    <td class="px-4 py-3 text-slate-500">420ms</td>
+                                    <td class="px-4 py-3">
+                                        <div class="flex text-amber-400">
+                                            <span class="iconify" data-icon="material-symbols:star"></span>
+                                            <span class="iconify" data-icon="material-symbols:star"></span>
+                                            <span class="iconify" data-icon="material-symbols:star"></span>
+                                            <span class="iconify" data-icon="material-symbols:star"></span>
+                                            <span class="iconify" data-icon="material-symbols:star"></span>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-3 text-slate-400 text-xs truncate max-w-[120px]">“理解非常精准”</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50 transition-colors card-hover">
+                                    <td class="px-4 py-3 font-medium text-slate-900 italic">Gen-Audio-v2</td>
+                                    <td class="px-4 py-3 text-slate-500">890ms</td>
+                                    <td class="px-4 py-3">
+                                        <div class="flex text-amber-400">
+                                            <span class="iconify" data-icon="material-symbols:star"></span>
+                                            <span class="iconify" data-icon="material-symbols:star"></span>
+                                            <span class="iconify" data-icon="material-symbols:star"></span>
+                                            <span class="iconify" data-icon="material-symbols:star"></span>
+                                            <span class="iconify" data-icon="material-symbols:star-outline"></span>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-3 text-slate-400 text-xs truncate max-w-[120px]">“语调极其自然”</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50 transition-colors card-hover">
+                                    <td class="px-4 py-3 font-medium text-slate-900 italic">DataAnalyzer</td>
+                                    <td class="px-4 py-3 text-slate-500">1.2s</td>
+                                    <td class="px-4 py-3">
+                                        <div class="flex text-amber-400">
+                                            <span class="iconify" data-icon="material-symbols:star"></span>
+                                            <span class="iconify" data-icon="material-symbols:star"></span>
+                                            <span class="iconify" data-icon="material-symbols:star"></span>
+                                            <span class="iconify" data-icon="material-symbols:star-half"></span>
+                                            <span class="iconify" data-icon="material-symbols:star-outline"></span>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-3 text-slate-400 text-xs truncate max-w-[120px]">“处理超大数据集很稳”</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 视角2：开发者视野（新增专属UI，默认隐藏）- 已修改贡献点相关内容 -->
+        <div id="view-dev" class="view-angle-container">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <!-- 开发者核心数据卡片 - 修改：技能收益 → 贡献点收入，移除人民币，更换图标 -->
+                <div class="space-y-6">
+                    <div class="bg-gradient-to-br from-emerald-500 to-emerald-700 p-6 rounded-3xl text-white shadow-lg relative overflow-hidden card-hover">
+                        <div class="relative z-10">
+                            <!-- 修改1：文本替换 我的技能收益（本月）→ 我的贡献点收入 -->
+                            <p class="text-emerald-100 text-sm">我的贡献点收入</p>
+                            <!-- 修改2：移除人民币符号 ¥ -->
+                            <h2 class="text-3xl font-bold mt-2">8,960</h2>
+                            <div class="mt-3 flex items-center text-xs text-emerald-200">
+                                <span class="iconify mr-1" data-icon="heroicons:arrow-trending-up"></span>
+                                较上月增长 23.8%
+                            </div>
+                        </div>
+                        <!-- 修改3：更换图标 currency-dollar → star-solid（贴合贡献点） -->
+                        <span class="iconify absolute -right-4 -bottom-4 text-white/10 text-8xl" data-icon="heroicons:star-solid"></span>
+                    </div>
+                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 card-hover">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-bold text-slate-800">我的上架技能</h3>
+                            <a href="skill.html" class="text-emerald-600 text-xs font-semibold hover:underline">新增技能</a>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center text-sm pb-3 border-b border-slate-100">
+                                <span class="font-medium text-slate-900">LLM 微调工具 v2.1</span>
+                                <span class="text-emerald-600 font-medium">已上架 · 热销</span>
+                            </div>
+                            <div class="flex justify-between items-center text-sm pb-3 border-b border-slate-100">
+                                <span class="font-medium text-slate-900">图片生成优化插件</span>
+                                <span class="text-emerald-600 font-medium">已上架 · 正常</span>
+                            </div>
+                            <div class="flex justify-between items-center text-sm">
+                                <span class="font-medium text-slate-900">数据清洗自动化脚本</span>
+                                <span class="text-amber-600 font-medium">审核中</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- 开发者沙盒环境状态 -->
+                <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 card-hover">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-bold text-slate-800 text-lg">沙盒环境状态</h3>
+                        <div class="flex items-center space-x-1">
+                            <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse-soft"></div>
+                            <span class="text-[10px] text-emerald-500 font-bold uppercase">Running</span>
+                        </div>
+                    </div>
+                    <div class="w-full h-48 flex items-center justify-center flex-col">
+                        <span class="iconify text-emerald-500 text-6xl mb-4" data-icon="heroicons:beaker"></span>
+                        <p class="text-slate-500 text-sm">当前环境：PyTorch 2.4 + CUDA 12.2</p>
+                        <p class="text-slate-400 text-xs mt-2">剩余使用时长：72.5 小时</p>
+                    </div>
+                    <button class="w-full mt-4 bg-emerald-50 text-emerald-600 px-4 py-2 rounded-xl text-sm font-medium hover:bg-emerald-100 transition-colors">
+                        进入沙盒环境
+                    </button>
+                </div>
+            </div>
+            <!-- 开发者待办任务 & 技能优化建议 -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+                <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden card-hover">
+                    <div class="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+                        <div class="flex items-center space-x-2">
+                            <span class="iconify text-emerald-500 text-xl" data-icon="heroicons:clipboard-list"></span>
+                            <h3 class="font-bold text-slate-800">我的待办任务</h3>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="space-y-4">
+                            <div class="flex items-start space-x-3">
+                                <div class="mt-1 w-5 h-5 rounded-full bg-amber-50 flex items-center justify-center text-amber-500">
+                                    <span class="iconify text-xs" data-icon="heroicons:exclamation-mark"></span>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium text-slate-900">技能 v2.1 版本迭代（截止：2026-02-10）</p>
+                                    <p class="text-xs text-slate-400 mt-1">需完成 bug 修复与功能优化</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start space-x-3">
+                                <div class="mt-1 w-5 h-5 rounded-full bg-slate-50 flex items-center justify-center text-slate-500">
+                                    <span class="iconify text-xs" data-icon="heroicons:clock"></span>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium text-slate-900">平台新规学习（截止：2026-02-15）</p>
+                                    <p class="text-xs text-slate-400 mt-1">需完成在线考核，否则影响技能上架</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start space-x-3">
+                                <div class="mt-1 w-5 h-5 rounded-full bg-slate-50 flex items-center justify-center text-slate-500">
+                                    <span class="iconify text-xs" data-icon="heroicons:user"></span>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium text-slate-900">完善开发者资料（无截止日期）</p>
+                                    <p class="text-xs text-slate-400 mt-1">完善后可提升技能曝光率 30%</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden card-hover">
+                    <div class="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+                        <div class="flex items-center space-x-2">
+                            <span class="iconify text-indigo-500 text-xl" data-icon="heroicons:lightbulb-solid"></span>
+                            <h3 class="font-bold text-slate-800">技能优化建议</h3>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="space-y-4">
+                            <div class="bg-indigo-50 p-4 rounded-xl">
+                                <p class="text-sm font-medium text-indigo-900 mb-1">LLM 微调工具 v2.1</p>
+                                <p class="text-xs text-indigo-700">用户反馈：增加批量处理功能可提升订单量 40%，建议优先迭代</p>
+                            </div>
+                            <div class="bg-indigo-50 p-4 rounded-xl">
+                                <p class="text-sm font-medium text-indigo-900 mb-1">图片生成优化插件</p>
+                                <p class="text-xs text-indigo-700">平台建议：适配最新 Stable Diffusion 版本，扩大用户群体</p>
+                            </div>
+                            <div class="bg-indigo-50 p-4 rounded-xl">
+                                <p class="text-sm font-medium text-indigo-900 mb-1">数据清洗自动化脚本</p>
+                                <p class="text-xs text-indigo-700">审核建议：补充详细使用文档，提升用户上手效率</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 视角3：需求方门户（新增专属UI，默认隐藏） -->
+        <div id="view-demand" class="view-angle-container">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <!-- 需求方核心数据卡片 -->
+                <div class="space-y-6">
+                    <div class="bg-gradient-to-br from-orange-500 to-orange-700 p-6 rounded-3xl text-white shadow-lg relative overflow-hidden card-hover">
+                        <div class="relative z-10">
+                            <p class="text-orange-100 text-sm">我的已完成项目（本月）</p>
+                            <h2 class="text-3xl font-bold mt-2">16</h2>
+                            <div class="mt-3 flex items-center text-xs text-orange-200">
+                                <span class="iconify mr-1" data-icon="heroicons:check-circle-solid"></span>
+                                完成率 94.1%
+                            </div>
+                        </div>
+                        <span class="iconify absolute -right-4 -bottom-4 text-white/10 text-8xl" data-icon="heroicons:clipboard-check"></span>
+                    </div>
+                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 card-hover">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-bold text-slate-800">我的发布需求</h3>
+                            <button class="bg-orange-600 text-white px-4 py-1.5 rounded-xl text-xs font-medium hover:bg-orange-700 transition-colors">
+                                发布新需求
+                            </button>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center text-sm pb-3 border-b border-slate-100">
+                                <span class="font-medium text-slate-900">企业级 LLM 部署需求</span>
+                                <span class="text-emerald-600 font-medium">已完成</span>
+                            </div>
+                            <div class="flex justify-between items-center text-sm pb-3 border-b border-slate-100">
+                                <span class="font-medium text-slate-900">产品图片生成外包</span>
+                                <span class="text-indigo-600 font-medium">进行中</span>
+                            </div>
+                            <div class="flex justify-between items-center text-sm">
+                                <span class="font-medium text-slate-900">数据建模与分析需求</span>
+                                <span class="text-slate-600 font-medium">待接单</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- 需求方采购统计 -->
+                <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 card-hover">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-bold text-slate-800 text-lg">本月采购统计</h3>
+                        <span class="text-xs text-slate-400">更新于 2026-02-04</span>
+                    </div>
+                    <div class="w-full h-48" id="purchase-chart"></div>
+                </div>
+            </div>
+            <!-- 需求方项目进度 & 优质技能推荐 -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+                <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden card-hover">
+                    <div class="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+                        <div class="flex items-center space-x-2">
+                            <span class="iconify text-orange-500 text-xl" data-icon="heroicons:arrow-path"></span>
+                            <h3 class="font-bold text-slate-800">项目进度详情</h3>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="space-y-6">
+                            <div>
+                                <div class="flex justify-between items-center text-sm mb-2">
+                                    <span class="font-medium text-slate-900">产品图片生成外包</span>
+                                    <span class="text-orange-600 font-medium">75%</span>
+                                </div>
+                                <div class="w-full bg-slate-100 rounded-full h-2">
+                                    <div class="bg-orange-500 h-2 rounded-full" style="width: 75%"></div>
+                                </div>
+                                <p class="text-xs text-slate-400 mt-1">预计完成时间：2026-02-08</p>
+                            </div>
+                            <div>
+                                <div class="flex justify-between items-center text-sm mb-2">
+                                    <span class="font-medium text-slate-900">数据建模与分析需求</span>
+                                    <span class="text-slate-600 font-medium">0%</span>
+                                </div>
+                                <div class="w-full bg-slate-100 rounded-full h-2">
+                                    <div class="bg-slate-300 h-2 rounded-full" style="width: 0%"></div>
+                                </div>
+                                <p class="text-xs text-slate-400 mt-1">待开发者接单，预计接单时间：1-3个工作日</p>
+                            </div>
+                            <div>
+                                <div class="flex justify-between items-center text-sm mb-2">
+                                    <span class="font-medium text-slate-900">企业级 LLM 部署需求</span>
+                                    <span class="text-emerald-600 font-medium">100%</span>
+                                </div>
+                                <div class="w-full bg-slate-100 rounded-full h-2">
+                                    <div class="bg-emerald-500 h-2 rounded-full" style="width: 100%"></div>
+                                </div>
+                                <p class="text-xs text-slate-400 mt-1">完成时间：2026-02-01，已验收</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden card-hover">
+                    <div class="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+                        <div class="flex items-center space-x-2">
+                            <span class="iconify text-rose-500 text-xl" data-icon="heroicons:star-solid"></span>
+                            <h3 class="font-bold text-slate-800">优质技能推荐</h3>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="space-y-4">
+                            <div class="flex items-center space-x-3">
+                                <img alt="Skill 1" class="w-10 h-10 rounded-lg bg-indigo-50 p-2" src="https://modao.cc/agent-py/media/generated_images/2026-02-04/2aa121ed4319448a874b5761129e2f98.jpg" />
+                                <div class="flex-1">
+                                    <p class="text-sm font-medium text-slate-900">企业级数据加密工具</p>
+                                    <p class="text-xs text-slate-400">评分：★★★★★ （5.0/5.0）</p>
+                                </div>
+                                <button class="bg-rose-50 text-rose-600 px-3 py-1 rounded-xl text-xs font-medium hover:bg-rose-100 transition-colors">
+                                    立即采购
+                                </button>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <img alt="Skill 2" class="w-10 h-10 rounded-lg bg-emerald-50 p-2" src="https://modao.cc/agent-py/media/generated_images/2026-02-04/b1f7efdeea774c7093e0160b8375b154.jpg" />
+                                <div class="flex-1">
+                                    <p class="text-sm font-medium text-slate-900">多语言文本翻译模型</p>
+                                    <p class="text-xs text-slate-400">评分：★★★★☆ （4.8/5.0）</p>
+                                </div>
+                                <button class="bg-rose-50 text-rose-600 px-3 py-1 rounded-xl text-xs font-medium hover:bg-rose-100 transition-colors">
+                                    立即采购
+                                </button>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <img alt="Skill 3" class="w-10 h-10 rounded-lg bg-sky-50 p-2" src="https://modao.cc/agent-py/media/generated_images/2026-02-04/e3395902005d4adabbfa6652ff0768b6.jpg" />
+                                <div class="flex-1">
+                                    <p class="text-sm font-medium text-slate-900">报表自动生成工具</p>
+                                    <p class="text-xs text-slate-400">评分：★★★★☆ （4.7/5.0）</p>
+                                </div>
+                                <button class="bg-rose-50 text-rose-600 px-3 py-1 rounded-xl text-xs font-medium hover:bg-rose-100 transition-colors">
+                                    立即采购
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 核心功能模块磁贴（三个视角共用，保留原有） -->
+        <div class="mb-12">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-2xl font-bold text-slate-800">核心功能模块</h3>
+                <div class="flex space-x-2">
+                    <button class="p-2 border border-slate-200 rounded-lg hover:bg-white transition-all"><span class="iconify" data-icon="heroicons:chevron-left"></span></button>
+                    <button class="p-2 border border-slate-200 rounded-lg hover:bg-white transition-all"><span class="iconify" data-icon="heroicons:chevron-right"></span></button>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="group bg-white p-6 rounded-3xl border border-slate-200 hover:border-indigo-500 hover:shadow-xl transition-all cursor-pointer">
+                    <div class="w-12 h-12 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600 mb-4 group-hover:scale-110 transition-transform">
+                        <span class="iconify text-2xl" data-icon="heroicons:key"></span>
+                    </div>
+                    <h4 class="font-bold text-slate-800 mb-2">技能授权申请</h4>
+                    <p class="text-slate-500 text-sm leading-relaxed">获取最前沿AI技能模型的使用权，支持多种计费模式。</p>
+                </div>
+                <div class="group bg-white p-6 rounded-3xl border border-slate-200 hover:border-emerald-500 hover:shadow-xl transition-all cursor-pointer">
+                    <div class="w-12 h-12 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-600 mb-4 group-hover:scale-110 transition-transform">
+                        <span class="iconify text-2xl" data-icon="heroicons:chat-bubble-left-right"></span>
+                    </div>
+                    <h4 class="font-bold text-slate-800 mb-2">协作需求发布</h4>
+                    <p class="text-slate-500 text-sm leading-relaxed">连接全球开发者，发布您的复杂AI业务需求。</p>
+                </div>
+                <div class="group bg-white p-6 rounded-3xl border border-slate-200 hover:border-orange-500 hover:shadow-xl transition-all cursor-pointer">
+                    <div class="w-12 h-12 bg-orange-50 rounded-2xl flex items-center justify-center text-orange-600 mb-4 group-hover:scale-110 transition-transform">
+                        <span class="iconify text-2xl" data-icon="heroicons:beaker"></span>
+                    </div>
+                    <h4 class="font-bold text-slate-800 mb-2">开发者沙盒</h4>
+                    <p class="text-slate-500 text-sm leading-relaxed">高性能部署环境，一键测试你的AI技能原型。</p>
+                </div>
+                <div class="group bg-white p-6 rounded-3xl border border-slate-200 hover:border-rose-500 hover:shadow-xl transition-all cursor-pointer">
+                    <div class="w-12 h-12 bg-rose-50 rounded-2xl flex items-center justify-center text-rose-600 mb-4 group-hover:scale-110 transition-transform">
+                        <span class="iconify text-2xl" data-icon="heroicons:document-text"></span>
+                    </div>
+                    <h4 class="font-bold text-slate-800 mb-2">资产管理报告</h4>
+                    <p class="text-slate-500 text-sm leading-relaxed">全面的收入与影响力分析报告，定期离线导出。</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 底部页脚 -->
+    <footer class="bg-white border-t border-slate-200 py-12">
+        <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div class="col-span-2">
+                <div class="flex items-center space-x-3 mb-4">
+                    <div class="bg-slate-800 p-1.5 rounded-md">
+                        <span class="iconify text-white text-lg" data-icon="heroicons:bolt-20-solid"></span>
+                    </div>
+                    <span class="font-bold text-slate-800">AI-Hub Market</span>
+                </div>
+                <p class="text-slate-400 text-sm max-w-sm mb-6">下一代AI技能协作市场，构建人类与AI高度协同的生产力枢纽。</p>
+                <div class="flex space-x-4">
+                    <span class="iconify text-slate-400 hover:text-indigo-600 cursor-pointer text-xl" data-icon="brandico:twitter-bird"></span>
+                    <span class="iconify text-slate-400 hover:text-indigo-600 cursor-pointer text-xl" data-icon="brandico:github"></span>
+                    <span class="iconify text-slate-400 hover:text-indigo-600 cursor-pointer text-xl" data-icon="brandico:linkedin-rect"></span>
+                </div>
+            </div>
+            <div>
+                <h5 class="font-bold text-slate-800 mb-4">快速链接</h5>
+                <ul class="space-y-2 text-sm text-slate-500">
+                    <li class="hover:text-indigo-600 cursor-pointer">开发者文档</li>
+                    <li class="hover:text-indigo-600 cursor-pointer">合规协议</li>
+                    <li class="hover:text-indigo-600 cursor-pointer">社区准则</li>
+                </ul>
+            </div>
+            <div>
+                <h5 class="font-bold text-slate-800 mb-4">订阅更新</h5>
+                <div class="flex">
+                    <input class="bg-slate-50 border border-slate-200 rounded-l-lg px-4 py-2 w-full text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500" placeholder="输入邮箱" type="email" />
+                    <button class="bg-indigo-600 text-white px-4 py-2 rounded-r-lg hover:bg-indigo-700 transition-colors">
+                        <span class="iconify" data-icon="heroicons:paper-airplane"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="max-w-7xl mx-auto px-6 mt-12 pt-8 border-t border-slate-100 flex justify-between text-[11px] text-slate-400">
+            <p>© 2026 AI-Hub Market. All rights reserved. 当前时间: 2026-02-04 14:30</p>
+            <div class="flex space-x-4">
+                <span>隐私权政策</span>
+                <span>服务条款</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 首页专属JS（修复视角切换Bug，优化遍历逻辑） -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+    // 原有代码（如下拉菜单、搜索功能）保留，新增以下内容
+    
+    // 1. 页面加载完成后，延迟10毫秒触发入场动画（确保DOM渲染完成，避免动画失效）
+    setTimeout(() => {
+        document.documentElement.classList.add('page-active');
+        document.body.classList.add('page-active');
+    }, 10);
+
+    // 2. 给所有导航链接添加点击事件：先播放退场动画，再跳转新页面
+    const navLinks = document.querySelectorAll('nav a'); // 获取所有导航链接
+    navLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            // 阻止链接默认跳转行为
+            e.preventDefault();
+            const targetHref = this.getAttribute('href'); // 获取目标页面地址（如skill.html）
+
+            // 3. 播放当前页面的退场动画（移除page-active类，触发CSS的transition）
+            document.documentElement.classList.remove('page-active');
+            document.body.classList.remove('page-active');
+
+            // 4. 延迟300毫秒（和CSS动画时长一致），再跳转到目标页面
+            setTimeout(() => {
+                window.location.href = targetHref;
+            }, 150);
+        });
+    });
+});
+        document.addEventListener('DOMContentLoaded', function() {
+        // ======================================
+        // 修复：视角切换核心函数（优化按钮遍历逻辑，确保高亮类彻底移除）
+        // ======================================
+        function switchViewAngle(angleType) {
+        // 1. 重置所有视角容器状态（隐藏所有）
+        document.querySelectorAll('.view-angle-container').forEach(container => {
+        container.classList.remove('view-angle-active');
+        });
+
+        // 2. 重置所有切换按钮状态（移除高亮，关键修复：明确按钮选择器，确保无遗漏）
+        const angleButtons = document.querySelectorAll('.inline-flex [id^="angle-"]');
+        angleButtons.forEach(btn => {
+        btn.classList.remove('angle-btn-active');
+        // 还原按钮默认样式（确保蓝色背景消失，文字变回深灰）
+        btn.classList.remove('bg-indigo-600', 'text-white');
+        btn.classList.add('text-slate-500', 'hover:bg-slate-100');
+        });
+
+        // 3. 激活目标视角和对应按钮
+        document.getElementById(`view-${angleType}`).classList.add('view-angle-active');
+        const targetBtn = document.getElementById(`angle-${angleType}`);
+        targetBtn.classList.add('angle-btn-active');
+        // 强制设置激活按钮样式，确保高亮生效
+        targetBtn.classList.remove('text-slate-500', 'hover:bg-slate-100');
+        targetBtn.classList.add('bg-indigo-600', 'text-white');
+        }
+
+        // ======================================
+        // 原有：初始化管理者中心热度趋势图
+        // ======================================
+        const chartDom = document.getElementById('trend-chart');
+        const myChart = echarts.init(chartDom);
+        const option = {
+        grid: { top: 8, right: 15, bottom: 30, left: 35 },
+        tooltip: { trigger: 'axis' },
+        xAxis: {
+        type: 'category',
+        data: ['01-28', '01-29', '01-30', '01-31', '02-01', '02-02', '02-03', '02-04'],
+        axisLine: { lineStyle: { color: '#e2e8f0' } },
+        axisLabel: { color: '#94a3b8', fontSize: 10 }
+        },
+        yAxis: {
+        type: 'value',
+        splitLine: { lineStyle: { type: 'dashed', color: '#f1f5f9' } },
+        axisLabel: { color: '#94a3b8', fontSize: 10 }
+        },
+        series: [
+        {
+        name: '技能处理量',
+        data: [1200, 1500, 1800, 1600, 2100, 2500, 2800, 3100],
+        type: 'line',
+        smooth: true,
+        symbol: 'none',
+        itemStyle: { color: '#4f46e5' },
+        areaStyle: {
+        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+        { offset: 0, color: 'rgba(79, 70, 229, 0.2)' },
+        { offset: 1, color: 'rgba(79, 70, 229, 0)' }
+        ])
+        }
+        }
+        ]
+        };
+        myChart.setOption(option);
+
+        // ======================================
+        // 新增：初始化需求方采购统计图表
+        // ======================================
+        const purchaseDom = document.getElementById('purchase-chart');
+        const purchaseChart = echarts.init(purchaseDom);
+        const purchaseOption = {
+        grid: { top: 8, right: 15, bottom: 30, left: 35 },
+        tooltip: { trigger: 'item' },
+        xAxis: {
+        type: 'category',
+        data: ['技能采购', '项目外包', '沙盒使用', '其他服务'],
+        axisLine: { lineStyle: { color: '#e2e8f0' } },
+        axisLabel: { color: '#94a3b8', fontSize: 10 }
+        },
+        yAxis: {
+        type: 'value',
+        splitLine: { lineStyle: { type: 'dashed', color: '#f1f5f9' } },
+        axisLabel: { color: '#94a3b8', fontSize: 10 }
+        },
+        series: [
+        {
+        name: '采购金额（¥）',
+        data: [5200, 3800, 960, 480],
+        type: 'bar',
+        itemStyle: {
+        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+        { offset: 0, color: '#f97316' },
+        { offset: 1, color: '#fb923c' }
+        ])
+        },
+        barRadius: [4, 4, 0, 0]
+        }
+        ]
+        };
+        purchaseChart.setOption(purchaseOption);
+
+        // ======================================
+        // 窗口大小变化自适应所有图表
+        // ======================================
+        window.addEventListener('resize', () => {
+        myChart.resize();
+        purchaseChart.resize();
+        });
+
+        // ======================================
+        // 暴露全局函数，确保按钮点击生效
+        // ======================================
+        window.switchViewAngle = switchViewAngle;
+        });
+    </script>
+</body>
+</html>
