@@ -3,6 +3,7 @@
 import { memo, useState, useRef, useEffect, useCallback } from 'react';
 import { Handle, Position, NodeProps } from 'reactflow';
 import { createPortal } from 'react-dom';
+import { useTheme } from '../hooks/useTheme';
 
 interface MatterNodeData {
   name: string;
@@ -40,6 +41,10 @@ function MatterNode({ data }: NodeProps<MatterNodeData>) {
     onShowKnowledge,
     onHover,
   } = data;
+
+  // 使用主题配置
+  const { themeConfig } = useTheme();
+  const treeColors = themeConfig.treeColors;
 
   // 内部或外部 hover 状态
   const [internalIsHovered, setInternalIsHovered] = useState(false);
@@ -159,7 +164,7 @@ function MatterNode({ data }: NodeProps<MatterNodeData>) {
   const nodeSize = getNodeSize();
   const fontSize = Math.max(nodeSize / 8, 12); // 字体大小随节点缩放
 
-  // 根据层级获取节点颜色
+  // 根据层级获取节点颜色 - 使用主题配置
   const getNodeColor = () => {
     if (isRawMaterial) {
       return 'bg-gradient-to-br from-green-400 to-emerald-600 border-green-300';
@@ -168,19 +173,9 @@ function MatterNode({ data }: NodeProps<MatterNodeData>) {
       return 'bg-gradient-to-br from-gray-400 to-gray-600 border-gray-300 cursor-wait';
     }
 
-    // 根据层级分配颜色（使用和谐的色系）
-    const levelColors = [
-      'bg-gradient-to-br from-blue-400 to-blue-600 border-blue-300',      // Level 0: 蓝色
-      'bg-gradient-to-br from-purple-400 to-purple-600 border-purple-300', // Level 1: 紫色
-      'bg-gradient-to-br from-pink-400 to-pink-600 border-pink-300',       // Level 2: 粉色
-      'bg-gradient-to-br from-orange-400 to-orange-600 border-orange-300', // Level 3: 橙色
-      'bg-gradient-to-br from-yellow-400 to-yellow-600 border-yellow-300', // Level 4: 黄色
-      'bg-gradient-to-br from-cyan-400 to-cyan-600 border-cyan-300',       // Level 5+: 青色
-    ];
-
-    // 如果层级超过数组长度，循环使用颜色
-    const colorIndex = level % levelColors.length;
-    return levelColors[colorIndex] + ' hover:scale-110';
+    // 使用主题配置的层级颜色
+    const themeColor = treeColors[level % treeColors.length];
+    return `${themeColor.gradient} ${themeColor.border} hover:scale-110`;
   };
 
   return (

@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, Suspense } from 'react';
 import dynamic from 'next/dynamic';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
+import { useTheme } from '../hooks/useTheme';
 
 // Dynamic import GraphView to avoid SSR issues
 const GraphView = dynamic(() => import('../components/GraphView'), {
@@ -73,6 +74,7 @@ function CanvasContent() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { themeConfig } = useTheme();
 
   // State loaded from setup page
   const [identificationResult, setIdentificationResult] = useState<IdentificationResult | null>(null);
@@ -109,25 +111,6 @@ function CanvasContent() {
 
   // Edge type state
   const [edgeType, setEdgeType] = useState<'bezier' | 'smoothstep' | 'straight'>('bezier');
-
-  // Theme state (true = dark, false = light)
-  // Default to dark theme to match SSR, then sync with localStorage after mount
-  const [isDarkTheme, setIsDarkTheme] = useState<boolean>(true);
-  const [themeLoaded, setThemeLoaded] = useState(false);
-
-  // Load theme from localStorage after mount (client-only)
-  useEffect(() => {
-    const saved = localStorage.getItem('theme');
-    setIsDarkTheme(saved ? saved === 'dark' : true);
-    setThemeLoaded(true);
-  }, []);
-
-  // Persist theme to localStorage when it changes
-  useEffect(() => {
-    if (themeLoaded) {
-      localStorage.setItem('theme', isDarkTheme ? 'dark' : 'light');
-    }
-  }, [isDarkTheme, themeLoaded]);
 
   // Hovered node state for tree view synchronization
   const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
@@ -897,50 +880,16 @@ function CanvasContent() {
   };
 
   return (
-    <div className={`min-h-screen p-8 relative overflow-hidden transition-colors duration-300 ${
-      isDarkTheme
-        ? 'bg-gradient-to-br from-slate-950 via-slate-900 to-black text-white'
-        : 'bg-gradient-to-br from-blue-50 via-white to-blue-100 text-slate-800'
-    }`}>
+    <div className={`min-h-screen p-6 lg:p-8 relative overflow-hidden bg-gradient-to-br ${themeConfig.backgroundGradient} ${themeConfig.textPrimary}`}>
       {/* 背景装饰 */}
-      <div className={`absolute inset-0 tech-grid pointer-events-none transition-opacity duration-300 ${isDarkTheme ? 'opacity-30' : 'opacity-10'}`} />
-      <div className="absolute inset-0 pointer-events-none" style={{
-        background: isDarkTheme
-          ? 'radial-gradient(circle at 50% 0%, rgba(6, 182, 212, 0.1) 0%, transparent 50%)'
-          : 'radial-gradient(circle at 50% 0%, rgba(59, 130, 246, 0.1) 0%, transparent 50%)',
-      }} />
+      <div className="absolute inset-0 pointer-events-none" style={{ background: themeConfig.radialGradient }} />
 
-      <div className="max-w-7xl mx-auto relative z-10">
-        {/* Title area */}
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300 ${
-              isDarkTheme
-                ? 'bg-gradient-to-br from-cyan-500 to-cyan-700 shadow-lg shadow-cyan-500/30'
-                : 'bg-gradient-to-br from-blue-500 to-blue-600 shadow-lg shadow-blue-500/30'
-            }`}>
-              <span className="text-2xl">🌌</span>
-            </div>
-            <h1 className={`text-3xl font-bold bg-clip-text text-transparent transition-colors duration-300 ${
-              isDarkTheme
-                ? 'bg-gradient-to-r from-cyan-400 via-cyan-300 to-cyan-500'
-                : 'bg-gradient-to-r from-blue-600 via-blue-500 to-blue-600'
-            }`}>
-              操作界面
-            </h1>
-          </div>
-          <p className={`text-sm transition-colors duration-300 ${
-            isDarkTheme ? 'text-cyan-300/60' : 'text-blue-600/80'
-          }`}>
-            探索万物本质 - 拆解图谱
-          </p>
-        </div>
-
+      <div className="max-w-[1600px] mx-auto relative z-10">
         {/* Back to Setup Button */}
         <div className="mb-6">
           <button
             onClick={returnToSetup}
-            className={`tech-btn ${isDarkTheme ? '' : 'tech-btn-light'} flex items-center gap-2`}
+            className={`px-4 py-2 ${themeConfig.cardBg} hover:${themeConfig.cardLightBg} ${themeConfig.cardBorder} rounded-lg ${themeConfig.textSecondary} hover:${themeConfig.textPrimary} transition-all duration-300 flex items-center gap-2`}
           >
             <span>←</span>
             <span>返回调制</span>
@@ -949,12 +898,12 @@ function CanvasContent() {
 
         {/* Identification Result Display */}
         {identificationResult && (
-          <div className={`tech-card ${isDarkTheme ? '' : 'tech-card-light'} p-5 mb-6 ${isDarkTheme ? '' : 'bg-white/80'}`}>
+          <div className={`${themeConfig.cardBg} backdrop-blur-md ${themeConfig.cardBorder} rounded-xl p-5 mb-6`}>
             <div className="flex items-center gap-4">
               <div className="text-3xl">{identificationResult.icon || '📦'}</div>
               <div>
-                <div className={`text-xl font-bold transition-colors duration-300 ${isDarkTheme ? 'text-white' : 'text-slate-800'}`}>{identificationResult.name}</div>
-                <div className={`text-sm transition-colors duration-300 ${isDarkTheme ? 'text-cyan-300/70' : 'text-blue-600/70'}`}>{identificationResult.brief_description}</div>
+                <div className={`text-xl font-bold ${themeConfig.textPrimary}`}>{identificationResult.name}</div>
+                <div className={`text-sm ${themeConfig.textMuted}`}>{identificationResult.brief_description}</div>
               </div>
             </div>
           </div>
@@ -962,11 +911,11 @@ function CanvasContent() {
 
         {/* Start Deconstruction Button */}
         {!deconstructionTree && identificationResult && (
-          <div className={`tech-card ${isDarkTheme ? '' : 'tech-card-light'} p-8 mb-6 ${isDarkTheme ? '' : 'bg-white/80'}`}>
+          <div className={`${themeConfig.cardBg} backdrop-blur-md ${themeConfig.cardBorder} rounded-xl p-8 mb-6`}>
             <button
               onClick={startDeconstruction}
               disabled={isDeconstructing}
-              className={`tech-btn ${isDarkTheme ? 'tech-btn-primary' : 'tech-btn-primary-light'} flex items-center gap-3 px-8 py-4 text-lg`}
+              className={`px-8 py-4 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-lg font-semibold shadow-lg shadow-orange-500/30 hover:shadow-orange-500/60 hover:scale-105 transition-all duration-300 flex items-center gap-3 text-lg`}
             >
               {isDeconstructing ? (
                 <>
@@ -987,8 +936,8 @@ function CanvasContent() {
         {deconstructionTree && (
           <div className="flex gap-6">
             {/* 左侧分解结构栏 */}
-            <div className={`w-80 flex-shrink-0 tech-card ${isDarkTheme ? '' : 'tech-card-light'} p-4 max-h-[700px] overflow-hidden flex flex-col ${isDarkTheme ? '' : 'bg-white/80'}`}>
-              <h3 className={`text-lg font-bold flex items-center gap-2 mb-4 transition-colors duration-300 ${isDarkTheme ? 'text-cyan-100' : 'text-slate-700'}`}>
+            <div className={`w-80 flex-shrink-0 ${themeConfig.cardBg} backdrop-blur-md ${themeConfig.cardBorder} rounded-xl p-4 max-h-[700px] overflow-hidden flex flex-col`}>
+              <h3 className={`text-lg font-bold flex items-center gap-2 mb-4 ${themeConfig.textPrimary}`}>
                 <span>📋</span>
                 <span>分解结构</span>
               </h3>
@@ -1057,9 +1006,9 @@ function CanvasContent() {
             </div>
 
             {/* 右侧图谱区域 */}
-            <div className={`flex-1 tech-card ${isDarkTheme ? '' : 'tech-card-light'} p-6 ${isDarkTheme ? '' : 'bg-white/80'}`}>
+            <div className={`flex-1 ${themeConfig.cardBg} backdrop-blur-md ${themeConfig.cardBorder} rounded-xl p-6`}>
             <div className="flex items-center justify-between mb-4">
-              <h2 className={`text-2xl font-bold flex items-center gap-3 transition-colors duration-300 ${isDarkTheme ? 'text-cyan-100' : 'text-slate-700'}`}>
+              <h2 className={`text-2xl font-bold flex items-center gap-3 ${themeConfig.textPrimary}`}>
                 <span className="text-3xl">🌌</span>
                 <span>拆解图谱</span>
               </h2>
@@ -1074,20 +1023,14 @@ function CanvasContent() {
                     }
                   }
                 }}
-                className={`tech-btn ${isDarkTheme ? '' : 'tech-btn-light'} flex items-center gap-2 text-sm px-4 py-2`}
+                className={`px-4 py-2 ${themeConfig.cardBg} hover:${themeConfig.cardLightBg} ${themeConfig.cardBorder} rounded-lg ${themeConfig.textSecondary} hover:${themeConfig.textPrimary} transition-all duration-300 flex items-center gap-2 text-sm`}
               >
                 <span>🔍</span>
                 <span>全屏</span>
               </button>
             </div>
-            <div className={`mb-4 rounded-xl p-3 border transition-colors duration-300 ${
-              isDarkTheme
-                ? 'bg-cyan-950/30 border-cyan-500/30'
-                : 'bg-blue-200 border-blue-300'
-            }`}>
-              <div className={`text-sm transition-colors duration-300 ${
-                isDarkTheme ? 'text-cyan-300/70' : 'text-blue-600/70'
-              }`}>
+            <div className={`mb-4 rounded-xl p-3 border ${themeConfig.cardBorder} ${themeConfig.cardLightBg}`}>
+              <div className={`text-sm ${themeConfig.textMuted}`}>
                 点击节点继续拆解，青色节点是原材料。使用鼠标滚轮缩放，拖拽画布移动视图。
               </div>
             </div>
@@ -1106,14 +1049,12 @@ function CanvasContent() {
                 }}
                 edgeType={edgeType}
                 hoveredNodeId={hoveredNodeId}
-                isDarkTheme={isDarkTheme}
-                onThemeChange={(newValue) => setIsDarkTheme(newValue)}
               />
 
               {/* Fullscreen knowledge card modal */}
               {knowledgeCard && isFullscreen && (
                 <div
-                  className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[100000] p-4"
+                  className={`absolute inset-0 ${themeConfig.cardBg}/80 backdrop-blur-sm flex items-center justify-center z-[100000] p-4`}
                   onClick={() => setKnowledgeCard(null)}
                 >
                   <div
@@ -1127,7 +1068,7 @@ function CanvasContent() {
                       </h3>
                       <button
                         onClick={() => setKnowledgeCard(null)}
-                        className="text-gray-400 hover:text-white text-2xl"
+                        className={`${themeConfig.textMuted} hover:${themeConfig.textPrimary} text-2xl`}
                       >
                         ✕
                       </button>
@@ -1137,7 +1078,7 @@ function CanvasContent() {
                       <div className="flex items-center justify-center py-12">
                         <div className="flex flex-col items-center gap-3">
                           <span className="text-4xl animate-spin">🔄</span>
-                          <span className="text-gray-400">正在生成知识卡片...</span>
+                          <span className={themeConfig.textMuted}>正在生成知识卡片...</span>
                         </div>
                       </div>
                     ) : (
@@ -1170,9 +1111,9 @@ function CanvasContent() {
                                     {step.parameters.length > 0 && (
                                       <div className="flex flex-wrap gap-2">
                                         {step.parameters.map((param, pidx) => (
-                                          <div key={pidx} className="bg-black/30 rounded px-3 py-1 text-xs border border-gray-600">
-                                            <span className="text-gray-400">{param.label}:</span>
-                                            <span className="text-white ml-1 font-semibold">{param.value}</span>
+                                          <div key={pidx} className={`${themeConfig.cardLightBg} rounded px-3 py-1 text-xs ${themeConfig.cardBorder}`}>
+                                            <span className={themeConfig.textMuted}>{param.label}:</span>
+                                            <span className={`${themeConfig.textPrimary} ml-1 font-semibold`}>{param.value}</span>
                                           </div>
                                         ))}
                                       </div>
@@ -1196,8 +1137,8 @@ function CanvasContent() {
                           </div>
                           <div className="flex flex-wrap gap-2">
                             {knowledgeCard.node.children.map((child, idx) => (
-                              <div key={idx} className="bg-black/30 rounded-full px-3 py-1 text-sm border border-gray-600 flex items-center gap-1">
-                                <span className="text-white">{child.name}</span>
+                              <div key={idx} className={`${themeConfig.cardLightBg} rounded-full px-3 py-1 text-sm ${themeConfig.cardBorder} flex items-center gap-1`}>
+                                <span className={themeConfig.textPrimary}>{child.name}</span>
                                 {child.isRawMaterial && <span className="text-green-400 text-xs">🌿</span>}
                               </div>
                             ))}
@@ -1216,7 +1157,7 @@ function CanvasContent() {
         {/* Knowledge Card Modal (non-fullscreen) */}
         {knowledgeCard && !isFullscreen && (
           <div
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[100000] p-4"
+            className={`fixed inset-0 ${themeConfig.cardBg}/80 backdrop-blur-sm flex items-center justify-center z-[100000] p-4`}
             onClick={() => setKnowledgeCard(null)}
           >
             <div
@@ -1230,7 +1171,7 @@ function CanvasContent() {
                 </h3>
                 <button
                   onClick={() => setKnowledgeCard(null)}
-                  className="text-gray-400 hover:text-white text-2xl"
+                  className={`${themeConfig.textMuted} hover:${themeConfig.textPrimary} text-2xl`}
                 >
                   ✕
                 </button>
@@ -1240,7 +1181,7 @@ function CanvasContent() {
                 <div className="flex items-center justify-center py-12">
                   <div className="flex flex-col items-center gap-3">
                     <span className="text-4xl animate-spin">🔄</span>
-                    <span className="text-gray-400">正在生成知识卡片...</span>
+                    <span className={themeConfig.textMuted}>正在生成知识卡片...</span>
                   </div>
                 </div>
               ) : (
@@ -1273,9 +1214,9 @@ function CanvasContent() {
                               {step.parameters.length > 0 && (
                                 <div className="flex flex-wrap gap-2">
                                   {step.parameters.map((param, pidx) => (
-                                    <div key={pidx} className="bg-black/30 rounded px-3 py-1 text-xs border border-gray-600">
-                                      <span className="text-gray-400">{param.label}:</span>
-                                      <span className="text-white ml-1 font-semibold">{param.value}</span>
+                                    <div key={pidx} className={`${themeConfig.cardLightBg} rounded px-3 py-1 text-xs ${themeConfig.cardBorder}`}>
+                                      <span className={themeConfig.textMuted}>{param.label}:</span>
+                                      <span className={`${themeConfig.textPrimary} ml-1 font-semibold`}>{param.value}</span>
                                     </div>
                                   ))}
                                 </div>
@@ -1299,8 +1240,8 @@ function CanvasContent() {
                     </div>
                     <div className="flex flex-wrap gap-2">
                       {knowledgeCard.node.children.map((child, idx) => (
-                        <div key={idx} className="bg-black/30 rounded-full px-3 py-1 text-sm border border-gray-600 flex items-center gap-1">
-                          <span className="text-white">{child.name}</span>
+                        <div key={idx} className={`${themeConfig.cardLightBg} rounded-full px-3 py-1 text-sm ${themeConfig.cardBorder} flex items-center gap-1`}>
+                          <span className={themeConfig.textPrimary}>{child.name}</span>
                           {child.isRawMaterial && <span className="text-green-400 text-xs">🌿</span>}
                         </div>
                       ))}
@@ -1314,7 +1255,7 @@ function CanvasContent() {
 
         {/* Loading overlay */}
         {isLoadingSession && (
-          <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center">
+          <div className={`fixed inset-0 ${themeConfig.cardBg}/90 backdrop-blur-sm z-50 flex items-center justify-center`}>
             <div className="bg-gray-900 rounded-2xl p-8 shadow-2xl max-w-md w-full mx-4">
               <div className="text-center">
                 <div className="mb-6">
@@ -1323,10 +1264,10 @@ function CanvasContent() {
                 <h3 className="text-2xl font-bold mb-4 bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
                   加载中...
                 </h3>
-                <p className="text-gray-400 mb-6">
+                <p className={`${themeConfig.textMuted} mb-6`}>
                   正在加载拆解历史记录
                 </p>
-                <div className="w-full bg-gray-800 rounded-full h-2 overflow-hidden">
+                <div className={`w-full ${themeConfig.sliderTrack} rounded-full h-2 overflow-hidden`}>
                   <div className="h-full bg-gradient-to-r from-purple-500 to-blue-500 rounded-full animate-pulse"></div>
                 </div>
               </div>
@@ -1339,26 +1280,15 @@ function CanvasContent() {
 }
 
 // Wrap with Suspense for useSearchParams support
-export default function CanvasPage() {
-  // Read theme from localStorage
-  const isDarkTheme = typeof window !== 'undefined'
-    ? (localStorage.getItem('theme') !== 'light')
-    : true;
+function CanvasPage() {
+  const { themeConfig } = useTheme();
 
   return (
     <Suspense fallback={
-      <div className={`min-h-screen flex items-center justify-center transition-colors duration-300 ${
-        isDarkTheme
-          ? 'bg-gradient-to-br from-indigo-950 via-purple-950 to-slate-950 text-white'
-          : 'bg-gradient-to-br from-blue-50 via-white to-blue-100 text-slate-800'
-      }`}>
+      <div className={`min-h-screen flex items-center justify-center transition-colors duration-300 bg-gradient-to-br ${themeConfig.backgroundGradient} ${themeConfig.textPrimary}`}>
         <div className="text-center">
-          <div className={`inline-block animate-spin rounded-full h-16 w-16 border-4 mb-4 transition-colors duration-300 ${
-            isDarkTheme
-              ? 'border-purple-500 border-t-transparent'
-              : 'border-blue-500 border-t-transparent'
-          }`}></div>
-          <p className={isDarkTheme ? 'text-gray-400' : 'text-blue-600'}>加载中...</p>
+          <div className={`inline-block animate-spin rounded-full h-16 w-16 border-4 mb-4 transition-colors duration-300 border-${themeConfig.primaryColor}-500 border-t-transparent`}></div>
+          <p className={themeConfig.textMuted}>加载中...</p>
         </div>
       </div>
     }>
@@ -1366,3 +1296,5 @@ export default function CanvasPage() {
     </Suspense>
   );
 }
+
+export default CanvasPage;

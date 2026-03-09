@@ -92,12 +92,12 @@ export default function Home() {
   const logoOpacity = useTransform(scrollYProgress, [0, 0.1, 0.15], [1, 0.5, 0]);
 
   // 网站名字层 - 在logo消失后出现
-  const titleOpacity = useTransform(scrollYProgress, [0.05, 0.1, 0.25, 0.3], [0, 1, 1, 0]);
+  const titleOpacity = useTransform(scrollYProgress, [0.05, 0.1, 0.18, 0.23], [0, 1, 1, 0]);
   const titleY = useTransform(scrollYProgress, [0.05, 0.1], [50, 0]);
 
   // 宣传语层 - 在title消失后出现
-  const taglineOpacity = useTransform(scrollYProgress, [0.2, 0.25, 0.4, 0.45], [0, 1, 1, 0]);
-  const taglineY = useTransform(scrollYProgress, [0.2, 0.25], [50, 0]);
+  const taglineOpacity = useTransform(scrollYProgress, [0.3, 0.35, 0.4, 0.45], [0, 1, 1, 0]);
+  const taglineY = useTransform(scrollYProgress, [0.3, 0.35], [50, 0]);
 
   // 3D折叠效果 - 滚动到末尾时整个视差层沿X轴向后折叠
   const foldRotateX = useTransform(scrollYProgress, [0.6, 1], [0, 70]);
@@ -154,8 +154,10 @@ export default function Home() {
           <div className="text-center">
             {/* TODO: 替换为用户的Logo图片 */}
             {/* <img src="/images/logo.png" alt="Logo" className="w-64 h-64" /> */}
-            <div className="w-48 h-48 mx-auto bg-gradient-to-br from-cyan-400 to-purple-500 rounded-2xl flex items-center justify-center">
-              <span className="text-6xl font-black text-white">LOGO</span>
+            <div className="w-48 h-48 mx-auto bg-gradient-to-br from-yellow-400 via-orange-500 to-red-500 rounded-2xl flex items-center justify-center shadow-2xl shadow-orange-500/50">
+              <svg className="w-24 h-24 text-white drop-shadow-lg" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+              </svg>
             </div>
           </div>
         </motion.div>
@@ -165,9 +167,24 @@ export default function Home() {
           className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none"
           style={{ opacity: titleOpacity, y: titleY }}
         >
-          <h1 className="text-6xl md:text-8xl font-black text-white tracking-wider">
-            BREAK IT DOWN
-          </h1>
+          <div className="text-center">
+            <h1 className="text-7xl md:text-9xl lg:text-[10rem] font-black tracking-wider relative">
+              {/* 外层发光 */}
+              <span className="absolute inset-0 text-white/30 blur-3xl" style={{ textShadow: '0 0 60px rgba(255,255,255,0.5)' }}>
+                BREAK IT DOWN
+              </span>
+              {/* 主文字 - 渐变 + 内发光 */}
+              <span className="relative bg-gradient-to-b from-white via-white to-white/60 bg-clip-text text-transparent" style={{ textShadow: '0 0 40px rgba(255,255,255,0.8)' }}>
+                BREAK IT DOWN
+              </span>
+            </h1>
+            {/* 底部装饰线 */}
+            <div className="mt-4 flex justify-center gap-2">
+              <div className="h-1 w-16 bg-gradient-to-r from-transparent via-orange-500 to-transparent rounded-full" />
+              <div className="h-1 w-24 bg-gradient-to-r from-transparent via-red-500 to-transparent rounded-full" />
+              <div className="h-1 w-16 bg-gradient-to-r from-transparent via-orange-500 to-transparent rounded-full" />
+            </div>
+          </div>
         </motion.div>
 
         {/* 宣传语层 - 滚动消失 */}
@@ -182,7 +199,7 @@ export default function Home() {
       </motion.div>
 
       {/* 创建足够高的滚动区域（视差动画区域） */}
-      <div className="h-[400vh]" />
+      <div className="h-[600vh]" />
 
       {/* 宣传内容区域 - 滚动到这里显示 */}
       <div className="relative z-50 bg-black text-white">

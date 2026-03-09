@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useCallback } from 'react';
+import { useTheme } from '../hooks/useTheme';
 
 interface TreeNode {
   id: string;
@@ -36,9 +37,11 @@ export default function DecompositionTree({
   breakdownMode = 'basic',
   onProductionAnalysisClick,
 }: DecompositionTreeProps) {
+  const { themeConfig } = useTheme();
+
   if (!tree) {
     return (
-      <div className="text-cyan-300/50 text-sm p-4">
+      <div className={`${themeConfig.textMuted} text-sm p-4`}>
         暂无分解结构
       </div>
     );
@@ -87,24 +90,16 @@ function TreeNodeItem({
   breakdownMode = 'basic',
   onProductionAnalysisClick,
 }: TreeNodeItemProps) {
+  // 使用主题配置
+  const { themeConfig } = useTheme();
+  const treeColors = themeConfig.treeColors;
+
   const hasChildren = node.children.length > 0;
   const isHovered = hoveredNodeId === node.id;
   const isCollapsed = !node.isExpanded && hasChildren;
 
-  // 根据层级计算颜色 - 统一为青色科技风
-  const getLevelColor = (lvl: number) => {
-    const colors = [
-      { bg: 'bg-cyan-600', border: 'border-cyan-400', glow: 'shadow-cyan-500/60', text: 'text-cyan-100' },
-      { bg: 'bg-cyan-700', border: 'border-cyan-500', glow: 'shadow-cyan-500/60', text: 'text-cyan-100' },
-      { bg: 'bg-blue-600', border: 'border-blue-400', glow: 'shadow-blue-500/60', text: 'text-blue-100' },
-      { bg: 'bg-blue-700', border: 'border-blue-500', glow: 'shadow-blue-500/60', text: 'text-blue-100' },
-      { bg: 'bg-indigo-600', border: 'border-indigo-400', glow: 'shadow-indigo-500/60', text: 'text-indigo-100' },
-      { bg: 'bg-cyan-500', border: 'border-cyan-300', glow: 'shadow-cyan-500/60', text: 'text-cyan-100' },
-    ];
-    return colors[lvl % colors.length];
-  };
-
-  const color = getLevelColor(level);
+  // 根据层级获取主题颜色
+  const color = treeColors[level % treeColors.length];
   const isRawMaterial = node.isRawMaterial;
 
   // 处理折叠/展开（只是展开/折叠，不重新分解）
@@ -130,7 +125,7 @@ function TreeNodeItem({
 
   return (
     <div className="select-none">
-      {/* 节点卡片 - 默认就有层级颜色 */}
+      {/* 节点卡片 - 使用主题渐变背景 */}
       <div
         className={`
           relative flex items-center gap-2 px-3 py-2 mx-2 my-1 rounded-lg
@@ -141,6 +136,7 @@ function TreeNodeItem({
         style={{
           marginLeft: `${level * 20}px`,
           transform: isHovered ? 'scale(1.03)' : 'scale(1)',
+          background: `linear-gradient(135deg, ${color.gradient})`,
           boxShadow: isHovered
             ? `0 0 20px ${color.glow}, 0 0 40px ${color.glow}, 0 4px 12px rgba(0,0,0,0.3)`
             : `0 2px 8px rgba(0,0,0,0.2)`,
@@ -155,8 +151,8 @@ function TreeNodeItem({
           <button
             onClick={handleToggle}
             className={`
-              w-5 h-5 flex items-center justify-center rounded
-              ${isHovered ? 'bg-cyan-500/30 text-white' : 'bg-slate-700 text-cyan-300/70'}
+              w-5 h-5 flex items-center justify-center rounded backdrop-blur-sm
+              ${isHovered ? 'bg-white/30 text-white' : 'bg-black/20 text-white/70'}
               hover:bg-white/20 transition-all text-xs font-bold
             `}
           >
@@ -199,9 +195,9 @@ function TreeNodeItem({
       {/* 子节点 */}
       {hasChildren && !isCollapsed && (
         <div className="relative">
-          {/* 连接线 */}
+          {/* 连接线 - 使用层级颜色 */}
           <div
-            className="absolute border-l-2 border-cyan-500/30"
+            className={`absolute border-l-2 ${color.borderAccent}`}
             style={{
               left: `${(level + 1) * 20 - 10}px`,
               top: '8px',

@@ -16,6 +16,7 @@ import 'reactflow/dist/style.css';
 
 import MatterNode from './MatterNode';
 import { calculateRadialLayout } from '../utils/layoutUtils';
+import { useTheme } from '../hooks/useTheme';
 
 interface TreeNode {
   id: string;
@@ -36,8 +37,6 @@ interface GraphViewProps {
   onNodePositionsChange?: () => void;
   edgeType?: 'bezier' | 'smoothstep' | 'straight';
   hoveredNodeId?: string | null;
-  isDarkTheme?: boolean;
-  onThemeChange?: (isDark: boolean) => void;
 }
 
 const nodeTypes = {
@@ -54,9 +53,12 @@ function GraphViewInner({
   onNodePositionsChange,
   edgeType: initialEdgeType = 'bezier',
   hoveredNodeId: externalHoveredNodeId,
-  isDarkTheme = true,
-  onThemeChange,
 }: GraphViewProps) {
+  // 使用主题
+  const { themeConfig } = useTheme();
+  // 便捷访问
+  const tc = themeConfig;
+
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [internalHoveredNodeId, setInternalHoveredNodeId] = useState<string | null>(null);
@@ -298,30 +300,16 @@ function GraphViewInner({
   }
 
   return (
-    <div className={`w-full h-[600px] rounded-lg overflow-hidden border relative tech-grid ${
-      isDarkTheme ? 'border-cyan-500/20' : 'border-blue-300/30'
-    }`}>
+    <div className={`w-full h-[600px] rounded-lg overflow-hidden border relative tech-grid ${tc.borderColorLight}`}>
       {/* 渐变背景层 */}
       <div
         className="absolute inset-0"
         style={{
-          background: isDarkTheme
-            ? 'radial-gradient(ellipse at center, #0a0a0a 0%, #050505 50%, #020202 100%)'
-            : 'radial-gradient(ellipse at center, #eff6ff 0%, #dbeafe 50%, #bfdbfe 100%)',
+          background: tc.radialGradient,
         }}
       />
 
-      {/* 光晕效果 */}
-      <div
-        className="absolute inset-0 opacity-30"
-        style={{
-          background: isDarkTheme
-            ? 'radial-gradient(circle at 50% 50%, rgba(6, 182, 212, 0.1) 0%, transparent 70%)'
-            : 'radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.1) 0%, transparent 70%)',
-        }}
-      />
-
-      {/* 自定义控制按钮 - 左上角 - 青色科技风 */}
+      {/* 自定义控制按钮 - 使用主题色 */}
       <div className="absolute top-4 left-4 z-10 flex flex-col gap-2">
         {/* 返回按钮 */}
         <button
@@ -330,7 +318,7 @@ function GraphViewInner({
               document.exitFullscreen();
             }
           }}
-          className="w-12 h-12 bg-gradient-to-br from-slate-800 to-slate-900 hover:from-cyan-900 hover:to-slate-800 backdrop-blur-sm border border-cyan-500/30 hover:border-cyan-400/60 rounded-xl flex items-center justify-center text-white text-xl transition-all shadow-lg hover:shadow-cyan-500/20 hover:scale-105"
+          className={`w-12 h-12 bg-gradient-to-br from-slate-800 to-slate-900 ${themeConfig.controlBtnHover} backdrop-blur-sm border ${themeConfig.controlBtnBorder} ${themeConfig.controlBtnBorderHover} rounded-xl flex items-center justify-center text-white text-xl transition-all shadow-lg hover:shadow-cyan-500/20 hover:scale-105`}
           title="返回"
         >
           ←
@@ -339,7 +327,7 @@ function GraphViewInner({
         {/* 放大 */}
         <button
           onClick={() => zoomIn()}
-          className="w-12 h-12 bg-gradient-to-br from-cyan-900 to-slate-900 hover:from-cyan-700 hover:to-cyan-900 backdrop-blur-sm border border-cyan-500/30 hover:border-cyan-400/60 rounded-xl flex items-center justify-center text-cyan-300 text-2xl font-bold transition-all shadow-lg hover:shadow-cyan-500/30 hover:scale-105"
+          className={`w-12 h-12 ${themeConfig.controlBtn} ${themeConfig.controlBtnHover} backdrop-blur-sm border ${themeConfig.controlBtnBorder} ${themeConfig.controlBtnBorderHover} rounded-xl flex items-center justify-center ${themeConfig.controlBtnText} text-2xl font-bold transition-all shadow-lg hover:shadow-cyan-500/30 hover:scale-105`}
           title="放大"
         >
           +
@@ -348,7 +336,7 @@ function GraphViewInner({
         {/* 缩小 */}
         <button
           onClick={() => zoomOut()}
-          className="w-12 h-12 bg-gradient-to-br from-cyan-900 to-slate-900 hover:from-cyan-700 hover:to-cyan-900 backdrop-blur-sm border border-cyan-500/30 hover:border-cyan-400/60 rounded-xl flex items-center justify-center text-cyan-300 text-2xl font-bold transition-all shadow-lg hover:shadow-cyan-500/30 hover:scale-105"
+          className={`w-12 h-12 ${themeConfig.controlBtn} ${themeConfig.controlBtnHover} backdrop-blur-sm border ${themeConfig.controlBtnBorder} ${themeConfig.controlBtnBorderHover} rounded-xl flex items-center justify-center ${themeConfig.controlBtnText} text-2xl font-bold transition-all shadow-lg hover:shadow-cyan-500/30 hover:scale-105`}
           title="缩小"
         >
           −
@@ -357,7 +345,7 @@ function GraphViewInner({
         {/* 自适应观察 */}
         <button
           onClick={() => fitView({ padding: 0.2, duration: 300 })}
-          className="w-12 h-12 bg-gradient-to-br from-cyan-900 to-slate-900 hover:from-cyan-700 hover:to-cyan-900 backdrop-blur-sm border border-cyan-500/30 hover:border-cyan-400/60 rounded-xl flex items-center justify-center text-cyan-300 text-xl transition-all shadow-lg hover:shadow-cyan-500/30 hover:scale-105"
+          className={`w-12 h-12 ${themeConfig.controlBtn} ${themeConfig.controlBtnHover} backdrop-blur-sm border ${themeConfig.controlBtnBorder} ${themeConfig.controlBtnBorderHover} rounded-xl flex items-center justify-center ${themeConfig.controlBtnText} text-xl transition-all shadow-lg hover:shadow-cyan-500/30 hover:scale-105`}
           title="自适应观察"
         >
           ⊡
@@ -369,7 +357,7 @@ function GraphViewInner({
           className={`w-12 h-12 backdrop-blur-sm border rounded-xl flex items-center justify-center text-xl transition-all shadow-lg hover:scale-105 ${
             isDraggingLocked
               ? 'bg-gradient-to-br from-red-900/80 to-slate-900 hover:from-red-800 hover:to-red-900 border-red-500/30 hover:border-red-400/60'
-              : 'bg-gradient-to-br from-cyan-900 to-slate-900 hover:from-cyan-700 hover:to-cyan-900 border-cyan-500/30 hover:border-cyan-400/60'
+              : `${themeConfig.controlBtn} ${themeConfig.controlBtnHover} ${themeConfig.controlBtnBorder} ${themeConfig.controlBtnBorderHover}`
           }`}
           title={isDraggingLocked ? '解锁拖拽' : '锁定拖拽'}
         >
@@ -381,28 +369,13 @@ function GraphViewInner({
           onClick={() => setShowMiniMap(!showMiniMap)}
           className={`w-12 h-12 backdrop-blur-sm border rounded-xl flex items-center justify-center text-lg transition-all shadow-lg hover:scale-105 ${
             showMiniMap
-              ? 'bg-gradient-to-br from-cyan-900 to-slate-900 hover:from-cyan-700 hover:to-cyan-900 border-cyan-500/30 hover:border-cyan-400/60'
+              ? `${themeConfig.controlBtn} ${themeConfig.controlBtnHover} ${themeConfig.controlBtnBorder} ${themeConfig.controlBtnBorderHover}`
               : 'bg-gradient-to-br from-slate-800 to-slate-900 hover:from-slate-700 hover:to-slate-800 border-white/20 hover:border-cyan-500/40'
           }`}
           title={showMiniMap ? '隐藏缩略图' : '显示缩略图'}
         >
           🗺️
         </button>
-
-        {/* 主题切换 */}
-        {onThemeChange && (
-          <button
-            onClick={() => onThemeChange(!isDarkTheme)}
-            className={`w-12 h-12 backdrop-blur-sm border rounded-xl flex items-center justify-center text-lg transition-all shadow-lg hover:scale-105 ${
-              isDarkTheme
-                ? 'bg-gradient-to-br from-cyan-900 to-slate-900 hover:from-cyan-700 hover:to-cyan-900 border-cyan-500/30 hover:border-cyan-400/60'
-                : 'bg-gradient-to-br from-blue-200 to-blue-300 hover:from-blue-300 hover:to-blue-400 border-blue-400/50 hover:border-blue-500/60'
-            }`}
-            title={isDarkTheme ? '切换浅色主题' : '切换深色主题'}
-          >
-            {isDarkTheme ? '☀️' : '🌙'}
-          </button>
-        )}
 
         {/* 曲线类型切换 */}
         <button
@@ -412,7 +385,7 @@ function GraphViewInner({
             const nextIndex = (currentIndex + 1) % types.length;
             setEdgeType(types[nextIndex]);
           }}
-          className="w-12 h-12 bg-gradient-to-br from-cyan-900 to-slate-900 hover:from-cyan-700 hover:to-cyan-900 backdrop-blur-sm border border-cyan-500/30 hover:border-cyan-400/60 rounded-xl flex items-center justify-center text-cyan-300 text-lg transition-all shadow-lg hover:shadow-cyan-500/30 hover:scale-105"
+          className={`w-12 h-12 ${themeConfig.controlBtn} ${themeConfig.controlBtnHover} backdrop-blur-sm border ${themeConfig.controlBtnBorder} ${themeConfig.controlBtnBorderHover} rounded-xl flex items-center justify-center ${themeConfig.controlBtnText} text-lg transition-all shadow-lg hover:shadow-cyan-500/30 hover:scale-105`}
           title={`曲线类型: ${edgeType === 'bezier' ? '贝塞尔曲线' : edgeType === 'smoothstep' ? '阶梯线' : '直线'}`}
         >
           {edgeType === 'bezier' ? '〰' : edgeType === 'smoothstep' ? '📐' : '📏'}
@@ -421,7 +394,7 @@ function GraphViewInner({
         {/* 帮助按钮 */}
         <button
           onClick={() => setShowHelp(true)}
-          className="w-12 h-12 bg-gradient-to-br from-cyan-900 to-slate-900 hover:from-cyan-700 hover:to-cyan-900 backdrop-blur-sm border border-cyan-500/30 hover:border-cyan-400/60 rounded-xl flex items-center justify-center text-cyan-300 text-2xl font-bold transition-all shadow-lg hover:shadow-cyan-500/30 hover:scale-105"
+          className={`w-12 h-12 ${themeConfig.controlBtn} ${themeConfig.controlBtnHover} backdrop-blur-sm border ${themeConfig.controlBtnBorder} ${themeConfig.controlBtnBorderHover} rounded-xl flex items-center justify-center ${themeConfig.controlBtnText} text-2xl font-bold transition-all shadow-lg hover:shadow-cyan-500/30 hover:scale-105`}
           title="操作说明"
         >
           ?
@@ -430,7 +403,7 @@ function GraphViewInner({
         {/* 统计面板 */}
         <button
           onClick={() => setShowStats(true)}
-          className="w-12 h-12 bg-gradient-to-br from-cyan-900 to-slate-900 hover:from-cyan-700 hover:to-cyan-900 backdrop-blur-sm border border-cyan-500/30 hover:border-cyan-400/60 rounded-xl flex items-center justify-center text-cyan-300 text-xl font-bold transition-all shadow-lg hover:shadow-cyan-500/30 hover:scale-105"
+          className={`w-12 h-12 ${themeConfig.controlBtn} ${themeConfig.controlBtnHover} backdrop-blur-sm border ${themeConfig.controlBtnBorder} ${themeConfig.controlBtnBorderHover} rounded-xl flex items-center justify-center ${themeConfig.controlBtnText} text-xl font-bold transition-all shadow-lg hover:shadow-cyan-500/30 hover:scale-105`}
           title="统计面板"
         >
           📊
@@ -439,7 +412,7 @@ function GraphViewInner({
         {/* 搜索节点 */}
         <button
           onClick={() => setShowSearch(true)}
-          className="w-12 h-12 bg-gradient-to-br from-cyan-900 to-slate-900 hover:from-cyan-700 hover:to-cyan-900 backdrop-blur-sm border border-cyan-500/30 hover:border-cyan-400/60 rounded-xl flex items-center justify-center text-cyan-300 text-xl font-bold transition-all shadow-lg hover:shadow-cyan-500/30 hover:scale-105"
+          className={`w-12 h-12 ${themeConfig.controlBtn} ${themeConfig.controlBtnHover} backdrop-blur-sm border ${themeConfig.controlBtnBorder} ${themeConfig.controlBtnBorderHover} rounded-xl flex items-center justify-center ${themeConfig.controlBtnText} text-xl font-bold transition-all shadow-lg hover:shadow-cyan-500/30 hover:scale-105`}
           title="搜索节点"
         >
           🔍

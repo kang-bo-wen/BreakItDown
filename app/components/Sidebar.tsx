@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useSession, signOut } from 'next-auth/react'
 import { useRouter, usePathname } from 'next/navigation'
+import ThemeSwitcher from './ThemeSwitcher'
 
 interface SessionItem {
   id: string
@@ -83,6 +84,16 @@ export default function Sidebar() {
   useEffect(() => {
     setIsOpen(false)
   }, [pathname])
+
+  // 监听自定义事件打开侧边栏
+  useEffect(() => {
+    const handleOpenSidebar = () => {
+      setIsOpen(true)
+    }
+
+    window.addEventListener('open-sidebar', handleOpenSidebar)
+    return () => window.removeEventListener('open-sidebar', handleOpenSidebar)
+  }, [])
 
   if (status === 'loading') {
     return null
@@ -330,6 +341,11 @@ export default function Sidebar() {
                 ))}
               </div>
             )}
+          </div>
+
+          {/* 主题切换 */}
+          <div className="p-4 border-t border-gray-800">
+            <ThemeSwitcher />
           </div>
 
           {/* 底部 */}

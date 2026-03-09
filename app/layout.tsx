@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { Providers } from './providers';
 import Sidebar from './components/Sidebar';
+import TopNavBar from './components/TopNavBar';
+import Footer from './components/Footer';
 
 export const metadata: Metadata = {
   title: 'Break It Down - Deconstruction',
@@ -15,10 +17,17 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="zh-CN">
+      <head>
+        <script src="https://code.iconify.design/3/3.1.1/iconify.min.js" />
+      </head>
       <body>
         <Providers>
+          <TopNavBar />
           <Sidebar />
-          {children}
+          <main className="pt-16 min-h-screen flex flex-col">
+            {children}
+            <Footer />
+          </main>
         </Providers>
       </body>
     </html>
