@@ -1,336 +1,351 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { useRef, useState, useCallback } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import Link from 'next/link';
-import { useRef, useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
+
+// 前后对比滑块组件
+function ComparisonSlider({ before, after, alt }: { before: React.ReactNode; after: React.ReactNode; alt: string }) {
+  const [position, setPosition] = useState(50);
+  const [isDragging, setIsDragging] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const handleMove = useCallback((e: React.MouseEvent | React.TouchEvent) => {
+    if (!isDragging || !containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+    const x = clientX - rect.left;
+    const percentage = Math.max(0, Math.min(100, (x / rect.width) * 100));
+    setPosition(percentage);
+  }, [isDragging]);
+
+  const handleMouseDown = useCallback(() => {
+    setIsDragging(true);
+  }, []);
+
+  const handleMouseUp = useCallback(() => {
+    setIsDragging(false);
+  }, []);
+
+  return (
+    <div
+      ref={containerRef}
+      className="relative w-full h-80 rounded-2xl overflow-hidden cursor-ew-resize select-none"
+      onMouseMove={handleMove}
+      onTouchMove={handleMove}
+      onMouseDown={handleMouseDown}
+      onMouseUp={handleMouseUp}
+      onMouseLeave={handleMouseUp}
+      onTouchEnd={handleMouseUp}
+    >
+      {/* 底层 - 右边（after） */}
+      <div className="absolute inset-0">
+        {after}
+      </div>
+
+      {/* 顶层 - 左边（before），被裁剪 */}
+      <div
+        className="absolute inset-0 overflow-hidden"
+        style={{ width: `${position}%` }}
+      >
+        {before}
+      </div>
+
+      {/* 滑块竖线 */}
+      <div
+        className="absolute top-0 bottom-0 w-1 bg-white shadow-lg"
+        style={{ left: `${position}%` }}
+      >
+        {/* 滑块手柄 */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 bg-white rounded-full shadow-xl flex items-center justify-center">
+          <svg className="w-6 h-6 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 9l4-4 4 4m0 6l-4 4-4-4" />
+          </svg>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function Home() {
   const router = useRouter();
   const { data: session, status } = useSession();
-  const title = "BREAK IT DOWN!";
-  const letters = title.split('');
 
-  // 跟踪每个字母的位置
-  const [letterPositions, setLetterPositions] = useState<{ [key: number]: { x: number; y: number } }>({});
-  const [buttonPositions, setButtonPositions] = useState<{ start: { x: number; y: number }, about: { x: number; y: number } }>({
-    start: { x: 0, y: 0 },
-    about: { x: 0, y: 0 }
+  // 创建一个足够高的容器来实现滚动
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // 监听滚动进度
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ['start start', 'end end']
   });
 
-  const startButtonRef = useRef<HTMLDivElement>(null);
-  const aboutButtonRef = useRef<HTMLDivElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const dragTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  // 视频模糊层 - 模糊程度随滚动减少
+  const videoBlur = useTransform(scrollYProgress, [0, 0.08], [20, 0]);
+  const videoOpacity = useTransform(scrollYProgress, [0, 0.08, 0.15], [1, 0.5, 0]);
 
-  // 节流的拖动处理函数
-  const handleLetterDrag = useCallback((event: any, index: number) => {
-    if (dragTimeoutRef.current) return;
+  // Logo层 - 缩放和虚化
+  const logoScale = useTransform(scrollYProgress, [0, 0.1, 0.15], [1, 2.5, 3]);
+  const logoBlur = useTransform(scrollYProgress, [0, 0.08, 0.15], [0, 10, 30]);
+  const logoOpacity = useTransform(scrollYProgress, [0, 0.1, 0.15], [1, 0.5, 0]);
 
-    dragTimeoutRef.current = setTimeout(() => {
-      if (containerRef.current) {
-        const containerRect = containerRef.current.getBoundingClientRect();
-        const element = event.target as HTMLElement;
-        const rect = element.getBoundingClientRect();
-        setLetterPositions(prev => ({
-          ...prev,
-          [index]: {
-            x: rect.left + rect.width / 2 - containerRect.left,
-            y: rect.top + rect.height / 2 - containerRect.top
-          }
-        }));
-      }
-      dragTimeoutRef.current = null;
-    }, 16); // ~60fps
-  }, []);
+  // 网站名字层 - 在logo消失后出现
+  const titleOpacity = useTransform(scrollYProgress, [0.05, 0.1, 0.25, 0.3], [0, 1, 1, 0]);
+  const titleY = useTransform(scrollYProgress, [0.05, 0.1], [50, 0]);
 
-  // 获取按钮位置
-  useEffect(() => {
-    const updateButtonPositions = () => {
-      if (startButtonRef.current && aboutButtonRef.current && containerRef.current) {
-        const containerRect = containerRef.current.getBoundingClientRect();
-        const startRect = startButtonRef.current.getBoundingClientRect();
-        const aboutRect = aboutButtonRef.current.getBoundingClientRect();
+  // 宣传语层 - 在title消失后出现
+  const taglineOpacity = useTransform(scrollYProgress, [0.2, 0.25, 0.4, 0.45], [0, 1, 1, 0]);
+  const taglineY = useTransform(scrollYProgress, [0.2, 0.25], [50, 0]);
 
-        setButtonPositions({
-          start: {
-            x: startRect.left + startRect.width / 2 - containerRect.left,
-            y: startRect.top + startRect.height / 2 - containerRect.top
-          },
-          about: {
-            x: aboutRect.left + aboutRect.width / 2 - containerRect.left,
-            y: aboutRect.top + aboutRect.height / 2 - containerRect.top
-          }
-        });
-      }
-    };
-
-    updateButtonPositions();
-    window.addEventListener('resize', updateButtonPositions);
-    return () => window.removeEventListener('resize', updateButtonPositions);
-  }, []);
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.05,
-        delayChildren: 0.2,
-      }
-    }
-  };
-
-  const letterVariants = {
-    hidden: {
-      opacity: 0,
-      y: 50,
-      scale: 0.5,
-    },
-    visible: {
-      opacity: 1,
-      y: 0,
-      scale: 1,
-      transition: {
-        type: "spring",
-        damping: 12,
-        stiffness: 200,
-      }
-    }
-  };
-
-  const buttonVariants = {
-    hidden: { opacity: 0, y: 30 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        delay: 2,
-        duration: 0.6,
-      }
-    }
-  };
+  // 3D折叠效果 - 滚动到末尾时整个视差层沿X轴向后折叠
+  const foldRotateX = useTransform(scrollYProgress, [0.6, 1], [0, 70]);
+  const foldTranslateZ = useTransform(scrollYProgress, [0.6, 1], [0, -800]);
+  const foldScale = useTransform(scrollYProgress, [0.6, 1], [1, 0.8]);
+  const foldBlur = useTransform(scrollYProgress, [0.6, 1], [0, 40]);
+  const foldOpacity = useTransform(scrollYProgress, [0.6, 1], [1, 0]);
 
   return (
-    <main ref={containerRef} className="relative min-h-screen bg-black text-white overflow-hidden">
-      {/* 背景装饰 - 树状网格线 */}
-      <div className="absolute inset-0 overflow-hidden opacity-20">
-        <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse">
-              <circle cx="25" cy="25" r="1" fill="#8b5cf6" opacity="0.3"/>
-            </pattern>
-            <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#60a5fa" />
-              <stop offset="50%" stopColor="#a78bfa" />
-              <stop offset="100%" stopColor="#ec4899" />
-            </linearGradient>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#grid)" />
-          {/* 装饰性连接线 */}
-          <line x1="10%" y1="20%" x2="30%" y2="40%" stroke="url(#lineGradient)" strokeWidth="1" opacity="0.3"/>
-          <line x1="70%" y1="30%" x2="90%" y2="50%" stroke="url(#lineGradient)" strokeWidth="1" opacity="0.3"/>
-          <line x1="20%" y1="70%" x2="40%" y2="90%" stroke="url(#lineGradient)" strokeWidth="1" opacity="0.3"/>
-          <line x1="60%" y1="60%" x2="80%" y2="80%" stroke="url(#lineGradient)" strokeWidth="1" opacity="0.3"/>
-        </svg>
-      </div>
-
-      {/* 连接线层 - SVG */}
-      <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 5 }}>
-        {Object.entries(letterPositions).map(([index, pos]) => {
-          const letterIndex = parseInt(index);
-          const nonSpaceIndex = letters.slice(0, letterIndex + 1).filter(l => l !== ' ').length - 1;
-          const totalNonSpace = letters.filter(l => l !== ' ').length;
-          const isLeftHalf = nonSpaceIndex < Math.ceil(totalNonSpace / 2);
-          const targetPos = isLeftHalf ? buttonPositions.start : buttonPositions.about;
-
-          if (letters[letterIndex] === ' ') return null;
-
-          // 创建直角转弯路径
-          const midY = pos.y + (targetPos.y - pos.y) * 0.5;
-          const pathData = `M ${pos.x} ${pos.y} L ${pos.x} ${midY} L ${targetPos.x} ${midY} L ${targetPos.x} ${targetPos.y}`;
-
-          return (
-            <path
-              key={`line-${index}`}
-              d={pathData}
-              stroke="#60a5fa"
-              strokeWidth="2"
-              strokeDasharray="5,5"
-              fill="none"
-              opacity="0.4"
-            />
-          );
-        })}
-      </svg>
-
-      {/* 主内容 */}
-      <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4">
-        {/* 标题 - 树状节点风格 */}
-        <motion.header
-          className="mb-8 relative"
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-          role="banner"
+    <div ref={containerRef} className="relative">
+      {/* 3D折叠容器 - 包含所有视差层 */}
+      <motion.div
+        className="fixed inset-0"
+        style={{
+          perspective: '500px',
+          transformStyle: 'preserve-3d',
+          rotateX: foldRotateX,
+          translateZ: foldTranslateZ,
+          scale: foldScale,
+          filter: useTransform(foldBlur, (v) => `blur(${v}px)`),
+          opacity: foldOpacity,
+        }}
+      >
+        {/* 固定在视口的视频层 */}
+        <motion.div
+          className="absolute inset-0 z-0"
+          style={{
+            filter: useTransform(videoBlur, (v) => `blur(${v}px)`),
+            opacity: videoOpacity,
+          }}
         >
-          <h1 className="sr-only">Break It Down - 探索万物的本质</h1>
-          <div className="flex flex-wrap justify-center gap-3 md:gap-4 relative" style={{ zIndex: 1 }}>
-            {letters.map((letter, index) => (
-              <motion.div
-                key={index}
-                variants={letterVariants}
-                drag
-                dragMomentum={false}
-                dragElastic={0.1}
-                onDrag={(event) => handleLetterDrag(event, index)}
-                className="relative group cursor-move"
-              >
-                {/* 节点圆圈背景 */}
-                <div className={`
-                  absolute inset-0 rounded-full
-                  bg-gradient-to-br from-blue-500/20 via-purple-500/20 to-pink-500/20
-                  border-2 border-purple-400/50
-                  backdrop-blur-sm
-                  transition-all duration-300
-                  group-hover:scale-110 group-hover:border-purple-400
-                  ${letter === ' ' ? 'opacity-0' : ''}
-                `} style={{
-                  width: letter === ' ' ? '1rem' : 'clamp(3rem, 10vw, 7rem)',
-                  height: letter === ' ' ? '1rem' : 'clamp(3rem, 10vw, 7rem)',
-                  transform: 'translate(-50%, -50%)',
-                  left: '50%',
-                  top: '50%',
-                }}></div>
+          {/* TODO: 替换为用户的视频文件 */}
+          {/* <video
+            src="/videos/hero-background.mp4"
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="w-full h-full object-cover"
+          /> */}
+          {/* 临时占位背景 */}
+          <div className="w-full h-full bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900" />
+        </motion.div>
 
-                {/* 字母 */}
-                <span
-                  className={`
-                    relative z-10 text-4xl md:text-6xl lg:text-7xl font-black
-                    ${letter === ' ' ? 'w-8 md:w-12' : ''}
-                    bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400
-                    transition-all duration-300
-                    group-hover:scale-110
-                  `}
-                  style={{
-                    textShadow: '0 0 20px rgba(168, 85, 247, 0.6)',
-                    display: 'inline-block',
-                    minWidth: letter === ' ' ? '2rem' : '4rem',
-                    textAlign: 'center',
+        {/* Logo层 */}
+        <motion.div
+          className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none"
+          style={{
+            scale: logoScale,
+            filter: useTransform(logoBlur, (v) => `blur(${v}px)`),
+            opacity: logoOpacity,
+          }}
+        >
+          <div className="text-center">
+            {/* TODO: 替换为用户的Logo图片 */}
+            {/* <img src="/images/logo.png" alt="Logo" className="w-64 h-64" /> */}
+            <div className="w-48 h-48 mx-auto bg-gradient-to-br from-cyan-400 to-purple-500 rounded-2xl flex items-center justify-center">
+              <span className="text-6xl font-black text-white">LOGO</span>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* 网站名字层 */}
+        <motion.div
+          className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none"
+          style={{ opacity: titleOpacity, y: titleY }}
+        >
+          <h1 className="text-6xl md:text-8xl font-black text-white tracking-wider">
+            BREAK IT DOWN
+          </h1>
+        </motion.div>
+
+        {/* 宣传语层 - 滚动消失 */}
+        <motion.div
+          className="absolute inset-0 z-30 flex items-center justify-center pointer-events-none"
+          style={{ opacity: taglineOpacity, y: taglineY }}
+        >
+          <p className="text-2xl md:text-3xl text-white/80 text-center max-w-2xl px-4">
+            探索万物的本质 · 从复杂到简单的逆熵之旅
+          </p>
+        </motion.div>
+      </motion.div>
+
+      {/* 创建足够高的滚动区域（视差动画区域） */}
+      <div className="h-[400vh]" />
+
+      {/* 宣传内容区域 - 滚动到这里显示 */}
+      <div className="relative z-50 bg-black text-white">
+        {/* 特性介绍 1 */}
+        <section className="min-h-screen flex items-center justify-center py-20">
+          <div className="max-w-6xl mx-auto px-8 grid md:grid-cols-2 gap-12 items-center">
+            <div className="order-2 md:order-1">
+              {/* 前后对比滑块 */}
+              <ComparisonSlider
+                before={
+                  <div className="w-full h-full bg-gradient-to-br from-slate-800 to-slate-900 flex flex-col items-center justify-center">
+                    <span className="text-4xl mb-2">📷</span>
+                    <span className="text-gray-400">上传图片</span>
+                  </div>
+                }
+                after={
+                  <div className="w-full h-full bg-gradient-to-br from-cyan-500/30 to-purple-500/30 flex flex-col items-center justify-center border-2 border-cyan-400/50">
+                    <span className="text-4xl mb-2">✅</span>
+                    <span className="text-cyan-300 font-medium">iPhone 15 Pro</span>
+                    <span className="text-sm text-gray-400 mt-1">电子产品 · 手机</span>
+                  </div>
+                }
+                alt="智能识别"
+              />
+            </div>
+            <div className="order-1 md:order-2">
+              <h2 className="text-4xl font-bold mb-6 bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
+                智能识别
+              </h2>
+              <p className="text-xl text-gray-300 leading-relaxed">
+                上传图片或输入文字，AI 智能识别物品类型。借助先进的计算机视觉技术，
+                快速获取物品的详细信息、分类标签和简要描述。
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* 特性介绍 2 */}
+        <section className="min-h-screen flex items-center justify-center py-20">
+          <div className="max-w-6xl mx-auto px-8 grid md:grid-cols-2 gap-12 items-center">
+            <div>
+              <h2 className="text-4xl font-bold mb-6 bg-gradient-to-r from-pink-400 to-rose-400 bg-clip-text text-transparent">
+                深度拆解
+              </h2>
+              <p className="text-xl text-gray-300 leading-relaxed">
+                从多个维度拆解事物本质，了解其组成部分、材料构成、
+                制作工艺以及供应链上下游。让你对事物有更深入的理解。
+              </p>
+            </div>
+            <div>
+              {/* 前后对比滑块 */}
+              <ComparisonSlider
+                before={
+                  <div className="w-full h-full bg-gradient-to-br from-slate-800 to-slate-900 flex flex-col items-center justify-center p-6">
+                    <span className="text-4xl mb-2">📦</span>
+                    <span className="text-gray-400">iPhone 15 Pro</span>
+                  </div>
+                }
+                after={
+                  <div className="w-full h-full bg-gradient-to-br from-pink-500/30 to-rose-500/30 flex flex-col items-center justify-center p-4 border-2 border-pink-400/50 overflow-auto">
+                    <div className="text-sm text-pink-300 font-medium mb-2">组成部分</div>
+                    <div className="text-xs space-y-1 text-gray-300">
+                      <div>📱 A17 Pro 芯片</div>
+                      <div>🖥️ OLED 显示屏</div>
+                      <div>🔋 钛金属边框</div>
+                      <div>📷 4800万像素摄像头</div>
+                      <div>🔊 立体声扬声器</div>
+                    </div>
+                  </div>
+                }
+                alt="深度拆解"
+              />
+            </div>
+          </div>
+        </section>
+
+        {/* 特性介绍 3 */}
+        <section className="min-h-screen flex items-center justify-center py-20">
+          <div className="max-w-6xl mx-auto px-8 grid md:grid-cols-2 gap-12 items-center">
+            <div className="order-2 md:order-1">
+              {/* 前后对比滑块 */}
+              <ComparisonSlider
+                before={
+                  <div className="w-full h-full bg-gradient-to-br from-slate-800 to-slate-900 flex flex-col items-center justify-center">
+                    <span className="text-4xl mb-2">📋</span>
+                    <span className="text-gray-400">纯文本数据</span>
+                  </div>
+                }
+                after={
+                  <div className="w-full h-full bg-gradient-to-br from-amber-500/30 to-orange-500/30 flex flex-col items-center justify-center border-2 border-amber-400/50 p-4">
+                    <div className="text-amber-300 font-medium mb-2">知识图谱</div>
+                    <div className="w-full h-48 bg-black/30 rounded-lg flex items-center justify-center">
+                      <div className="text-2xl">🕸️</div>
+                    </div>
+                  </div>
+                }
+                alt="可视化展示"
+              />
+            </div>
+            <div className="order-1 md:order-2">
+              <h2 className="text-4xl font-bold mb-6 bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent">
+                可视化展示
+              </h2>
+              <p className="text-xl text-gray-300 leading-relaxed">
+                采用精美的可视化图表展示拆解结果，
+                让你直观理解知识脉络。多主题皮肤适配，无论白天黑夜都能舒适浏览。
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* CTA 按钮区域 - 在最底部 */}
+        <section className="min-h-[50vh] flex items-center justify-center py-20">
+          <div className="text-center">
+            <h2 className="text-5xl font-bold mb-8">
+              准备好探索了吗？
+            </h2>
+            <p className="text-xl text-gray-400 mb-12 max-w-xl mx-auto">
+              从今天开始，用 AI 帮你拆解万物的本质
+            </p>
+            <div className="flex flex-col sm:flex-row gap-6 justify-center">
+              {status === 'authenticated' ? (
+                <button
+                  className="px-12 py-5 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl font-bold text-xl shadow-2xl hover:shadow-purple-500/50 transition-all duration-300 hover:scale-105"
+                  onClick={() => {
+                    localStorage.removeItem('deconstructionTree');
+                    localStorage.removeItem('identificationResult');
+                    localStorage.removeItem('imagePreview');
+                    localStorage.removeItem('knowledgeCache');
+                    localStorage.removeItem('nodePositions');
+                    localStorage.removeItem('humorLevel');
+                    localStorage.removeItem('professionalLevel');
+                    localStorage.removeItem('promptMode');
+                    localStorage.removeItem('customPrompt');
+                    localStorage.removeItem('setupState');
+                    localStorage.removeItem('fromSetup');
+                    router.push('/setup');
                   }}
                 >
-                  {letter === ' ' ? '\u00A0' : letter}
-                </span>
-
-                {/* 节点光晕效果 */}
-                {letter !== ' ' && (
-                  <div className="absolute inset-0 rounded-full bg-purple-500/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{
-                    width: 'clamp(3rem, 10vw, 7rem)',
-                    height: 'clamp(3rem, 10vw, 7rem)',
-                    transform: 'translate(-50%, -50%)',
-                    left: '50%',
-                    top: '50%',
-                  }}></div>
-                )}
-              </motion.div>
-            ))}
+                  🚀 新建拆解
+                </button>
+              ) : (
+                <button
+                  className="px-12 py-5 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl font-bold text-xl shadow-2xl hover:shadow-purple-500/50 transition-all duration-300 hover:scale-105"
+                  onClick={() => router.push('/login')}
+                >
+                  🔐 登录 / 注册
+                </button>
+              )}
+              <Link href="/about">
+                <button className="px-12 py-5 bg-white/10 backdrop-blur-lg border-2 border-white/20 rounded-xl font-bold text-xl hover:bg-white/20 hover:border-white/40 transition-all duration-300">
+                  关于我们
+                </button>
+              </Link>
+            </div>
           </div>
-        </motion.header>
+        </section>
 
-        {/* 副标题 */}
-        <motion.p
-          className="text-xl md:text-2xl text-gray-300 mb-12 text-center max-w-2xl"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.5, duration: 0.8 }}
-        >
-          探索万物的本质 · 从复杂到简单的逆熵之旅
-        </motion.p>
-
-        {/* 按钮组 */}
-        <motion.div
-          className="flex flex-col sm:flex-row gap-6"
-          variants={buttonVariants}
-          initial="hidden"
-          animate="visible"
-        >
-          {/* 新建拆解/登录按钮 */}
-          <div ref={startButtonRef}>
-            {status === 'authenticated' ? (
-              <motion.button
-                className="px-12 py-5 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl font-bold text-xl shadow-2xl hover:shadow-purple-500/50 transition-all duration-300 relative overflow-hidden group"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => {
-                  // 清除所有缓存
-                  localStorage.removeItem('deconstructionTree');
-                  localStorage.removeItem('identificationResult');
-                  localStorage.removeItem('imagePreview');
-                  localStorage.removeItem('knowledgeCache');
-                  localStorage.removeItem('nodePositions');
-                  localStorage.removeItem('humorLevel');
-                  localStorage.removeItem('professionalLevel');
-                  localStorage.removeItem('promptMode');
-                  localStorage.removeItem('customPrompt');
-                  localStorage.removeItem('setupState');
-                  localStorage.removeItem('fromSetup');
-                  // 导航到拆解页面
-                  router.push('/setup');
-                }}
-              >
-                <span className="relative z-10">🚀 新建拆解</span>
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              </motion.button>
-            ) : (
-              <motion.button
-                className="px-12 py-5 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl font-bold text-xl shadow-2xl hover:shadow-purple-500/50 transition-all duration-300 relative overflow-hidden group"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => {
-                  // 清除所有缓存，避免登录后自动创建旧的会话
-                  localStorage.removeItem('deconstructionTree');
-                  localStorage.removeItem('identificationResult');
-                  localStorage.removeItem('imagePreview');
-                  localStorage.removeItem('knowledgeCache');
-                  localStorage.removeItem('nodePositions');
-                  localStorage.removeItem('humorLevel');
-                  localStorage.removeItem('professionalLevel');
-                  localStorage.removeItem('promptMode');
-                  localStorage.removeItem('customPrompt');
-                  router.push('/login');
-                }}
-              >
-                <span className="relative z-10">🔐 登录 / 注册</span>
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              </motion.button>
-            )}
-          </div>
-
-          {/* 关于我们按钮 */}
-          <div ref={aboutButtonRef}>
-            <Link href="/about">
-              <motion.button
-                className="px-12 py-5 bg-white/10 backdrop-blur-lg border-2 border-white/20 rounded-xl font-bold text-xl hover:bg-white/20 hover:border-white/40 transition-all duration-300"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                关于我们
-              </motion.button>
-            </Link>
-          </div>
-        </motion.div>
-
-        {/* 底部提示 */}
-        <motion.div
-          className="absolute bottom-8 text-gray-500 text-sm"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 2.5, duration: 1 }}
-        >
+        {/* 底部 */}
+        <footer className="py-8 text-center text-gray-500 border-t border-white/10">
           <p>Powered by AI · Next.js · React Flow</p>
-        </motion.div>
+        </footer>
       </div>
-    </main>
+    </div>
   );
 }
