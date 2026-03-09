@@ -82,29 +82,29 @@ export default function Home() {
     offset: ['start start', 'end end']
   });
 
-  // 视频模糊层 - 模糊程度随滚动减少
-  const videoBlur = useTransform(scrollYProgress, [0, 0.08], [20, 0]);
-  const videoOpacity = useTransform(scrollYProgress, [0, 0.08, 0.15], [1, 0.5, 0]);
+  // 视频模糊层 - 一开始清晰，随着滚动逐渐模糊
+  const videoBlur = useTransform(scrollYProgress, [0, 0.4], [0, 15]);
+  const videoOpacity = useTransform(scrollYProgress, [0, 0.4, 0.6], [1, 0.6, 0]);
 
-  // Logo层 - 缩放和虚化
-  const logoScale = useTransform(scrollYProgress, [0, 0.1, 0.15], [1, 2.5, 3]);
-  const logoBlur = useTransform(scrollYProgress, [0, 0.08, 0.15], [0, 10, 30]);
-  const logoOpacity = useTransform(scrollYProgress, [0, 0.1, 0.15], [1, 0.5, 0]);
+  // Logo层 - 缩放和虚化，延长消失时间
+  const logoScale = useTransform(scrollYProgress, [0, 0.15, 0.25], [1, 2.5, 3.5]);
+  const logoBlur = useTransform(scrollYProgress, [0, 0.12, 0.25], [0, 10, 30]);
+  const logoOpacity = useTransform(scrollYProgress, [0, 0.15, 0.25], [1, 0.5, 0]);
 
-  // 网站名字层 - 在logo消失后出现
-  const titleOpacity = useTransform(scrollYProgress, [0.05, 0.1, 0.18, 0.23], [0, 1, 1, 0]);
-  const titleY = useTransform(scrollYProgress, [0.05, 0.1], [50, 0]);
+  // 网站名字层 - 在logo消失后出现，延长间隔
+  const titleOpacity = useTransform(scrollYProgress, [0.2, 0.28, 0.35, 0.42], [0, 1, 1, 0]);
+  const titleY = useTransform(scrollYProgress, [0.2, 0.28], [50, 0]);
 
   // 宣传语层 - 在title消失后出现
-  const taglineOpacity = useTransform(scrollYProgress, [0.3, 0.35, 0.4, 0.45], [0, 1, 1, 0]);
-  const taglineY = useTransform(scrollYProgress, [0.3, 0.35], [50, 0]);
+  const taglineOpacity = useTransform(scrollYProgress, [0.45, 0.52, 0.58, 0.65], [0, 1, 1, 0]);
+  const taglineY = useTransform(scrollYProgress, [0.45, 0.52], [50, 0]);
 
   // 3D折叠效果 - 滚动到末尾时整个视差层沿X轴向后折叠
-  const foldRotateX = useTransform(scrollYProgress, [0.6, 1], [0, 70]);
-  const foldTranslateZ = useTransform(scrollYProgress, [0.6, 1], [0, -800]);
-  const foldScale = useTransform(scrollYProgress, [0.6, 1], [1, 0.8]);
-  const foldBlur = useTransform(scrollYProgress, [0.6, 1], [0, 40]);
-  const foldOpacity = useTransform(scrollYProgress, [0.6, 1], [1, 0]);
+  const foldRotateX = useTransform(scrollYProgress, [0.7, 1], [0, 70]);
+  const foldTranslateZ = useTransform(scrollYProgress, [0.7, 1], [0, -800]);
+  const foldScale = useTransform(scrollYProgress, [0.7, 1], [1, 0.8]);
+  const foldBlur = useTransform(scrollYProgress, [0.7, 1], [0, 40]);
+  const foldOpacity = useTransform(scrollYProgress, [0.7, 1], [1, 0]);
 
   return (
     <div ref={containerRef} className="relative">
@@ -130,14 +130,14 @@ export default function Home() {
           }}
         >
           {/* TODO: 替换为用户的视频文件 */}
-          {/* <video
+          { <video
             src="/videos/hero-background.mp4"
             autoPlay
             muted
             loop
             playsInline
             className="w-full h-full object-cover"
-          /> */}
+          /> }
           {/* 临时占位背景 */}
           <div className="w-full h-full bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900" />
         </motion.div>
@@ -152,13 +152,8 @@ export default function Home() {
           }}
         >
           <div className="text-center">
-            {/* TODO: 替换为用户的Logo图片 */}
-            {/* <img src="/images/logo.png" alt="Logo" className="w-64 h-64" /> */}
-            <div className="w-48 h-48 mx-auto bg-gradient-to-br from-yellow-400 via-orange-500 to-red-500 rounded-2xl flex items-center justify-center shadow-2xl shadow-orange-500/50">
-              <svg className="w-24 h-24 text-white drop-shadow-lg" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-              </svg>
-            </div>
+            {/* Logo 图片 */}
+            <img src="/images/logo.svg" alt="Logo" className="w-80 h-80 mx-auto" />
           </div>
         </motion.div>
 
@@ -199,7 +194,7 @@ export default function Home() {
       </motion.div>
 
       {/* 创建足够高的滚动区域（视差动画区域） */}
-      <div className="h-[600vh]" />
+      <div className="h-[800vh]" />
 
       {/* 宣传内容区域 - 滚动到这里显示 */}
       <div className="relative z-50 bg-black text-white">
