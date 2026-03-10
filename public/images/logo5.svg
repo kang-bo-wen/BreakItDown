@@ -1,0 +1,27 @@
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="grad5" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#fbbf24;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f97316;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- 太阳光芒 -->
+  <g stroke="url(#grad5)" stroke-width="2" stroke-linecap="round">
+    <line x1="100" y1="15" x2="100" y2="30" />
+    <line x1="100" y1="170" x2="100" y2="185" />
+    <line x1="15" y1="100" x2="30" y2="100" />
+    <line x1="170" y1="100" x2="185" y2="100" />
+    <line x1="40" y1="40" x2="50" y2="50" />
+    <line x1="160" y1="160" x2="150" y2="150" />
+    <line x1="160" y1="40" x2="150" y2="50" />
+    <line x1="40" y1="160" x2="50" y2="150" />
+  </g>
+
+  <!-- 中心立方体 - 打开效果 -->
+  <rect x="60" y="60" width="80" height="80" fill="none" stroke="white" stroke-width="2" rx="8" />
+  <!-- 打开的盖子 -->
+  <path d="M60 60 L40 40 L100 20 L140 40 L120 60" fill="none" stroke="white" stroke-width="2" stroke-linejoin="round" />
+  <!-- 中心点 -->
+  <circle cx="100" cy="100" r="6" fill="white" />
+</svg>

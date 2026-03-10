@@ -103,25 +103,29 @@ export default function Home() {
   const videoBlur = useTransform(scrollYProgress, [0, 0.25], [0, 15]);
   const videoOpacity = useTransform(scrollYProgress, [0, 0.4, 0.6], [1, 0.6, 0]);
 
-  // Logo层 - 缩放和虚化，延长消失时间
-  const logoScale = useTransform(scrollYProgress, [0, 0.15, 0.25], [1, 2.5, 3.5]);
-  const logoBlur = useTransform(scrollYProgress, [0, 0.12, 0.25], [0, 10, 30]);
-  const logoOpacity = useTransform(scrollYProgress, [0, 0.15, 0.25], [1, 0.5, 0]);
+  // 立方体三个面的拆解动画 - 先播放拆解
+  // 顶面: 0.02-0.08
+  const faceTopX = useTransform(scrollYProgress, [0, 0.02, 0.08, 0.12], [0, 0, 0, 0]);
+  const faceTopY = useTransform(scrollYProgress, [0, 0.02, 0.08, 0.12], [0, 0, -50, -50]);
+  // 左面: 0.08-0.14
+  const faceLeftX = useTransform(scrollYProgress, [0, 0.08, 0.14, 0.18], [0, 0, -50, -50]);
+  const faceLeftY = useTransform(scrollYProgress, [0, 0.08, 0.14, 0.18], [0, 0, 25, 25]);
+  // 右面: 0.14-0.20
+  const faceRightX = useTransform(scrollYProgress, [0, 0.14, 0.20, 0.24], [0, 0, 50, 50]);
+  const faceRightY = useTransform(scrollYProgress, [0, 0.14, 0.20, 0.24], [0, 0, 25, 25]);
 
-  // 网站名字层 - 在logo消失后出现，延长间隔
-  const titleOpacity = useTransform(scrollYProgress, [0.2, 0.28, 0.35, 0.42], [0, 1, 1, 0]);
-  const titleY = useTransform(scrollYProgress, [0.2, 0.28], [50, 0]);
+  // Logo层 - 缩放和虚化，在拆解完成后开始
+  const logoScale = useTransform(scrollYProgress, [0.20, 0.25, 0.35], [1, 2.5, 3.5]);
+  const logoBlur = useTransform(scrollYProgress, [0.20, 0.22, 0.35], [0, 10, 30]);
+  const logoOpacity = useTransform(scrollYProgress, [0.20, 0.25, 0.35], [1, 0.5, 0]);
 
-  // 宣传语层 - 在title消失后出现
-  const taglineOpacity = useTransform(scrollYProgress, [0.45, 0.52, 0.58, 0.65], [0, 1, 1, 0]);
+  // 网站名字层 - 在logo消失后出现，时间缩短
+  const titleOpacity = useTransform(scrollYProgress, [0.25, 0.32, 0.45, 0.52], [0, 1, 1, 0]);
+  const titleY = useTransform(scrollYProgress, [0.25, 0.32], [50, 0]);
+
+  // 宣传语层 - 在title之后出现
+  const taglineOpacity = useTransform(scrollYProgress, [0.45, 0.52, 0.95, 1], [0, 1, 1, 0]);
   const taglineY = useTransform(scrollYProgress, [0.45, 0.52], [50, 0]);
-
-  // 3D折叠效果 - 滚动到末尾时整个视差层沿X轴向后折叠
-  const foldRotateX = useTransform(scrollYProgress, [0.7, 1], [0, 70]);
-  const foldTranslateZ = useTransform(scrollYProgress, [0.7, 1], [0, -800]);
-  const foldScale = useTransform(scrollYProgress, [0.7, 1], [1, 0.8]);
-  const foldBlur = useTransform(scrollYProgress, [0.7, 1], [0, 40]);
-  const foldOpacity = useTransform(scrollYProgress, [0.7, 1], [1, 0]);
 
   return (
     <div ref={containerRef} className="relative">
@@ -150,7 +154,7 @@ export default function Home() {
           <div className="w-full h-full bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900" />
         </motion.div>
 
-        {/* Logo层 */}
+        {/* Logo层 - 立方体拆解动画 */}
         <motion.div
           className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none"
           style={{
@@ -159,10 +163,42 @@ export default function Home() {
             opacity: logoOpacity,
           }}
         >
-          <div className="text-center">
-            {/* Logo 图片 */}
-            <img src="/images/logo.svg" alt="Logo" className="w-80 h-80 mx-auto" />
-          </div>
+          <svg viewBox="0 0 200 200" className="w-[40rem] h-[40rem]">
+            <defs>
+              <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#22d3ee" />
+                <stop offset="50%" stopColor="#ffffff" />
+                <stop offset="100%" stopColor="#a78bfa" />
+              </linearGradient>
+            </defs>
+
+            {/* 中心立方体 - 等轴测 */}
+            <g transform="translate(100, 100)">
+              {/* 顶面 - 向上拆解 */}
+              <motion.g
+                style={{ x: faceTopX, y: faceTopY }}
+              >
+                <path d="M0 -50 L45 -25 L0 0 L-45 -25 Z" fill="none" stroke="url(#logoGrad)" strokeWidth="2.5" />
+              </motion.g>
+
+              {/* 右面向右下拆解 */}
+              <motion.g
+                style={{ x: faceRightX, y: faceRightY }}
+              >
+                <path d="M45 -25 L45 25 L0 50 L0 0 Z" fill="none" stroke="url(#logoGrad)" strokeWidth="2.5" />
+              </motion.g>
+
+              {/* 左面向左下拆解 */}
+              <motion.g
+                style={{ x: faceLeftX, y: faceLeftY }}
+              >
+                <path d="M-45 -25 L0 0 L0 50 L-45 25 Z" fill="none" stroke="url(#logoGrad)" strokeWidth="2.5" />
+              </motion.g>
+            </g>
+
+            {/* 中心原子核 */}
+            <circle cx="100" cy="100" r="5" fill="white" />
+          </svg>
         </motion.div>
 
         {/* 网站名字层 */}
@@ -202,7 +238,7 @@ export default function Home() {
       </motion.div>
 
       {/* 创建足够高的滚动区域（视差动画区域） */}
-      <div className="h-[800vh]" />
+      <div className="h-[1000vh]" />
 
       {/* 宣传内容区域 - 滚动到这里显示 */}
       <div className="relative z-50 bg-black text-white">

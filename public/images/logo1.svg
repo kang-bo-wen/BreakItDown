@@ -15,7 +15,4 @@
     <!-- 左面 -->
     <path d="M-45 -25 L0 0 L0 50 L-45 25 Z" fill="none" stroke="url(#grad1)" stroke-width="2.5" />
   </g>
-
-  <!-- 中心原子核 -->
-  <circle cx="100" cy="100" r="5" fill="white" />
 </svg>
