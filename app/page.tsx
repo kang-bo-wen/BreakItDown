@@ -2,7 +2,6 @@
 
 import { useRef, useState, useCallback } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 
@@ -32,7 +31,7 @@ function ComparisonSlider({ before, after, alt }: { before: React.ReactNode; aft
   return (
     <div
       ref={containerRef}
-      className="relative w-full h-80 rounded-2xl overflow-hidden cursor-ew-resize select-none"
+      className="relative w-full h-[500px] rounded-2xl overflow-hidden cursor-ew-resize select-none"
       onMouseMove={handleMove}
       onTouchMove={handleMove}
       onMouseDown={handleMouseDown}
@@ -40,15 +39,15 @@ function ComparisonSlider({ before, after, alt }: { before: React.ReactNode; aft
       onMouseLeave={handleMouseUp}
       onTouchEnd={handleMouseUp}
     >
-      {/* 底层 - 右边（after） */}
+      {/* 底层 - 完整显示 after */}
       <div className="absolute inset-0">
         {after}
       </div>
 
-      {/* 顶层 - 左边（before），被裁剪 */}
+      {/* 顶层 - 用 clip-path 裁剪 before，保持图片静止 */}
       <div
-        className="absolute inset-0 overflow-hidden"
-        style={{ width: `${position}%` }}
+        className="absolute inset-0"
+        style={{ clipPath: `inset(0 ${100 - position}% 0 0)` }}
       >
         {before}
       </div>
@@ -83,7 +82,7 @@ export default function Home() {
   });
 
   // 视频模糊层 - 一开始清晰，随着滚动逐渐模糊
-  const videoBlur = useTransform(scrollYProgress, [0, 0.4], [0, 15]);
+  const videoBlur = useTransform(scrollYProgress, [0, 0.25], [0, 15]);
   const videoOpacity = useTransform(scrollYProgress, [0, 0.4, 0.6], [1, 0.6, 0]);
 
   // Logo层 - 缩放和虚化，延长消失时间
@@ -110,16 +109,7 @@ export default function Home() {
     <div ref={containerRef} className="relative">
       {/* 3D折叠容器 - 包含所有视差层 */}
       <motion.div
-        className="fixed inset-0"
-        style={{
-          perspective: '500px',
-          transformStyle: 'preserve-3d',
-          rotateX: foldRotateX,
-          translateZ: foldTranslateZ,
-          scale: foldScale,
-          filter: useTransform(foldBlur, (v) => `blur(${v}px)`),
-          opacity: foldOpacity,
-        }}
+        className="fixed inset-0 z-40"
       >
         {/* 固定在视口的视频层 */}
         <motion.div
@@ -198,24 +188,27 @@ export default function Home() {
 
       {/* 宣传内容区域 - 滚动到这里显示 */}
       <div className="relative z-50 bg-black text-white">
+        {/* 产品特性大标题 */}
+        <section className="pt-20 pb-10">
+          <div className="max-w-6xl mx-auto px-8 text-center">
+            <h2 className="text-5xl md:text-6xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400">
+              产品特性
+            </h2>
+            <p className="text-xl text-gray-400">探索万物的本质，从复杂到简单的逆熵之旅</p>
+          </div>
+        </section>
+
         {/* 特性介绍 1 */}
-        <section className="min-h-screen flex items-center justify-center py-20">
+        <section className="min-h-screen flex items-center justify-center py-10">
           <div className="max-w-6xl mx-auto px-8 grid md:grid-cols-2 gap-12 items-center">
             <div className="order-2 md:order-1">
               {/* 前后对比滑块 */}
               <ComparisonSlider
                 before={
-                  <div className="w-full h-full bg-gradient-to-br from-slate-800 to-slate-900 flex flex-col items-center justify-center">
-                    <span className="text-4xl mb-2">📷</span>
-                    <span className="text-gray-400">上传图片</span>
-                  </div>
+                  <img src="/images/生成拍照图片.png" alt="上传图片" className="w-full h-full object-cover" />
                 }
                 after={
-                  <div className="w-full h-full bg-gradient-to-br from-cyan-500/30 to-purple-500/30 flex flex-col items-center justify-center border-2 border-cyan-400/50">
-                    <span className="text-4xl mb-2">✅</span>
-                    <span className="text-cyan-300 font-medium">iPhone 15 Pro</span>
-                    <span className="text-sm text-gray-400 mt-1">电子产品 · 手机</span>
-                  </div>
+                  <img src="/images/识图.png" alt="AI识别结果" className="w-full h-full object-cover" />
                 }
                 alt="智能识别"
               />
@@ -248,22 +241,10 @@ export default function Home() {
               {/* 前后对比滑块 */}
               <ComparisonSlider
                 before={
-                  <div className="w-full h-full bg-gradient-to-br from-slate-800 to-slate-900 flex flex-col items-center justify-center p-6">
-                    <span className="text-4xl mb-2">📦</span>
-                    <span className="text-gray-400">iPhone 15 Pro</span>
-                  </div>
+                  <img src="/images/mac.png" alt="Mac电脑" className="w-full h-full object-cover" />
                 }
                 after={
-                  <div className="w-full h-full bg-gradient-to-br from-pink-500/30 to-rose-500/30 flex flex-col items-center justify-center p-4 border-2 border-pink-400/50 overflow-auto">
-                    <div className="text-sm text-pink-300 font-medium mb-2">组成部分</div>
-                    <div className="text-xs space-y-1 text-gray-300">
-                      <div>📱 A17 Pro 芯片</div>
-                      <div>🖥️ OLED 显示屏</div>
-                      <div>🔋 钛金属边框</div>
-                      <div>📷 4800万像素摄像头</div>
-                      <div>🔊 立体声扬声器</div>
-                    </div>
-                  </div>
+                  <img src="/images/mac 拆解.png" alt="拆解结果" className="w-full h-full object-cover" />
                 }
                 alt="深度拆解"
               />
@@ -278,18 +259,10 @@ export default function Home() {
               {/* 前后对比滑块 */}
               <ComparisonSlider
                 before={
-                  <div className="w-full h-full bg-gradient-to-br from-slate-800 to-slate-900 flex flex-col items-center justify-center">
-                    <span className="text-4xl mb-2">📋</span>
-                    <span className="text-gray-400">纯文本数据</span>
-                  </div>
+                  <img src="/images/文本.png" alt="文本数据" className="w-full h-full object-cover" />
                 }
                 after={
-                  <div className="w-full h-full bg-gradient-to-br from-amber-500/30 to-orange-500/30 flex flex-col items-center justify-center border-2 border-amber-400/50 p-4">
-                    <div className="text-amber-300 font-medium mb-2">知识图谱</div>
-                    <div className="w-full h-48 bg-black/30 rounded-lg flex items-center justify-center">
-                      <div className="text-2xl">🕸️</div>
-                    </div>
-                  </div>
+                  <img src="/images/可视化.png" alt="可视化展示" className="w-full h-full object-cover" />
                 }
                 alt="可视化展示"
               />
@@ -302,6 +275,241 @@ export default function Home() {
                 采用精美的可视化图表展示拆解结果，
                 让你直观理解知识脉络。多主题皮肤适配，无论白天黑夜都能舒适浏览。
               </p>
+            </div>
+          </div>
+        </section>
+
+        {/* 应用场景 */}
+        <section className="min-h-screen flex items-center justify-center py-20">
+          <div className="max-w-6xl mx-auto px-8">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
+              className="text-center mb-16"
+            >
+              <h2 className="text-5xl md:text-6xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-green-400 via-cyan-400 to-purple-400">
+                应用场景
+              </h2>
+              <p className="text-xl text-gray-400">探索万物的本质，从复杂到简单的逆熵之旅</p>
+            </motion.div>
+
+            <div className="grid md:grid-cols-2 gap-8">
+              <motion.div
+                initial={{ opacity: 0, x: -30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6, delay: 0.1 }}
+                viewport={{ once: true }}
+                className="bg-white/10 backdrop-blur-lg rounded-xl p-8 border border-white/20"
+              >
+                <h3 className="text-2xl font-bold mb-4 flex items-center gap-3">
+                  <span>🎓</span>
+                  <span className="bg-gradient-to-r from-green-400 to-cyan-400 bg-clip-text text-transparent">教育学习</span>
+                </h3>
+                <p className="text-gray-300 leading-relaxed">
+                  帮助学生理解物品的构成，将复杂的物体拆解为简单的组成部分，让学习更加直观有趣。
+                </p>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, x: 30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                viewport={{ once: true }}
+                className="bg-white/10 backdrop-blur-lg rounded-xl p-8 border border-white/20"
+              >
+                <h3 className="text-2xl font-bold mb-4 flex items-center gap-3">
+                  <span>🎨</span>
+                  <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">产品设计</span>
+                </h3>
+                <p className="text-gray-300 leading-relaxed">
+                  分析竞品的材料组成，了解产品的内部结构和原材料来源，为产品设计提供参考。
+                </p>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, x: -30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+                viewport={{ once: true }}
+                className="bg-white/10 backdrop-blur-lg rounded-xl p-8 border border-white/20"
+              >
+                <h3 className="text-2xl font-bold mb-4 flex items-center gap-3">
+                  <span>🌍</span>
+                  <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">环保意识</span>
+                </h3>
+                <p className="text-gray-300 leading-relaxed">
+                  了解产品的原材料来源和生产过程，增强环保意识，促进可持续消费。
+                </p>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, x: 30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6, delay: 0.4 }}
+                viewport={{ once: true }}
+                className="bg-white/10 backdrop-blur-lg rounded-xl p-8 border border-white/20"
+              >
+                <h3 className="text-2xl font-bold mb-4 flex items-center gap-3">
+                  <span>🎮</span>
+                  <span className="bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent">趣味探索</span>
+                </h3>
+                <p className="text-gray-300 leading-relaxed">
+                  探索日常物品的内在世界，满足好奇心，带来意想不到的知识收获。
+                </p>
+              </motion.div>
+            </div>
+          </div>
+        </section>
+
+        {/* 关于我们 */}
+        <section className="min-h-screen flex items-center justify-center py-20">
+          <div className="max-w-6xl mx-auto px-8">
+            {/* 标题 */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
+              className="text-center mb-16"
+            >
+              <h2 className="text-5xl md:text-6xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
+                关于我们
+              </h2>
+              <p className="text-xl text-gray-400 max-w-2xl mx-auto">
+                探索万物的本质，从复杂到简单的逆熵之旅
+              </p>
+            </motion.div>
+
+            <div className="grid md:grid-cols-2 gap-8 mb-12">
+              {/* 项目简介 */}
+              <motion.div
+                initial={{ opacity: 0, x: -30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6, delay: 0.1 }}
+                viewport={{ once: true }}
+                className="bg-white/10 backdrop-blur-lg rounded-xl p-8 border border-white/20"
+              >
+                <h3 className="text-2xl font-bold mb-4 flex items-center gap-3">
+                  <span>🎯</span>
+                  <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">项目简介</span>
+                </h3>
+                <p className="text-gray-300 leading-relaxed">
+                  Break It Down 是一个创新的交互式可视化项目，旨在通过 AI 技术帮助用户理解复杂物体的构成。
+                  我们将任何物体逐层拆解，直至最基本的原材料，让您以全新的视角认识身边的事物。
+                </p>
+              </motion.div>
+
+              {/* 核心理念 */}
+              <motion.div
+                initial={{ opacity: 0, x: 30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                viewport={{ once: true }}
+                className="bg-white/10 backdrop-blur-lg rounded-xl p-8 border border-white/20"
+              >
+                <h3 className="text-2xl font-bold mb-4 flex items-center gap-3">
+                  <span>💡</span>
+                  <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">核心理念</span>
+                </h3>
+                <div className="space-y-3 text-gray-300">
+                  <p>
+                    <strong className="text-white">熵逆转</strong> —
+，熵代表                    在物理学中系统的混乱程度。我们的项目反其道而行之，
+                    将复杂的成品"逆向"拆解为简单的原材料，让混乱回归有序。
+                  </p>
+                  <p>
+                    这不仅是一个技术展示，更是一种思维方式：
+                    <strong className="text-purple-300">从复杂到简单，从表象到本质</strong>。
+                  </p>
+                </div>
+              </motion.div>
+            </div>
+
+            {/* 功能特性 */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              viewport={{ once: true }}
+              className="bg-white/10 backdrop-blur-lg rounded-xl p-8 mb-12 border border-white/20"
+            >
+              <h3 className="text-2xl font-bold mb-6 flex items-center gap-3">
+                <span>✨</span>
+                <span className="bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">功能特性</span>
+              </h3>
+              <div className="grid md:grid-cols-3 gap-6">
+                <div className="bg-black/30 rounded-lg p-6">
+                  <div className="text-4xl mb-3">🖼️</div>
+                  <h4 className="text-xl font-semibold mb-2 text-white">AI 图片识别</h4>
+                  <p className="text-sm text-gray-400">
+                    上传图片，AI 自动识别物体类型和名称
+                  </p>
+                </div>
+                <div className="bg-black/30 rounded-lg p-6">
+                  <div className="text-4xl mb-3">🔍</div>
+                  <h4 className="text-xl font-semibold mb-2 text-white">递归拆解</h4>
+                  <p className="text-sm text-gray-400">
+                    逐层拆解物体，直至最基本的原材料
+                  </p>
+                </div>
+                <div className="bg-black/30 rounded-lg p-6">
+                  <div className="text-4xl mb-3">🌳</div>
+                  <h4 className="text-xl font-semibold mb-2 text-white">交互式可视化</h4>
+                  <p className="text-sm text-gray-400">
+                    树状图展示，支持拖拽、缩放、查看详情
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* 技术栈和使用场景 */}
+            <div className="grid md:grid-cols-2 gap-8">
+              {/* 技术栈 */}
+              <motion.div
+                initial={{ opacity: 0, x: -30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6, delay: 0.4 }}
+                viewport={{ once: true }}
+                className="bg-white/10 backdrop-blur-lg rounded-xl p-8 border border-white/20"
+              >
+                <h3 className="text-2xl font-bold mb-6 flex items-center gap-3">
+                  <span>🛠️</span>
+                  <span className="bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent">技术栈</span>
+                </h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="flex items-center gap-3 bg-black/30 rounded-lg p-4">
+                    <span className="text-2xl">⚛️</span>
+                    <div>
+                      <div className="font-semibold text-white">Next.js 15</div>
+                      <div className="text-xs text-gray-400">前端框架</div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 bg-black/30 rounded-lg p-4">
+                    <span className="text-2xl">🤖</span>
+                    <div>
+                      <div className="font-semibold text-white">AI 大模型</div>
+                      <div className="text-xs text-gray-400">智能识别</div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 bg-black/30 rounded-lg p-4">
+                    <span className="text-2xl">🎨</span>
+                    <div>
+                      <div className="font-semibold text-white">React Flow</div>
+                      <div className="text-xs text-gray-400">图形可视化</div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 bg-black/30 rounded-lg p-4">
+                    <span className="text-2xl">✨</span>
+                    <div>
+                      <div className="font-semibold text-white">Framer</div>
+                      <div className="text-xs text-gray-400">动画效果</div>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+
             </div>
           </div>
         </section>
@@ -344,11 +552,6 @@ export default function Home() {
                   🔐 登录 / 注册
                 </button>
               )}
-              <Link href="/about">
-                <button className="px-12 py-5 bg-white/10 backdrop-blur-lg border-2 border-white/20 rounded-xl font-bold text-xl hover:bg-white/20 hover:border-white/40 transition-all duration-300">
-                  关于我们
-                </button>
-              </Link>
             </div>
           </div>
         </section>

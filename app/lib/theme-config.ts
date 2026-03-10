@@ -61,6 +61,9 @@ export interface ThemeConfig {
   // 背景装饰
   techGridOpacity: string;
   radialGradient: string;
+  // GraphView 大容器样式
+  containerBorderGradient: string;
+  containerBgGradient: string;
   // 图片预览
   imagePreviewBg: string;
   imagePreviewBorder: string;
@@ -107,6 +110,9 @@ export const themes: Record<ThemeName, ThemeConfig> = {
     borderColorLight: 'border-cyan-500/20',
     techGridOpacity: 'opacity-30',
     radialGradient: 'radial-gradient(circle at 50% 0%, rgba(6, 182, 212, 0.1) 0%, transparent 50%)',
+    // GraphView 大容器样式 - 多彩渐变
+    containerBorderGradient: 'linear-gradient(135deg, rgba(6, 182, 212, 0.4), rgba(168, 85, 247, 0.4), rgba(34, 197, 94, 0.4), rgba(249, 115, 22, 0.4))',
+    containerBgGradient: 'linear-gradient(180deg, rgba(6, 182, 212, 0.08) 0%, rgba(168, 85, 247, 0.05) 50%, rgba(34, 197, 94, 0.03) 100%)',
     imagePreviewBg: 'bg-black/40',
     imagePreviewBorder: 'border-cyan-500/20',
     // GraphView 控制按钮样式
@@ -127,11 +133,11 @@ export const themes: Record<ThemeName, ThemeConfig> = {
     // 树形结构层级颜色（深色主题 - 青色科技风）
     treeColors: [
       { bg: 'bg-cyan-500/20', border: 'border-cyan-500/40', borderAccent: 'border-cyan-400', text: 'text-cyan-100', glow: 'shadow-cyan-500/50', gradient: 'from-cyan-500/30 via-cyan-400/20 to-transparent' },
-      { bg: 'bg-blue-500/20', border: 'border-blue-500/40', borderAccent: 'border-blue-400', text: 'text-blue-100', glow: 'shadow-blue-500/50', gradient: 'from-blue-500/30 via-blue-400/20 to-transparent' },
-      { bg: 'bg-indigo-500/20', border: 'border-indigo-500/40', borderAccent: 'border-indigo-400', text: 'text-indigo-100', glow: 'shadow-indigo-500/50', gradient: 'from-indigo-500/30 via-indigo-400/20 to-transparent' },
-      { bg: 'bg-violet-500/20', border: 'border-violet-500/40', borderAccent: 'border-violet-400', text: 'text-violet-100', glow: 'shadow-violet-500/50', gradient: 'from-violet-500/30 via-violet-400/20 to-transparent' },
+      { bg: 'bg-orange-500/20', border: 'border-orange-500/40', borderAccent: 'border-orange-400', text: 'text-orange-100', glow: 'shadow-orange-500/50', gradient: 'from-orange-500/30 via-orange-400/20 to-transparent' },
+      { bg: 'bg-green-500/20', border: 'border-green-500/40', borderAccent: 'border-green-400', text: 'text-green-100', glow: 'shadow-green-500/50', gradient: 'from-green-500/30 via-green-400/20 to-transparent' },
       { bg: 'bg-purple-500/20', border: 'border-purple-500/40', borderAccent: 'border-purple-400', text: 'text-purple-100', glow: 'shadow-purple-500/50', gradient: 'from-purple-500/30 via-purple-400/20 to-transparent' },
-      { bg: 'bg-teal-500/20', border: 'border-teal-500/40', borderAccent: 'border-teal-400', text: 'text-teal-100', glow: 'shadow-teal-500/50', gradient: 'from-teal-500/30 via-teal-400/20 to-transparent' },
+      { bg: 'bg-violet-500/20', border: 'border-violet-500/40', borderAccent: 'border-violet-400', text: 'text-violet-100', glow: 'shadow-violet-500/50', gradient: 'from-violet-500/30 via-violet-400/20 to-transparent' },
+      { bg: 'bg-pink-500/20', border: 'border-pink-500/40', borderAccent: 'border-pink-400', text: 'text-pink-100', glow: 'shadow-pink-500/50', gradient: 'from-pink-500/30 via-pink-400/20 to-transparent' },
     ],
   },
   // 特殊主题 - 浅色科技风（4种不同配色）
@@ -170,6 +176,9 @@ export const themes: Record<ThemeName, ThemeConfig> = {
     // 背景装饰
     techGridOpacity: 'opacity-5',
     radialGradient: 'radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.05) 0%, transparent 50%)',
+    // GraphView 大容器样式 - 多彩渐变
+    containerBorderGradient: 'linear-gradient(135deg, rgba(99, 102, 241, 0.4), rgba(168, 85, 247, 0.4), rgba(34, 197, 94, 0.4), rgba(249, 115, 22, 0.4))',
+    containerBgGradient: 'linear-gradient(180deg, rgba(99, 102, 241, 0.06) 0%, rgba(168, 85, 247, 0.04) 50%, rgba(34, 197, 94, 0.03) 100%)',
     // 图片预览
     imagePreviewBg: 'bg-slate-50',
     imagePreviewBorder: 'border-slate-200',
@@ -196,16 +205,16 @@ export const themes: Record<ThemeName, ThemeConfig> = {
     treeColors: [
       // 层级1: 靛蓝渐变
       { bg: 'bg-indigo-50', border: 'border-indigo-200', borderAccent: 'border-indigo-400', text: 'text-indigo-700', glow: 'shadow-indigo-500/30', gradient: 'from-indigo-100 via-indigo-50 to-white' },
-      // 层级2: 蓝紫渐变
-      { bg: 'bg-violet-50', border: 'border-violet-200', borderAccent: 'border-violet-400', text: 'text-violet-700', glow: 'shadow-violet-500/30', gradient: 'from-violet-100 via-violet-50 to-white' },
-      // 层级3: 紫粉渐变
-      { bg: 'bg-fuchsia-50', border: 'border-fuchsia-200', borderAccent: 'border-fuchsia-400', text: 'text-fuchsia-700', glow: 'shadow-fuchsia-500/30', gradient: 'from-fuchsia-100 via-fuchsia-50 to-white' },
-      // 层级4: 粉橙渐变
-      { bg: 'bg-pink-50', border: 'border-pink-200', borderAccent: 'border-pink-400', text: 'text-pink-700', glow: 'shadow-pink-500/30', gradient: 'from-pink-100 via-pink-50 to-white' },
-      // 层级5: 橙黄渐变
+      // 层级2: 橙色渐变
       { bg: 'bg-orange-50', border: 'border-orange-200', borderAccent: 'border-orange-400', text: 'text-orange-700', glow: 'shadow-orange-500/30', gradient: 'from-orange-100 via-orange-50 to-white' },
-      // 层级6: 青绿渐变
-      { bg: 'bg-teal-50', border: 'border-teal-200', borderAccent: 'border-teal-400', text: 'text-teal-700', glow: 'shadow-teal-500/30', gradient: 'from-teal-100 via-teal-50 to-white' },
+      // 层级3: 绿色渐变
+      { bg: 'bg-green-50', border: 'border-green-200', borderAccent: 'border-green-400', text: 'text-green-700', glow: 'shadow-green-500/30', gradient: 'from-green-100 via-green-50 to-white' },
+      // 层级4: 紫色渐变
+      { bg: 'bg-violet-50', border: 'border-violet-200', borderAccent: 'border-violet-400', text: 'text-violet-700', glow: 'shadow-violet-500/30', gradient: 'from-violet-100 via-violet-50 to-white' },
+      // 层级5: 粉紫渐变
+      { bg: 'bg-fuchsia-50', border: 'border-fuchsia-200', borderAccent: 'border-fuchsia-400', text: 'text-fuchsia-700', glow: 'shadow-fuchsia-500/30', gradient: 'from-fuchsia-100 via-fuchsia-50 to-white' },
+      // 层级6: 粉色渐变
+      { bg: 'bg-pink-50', border: 'border-pink-200', borderAccent: 'border-pink-400', text: 'text-pink-700', glow: 'shadow-pink-500/30', gradient: 'from-pink-100 via-pink-50 to-white' },
     ],
   },
 };

@@ -300,7 +300,7 @@ function GraphViewInner({
   }
 
   return (
-    <div className={`w-full h-[600px] rounded-lg overflow-hidden border relative tech-grid ${tc.borderColorLight}`}>
+    <div className="w-full h-[600px] rounded-lg overflow-hidden border relative tech-grid" style={{ borderImage: `${tc.containerBorderGradient} 1`, background: tc.containerBgGradient }}>
       {/* 渐变背景层 */}
       <div
         className="absolute inset-0"
@@ -443,9 +443,10 @@ function GraphViewInner({
           <MiniMap
             className="bg-white/5 backdrop-blur-sm border border-cyan-500/20"
             nodeColor={(node) => {
-              if (node.data.isRawMaterial) return '#06b6d4';
+              if (node.data.isRawMaterial) return '#22c55e'; // 绿色
               if (node.data.isLoading) return '#475569';
-              return '#22d3ee';
+              // 根据主题使用不同颜色 - 深色主题用青色，浅色主题用靛蓝
+              return tc.primaryColor === 'indigo' ? '#6366f1' : '#22d3ee';
             }}
           />
         )}
