@@ -35,6 +35,8 @@ export async function POST(request: NextRequest) {
       partId,
       partName,
       currentStep,
+      productPlan,
+      competitorAnalysis,
       suppliers,
       selectedSupplier,
       customizationQuestions,
@@ -42,6 +44,7 @@ export async function POST(request: NextRequest) {
       processes,
       selectedProcess,
       analysisResult,
+      finalReport,
       isCompleted
     } = body;
 
@@ -71,6 +74,8 @@ export async function POST(request: NextRequest) {
         data: {
           partName: partName || undefined,
           currentStep,
+          productPlan,
+          competitorAnalysis,
           suppliers,
           selectedSupplier,
           customizationQuestions,
@@ -78,6 +83,7 @@ export async function POST(request: NextRequest) {
           processes,
           selectedProcess,
           analysisResult,
+          finalReport,
           isCompleted,
           updatedAt: new Date()
         }
@@ -89,7 +95,9 @@ export async function POST(request: NextRequest) {
           sessionId,
           partId,
           partName: partName || '',
-          currentStep: currentStep || 'supplier-select',
+          currentStep: currentStep || 'product-planning',
+          productPlan,
+          competitorAnalysis,
           suppliers,
           selectedSupplier,
           customizationQuestions,
@@ -97,6 +105,7 @@ export async function POST(request: NextRequest) {
           processes,
           selectedProcess,
           analysisResult,
+          finalReport,
           isCompleted: isCompleted || false
         }
       });

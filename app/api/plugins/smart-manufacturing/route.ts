@@ -1,6 +1,53 @@
 import { NextRequest, NextResponse } from 'next/server';
 import deepseek from '@/lib/deepseek';
 
+// 产品规划 Agent System Prompt
+const PRODUCT_PLANNING_PROMPT = `你是一个专业的新产品规划专家。
+根据零件名称，分析并规划产品的潜在方向。
+
+请提供以下信息：
+- 目标用途（3-5个推荐用途）
+- 目标价格区间（最低价和最高价）
+- 推荐材料（3-5种）
+- 产品特性（3-5个）
+
+以JSON格式返回：
+{
+  "productPlan": {
+    "useCases": ["用途1", "用途2"],
+    "targetPriceRange": { "min": 最低价, "max": 最高价, "currency": "CNY" },
+    "materials": ["材料1", "材料2"],
+    "features": ["特性1", "特性2"]
+  }
+}`;
+
+// 竞品分析 Agent System Prompt
+const COMPETITOR_ANALYSIS_PROMPT = `你是一个专业的市场竞品分析专家。
+根据零件名称和产品规划，进行市场竞争分析。
+
+请提供：
+- 市场价格区间（低端、中端、高端）
+- 主要竞品（3-5个）
+- 定价建议
+- 市场趋势
+
+以JSON格式返回：
+{
+  "marketResearch": {
+    "marketPrice": { "low": 最低价, "mid": 中端价, "high": 最高价, "currency": "CNY" },
+    "competitors": [
+      {
+        "name": "竞品名称",
+        "price": 价格,
+        "features": ["特性1", "特性2"],
+        "marketShare": "市场份额"
+      }
+    ],
+    "pricingAdvice": "定价建议",
+    "marketTrends": "市场趋势"
+  }
+}`;
+
 // 供应商 Agent System Prompt
 const SUPPLIER_AGENT_PROMPT = `你是一个专业的供应商检索专家。
 你的任务是根据零件的名称和规格，生成3-5个可能的供应商选项。
@@ -145,6 +192,47 @@ const BREAKING_AGENT_PROMPT = `你是一个专业的生产决策专家。
   "keyFactors": ["关键因素1", "关键因素2"]
 }`;
 
+// 最终报告 Agent System Prompt
+const FINAL_REPORT_PROMPT = `你是一个专业的商业策略分析师。
+根据以下产品分析信息，生成一份全面的产品规划最终报告。
+
+报告需包含四个部分：
+1. 商业底座与定位 - 市场定位、竞争优势、目标客户、定价策略
+2. 供应链与成本 - 供应商概述、成本结构、风险评估、优化建议
+3. 生产时间轴与节拍 - 各阶段时间安排、潜在瓶颈、改进建议
+4. 上市与生命周期 - 上市计划、预期生命周期、更新计划、生命周期结束策略
+
+以JSON格式返回：
+{
+  "finalReport": {
+    "businessBase": {
+      "marketPosition": "市场定位描述",
+      "competitiveAdvantages": ["优势1", "优势2", "优势3"],
+      "targetCustomers": "目标客户群体描述",
+      "priceStrategy": "定价策略建议"
+    },
+    "supplyChain": {
+      "supplierOverview": "供应商概况",
+      "costStructure": "成本结构分析",
+      "riskAssessment": "供应链风险评估",
+      "optimization": "优化建议"
+    },
+    "productionTimeline": {
+      "phases": [
+        { "phase": "阶段名称", "duration": "持续时间", "milestones": ["里程碑1", "里程碑2"] }
+      ],
+      "bottleneck": "潜在瓶颈描述",
+      "recommendations": "改进建议"
+    },
+    "lifecycle": {
+      "launchPlan": "上市计划",
+      "expectedLifecycle": "预期生命周期",
+      "updatePlan": "更新计划",
+      "endOfLife": "生命周期结束策略"
+    }
+  }
+}`;
+
 // 调用 DeepSeek AI 并解析 JSON
 async function callDeepSeek(systemPrompt: string, userMessage: string): Promise<any> {
   const messages: { role: 'system' | 'user' | 'assistant'; content: string }[] = [
@@ -176,15 +264,44 @@ async function callDeepSeek(systemPrompt: string, userMessage: string): Promise<
 
 // 处理各个 Agent 请求
 async function handleAgentRequest(action: string, data: any): Promise<any> {
-  const { partName, partSpecs, option, optionType, customizedParams, costData, riskData, carbonData } = data;
+  const { partName, partSpecs, option, optionType, customizedParams, costData, riskData, carbonData, productPlan, competitorAnalysis, selectedSupplier, selectedProcess, analysisResult } = data;
+
+  // 解析产品规划信息
+  const materials = productPlan?.materials || [];
+  const budget = productPlan?.budget || '';
+  const features = productPlan?.features || [];
 
   switch (action) {
+    case 'product_planning': {
+      const userMessage = `请为以下零件进行产品规划：
+零件名称：${partName}
+
+请分析产品的潜在方向并给出推荐用途、价格区间、材料和特性。`;
+
+      const result = await callDeepSeek(PRODUCT_PLANNING_PROMPT, userMessage);
+      return result;
+    }
+
+    case 'market_research': {
+      const userMessage = `请为以下零件进行竞品分析：
+零件名称：${partName}
+产品规划：${JSON.stringify(productPlan || {}, null, 2)}
+
+请分析市场竞争情况，包括价格区间、主要竞品、定价建议和市场趋势。`;
+
+      const result = await callDeepSeek(COMPETITOR_ANALYSIS_PROMPT, userMessage);
+      return result;
+    }
+
     case 'find_suppliers': {
       const userMessage = `请为以下零件寻找供应商：
 零件名称：${partName}
 ${partSpecs ? `规格要求：${partSpecs}` : ''}
+${materials.length > 0 ? `首选材料：${materials.join(', ')}` : ''}
+${budget ? `目标价格区间：${budget} CNY` : ''}
+${features.length > 0 ? `产品特性：${features.join(', ')}` : ''}
 
-请生成3-5个可能的供应商选项。`;
+请根据以上信息生成3-5个最合适的供应商选项，优先考虑能够提供所选材料和满足预算要求的供应商。`;
 
       const result = await callDeepSeek(SUPPLIER_AGENT_PROMPT, userMessage);
       return { suppliers: result?.suppliers || [] };
@@ -247,6 +364,32 @@ ${partSpecs ? `规格要求：${partSpecs}` : ''}
 
       const result = await callDeepSeek(BREAKING_AGENT_PROMPT, userMessage);
       return { recommendation: result };
+    }
+
+    case 'generate_final_report': {
+      const userMessage = `请为以下产品生成最终规划报告：
+
+零件名称：${partName}
+
+产品规划：
+${JSON.stringify(productPlan || {}, null, 2)}
+
+竞品分析：
+${JSON.stringify(competitorAnalysis || {}, null, 2)}
+
+选定供应商：${selectedSupplier ? JSON.stringify(selectedSupplier, null, 2) : '未选定'}
+
+定制参数：${JSON.stringify(customizedParams || {}, null, 2)}
+
+选定工艺：${selectedProcess ? JSON.stringify(selectedProcess, null, 2) : '未选定'}
+
+评估结果：
+${analysisResult ? JSON.stringify(analysisResult, null, 2) : '无'}
+
+请根据以上所有信息，生成一份全面的产品规划最终报告。`;
+
+      const result = await callDeepSeek(FINAL_REPORT_PROMPT, userMessage);
+      return result;
     }
 
     case 'deep_production_analysis': {

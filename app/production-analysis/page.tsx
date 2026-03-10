@@ -6,11 +6,29 @@ import Link from 'next/link';
 
 // 步骤类型
 type AnalysisStep =
-  | 'supplier-select'  // 选择供应商
-  | 'customization'     // 回答定制问题
-  | 'process-select'   // 选择工艺方案
-  | 'analyzing'        // 分析中
-  | 'result';          // 显示结果
+  | 'product-planning'   // 产品雏形规划
+  | 'competitor-analysis' // 竞品分析
+  | 'supplier-select'   // 选择供应商
+  | 'customization'      // 回答定制问题
+  | 'process-select'    // 选择工艺方案
+  | 'result'            // 评估结果
+  | 'final-report';     // 最终报告
+
+// 产品雏形规划
+interface ProductPlan {
+  useCases: string[];
+  targetPriceRange: { min: number; max: number; currency: string };
+  materials: string[];
+  features: string[];
+}
+
+// 竞品分析
+interface CompetitorAnalysis {
+  marketPrice: { low: number; mid: number; high: number; currency: string };
+  competitors: { name: string; price: number; features: string[]; marketShare: string }[];
+  pricingAdvice: string;
+  marketTrends: string;
+}
 
 // 供应商
 interface Supplier {
@@ -63,6 +81,33 @@ interface AnalysisResult {
   } | null;
 }
 
+// 最终报告
+interface FinalReport {
+  businessBase: {
+    marketPosition: string;
+    competitiveAdvantages: string[];
+    targetCustomers: string;
+    priceStrategy: string;
+  };
+  supplyChain: {
+    supplierOverview: string;
+    costStructure: string;
+    riskAssessment: string;
+    optimization: string;
+  };
+  productionTimeline: {
+    phases: { phase: string; duration: string; milestones: string[] }[];
+    bottleneck: string;
+    recommendations: string;
+  };
+  lifecycle: {
+    launchPlan: string;
+    expectedLifecycle: string;
+    updatePlan: string;
+    endOfLife: string;
+  };
+}
+
 function ProductionAnalysisPage() {
   const searchParams = useSearchParams();
 
@@ -71,9 +116,18 @@ function ProductionAnalysisPage() {
   const partId = searchParams.get('partId') || '';
 
   // 当前步骤
-  const [currentStep, setCurrentStep] = useState<AnalysisStep>('supplier-select');
+  const [currentStep, setCurrentStep] = useState<AnalysisStep>('product-planning');
 
   // 数据状态
+  const [productPlan, setProductPlan] = useState<ProductPlan | null>(null);
+  const [competitorAnalysis, setCompetitorAnalysis] = useState<CompetitorAnalysis | null>(null);
+
+  // 用户选择状态
+  const [selectedUseCases, setSelectedUseCases] = useState<string[]>([]);
+  const [selectedBudget, setSelectedBudget] = useState<string>('');
+  const [selectedMaterials, setSelectedMaterials] = useState<string[]>([]);
+  const [selectedFeatures, setSelectedFeatures] = useState<string[]>([]);
+
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
   const [selectedSupplier, setSelectedSupplier] = useState<Supplier | null>(null);
 
@@ -84,6 +138,7 @@ function ProductionAnalysisPage() {
   const [selectedProcess, setSelectedProcess] = useState<Process | null>(null);
 
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
+  const [finalReport, setFinalReport] = useState<FinalReport | null>(null);
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -99,7 +154,9 @@ function ProductionAnalysisPage() {
         const data = await res.json();
         if (data.data) {
           const progress = data.data;
-          setCurrentStep(progress.currentStep as AnalysisStep || 'supplier-select');
+          setCurrentStep(progress.currentStep as AnalysisStep || 'product-planning');
+          setProductPlan(progress.productPlan || null);
+          setCompetitorAnalysis(progress.competitorAnalysis || null);
           setSuppliers(progress.suppliers || []);
           setSelectedSupplier(progress.selectedSupplier || null);
           setCustomizationQuestions(progress.customizationQuestions || []);
@@ -107,6 +164,7 @@ function ProductionAnalysisPage() {
           setProcesses(progress.processes || []);
           setSelectedProcess(progress.selectedProcess || null);
           setAnalysisResult(progress.analysisResult || null);
+          setFinalReport(progress.finalReport || null);
         }
         setIsLoaded(true);
       } catch (err) {
@@ -131,6 +189,8 @@ function ProductionAnalysisPage() {
           partId,
           partName,
           currentStep,
+          productPlan,
+          competitorAnalysis,
           suppliers,
           selectedSupplier,
           customizationQuestions,
@@ -138,13 +198,14 @@ function ProductionAnalysisPage() {
           processes,
           selectedProcess,
           analysisResult,
+          finalReport,
           isCompleted: completed
         })
       });
     } catch (err) {
       console.error('保存进度失败:', err);
     }
-  }, [sessionId, partId, partName, currentStep, suppliers, selectedSupplier, customizationQuestions, customizationAnswers, processes, selectedProcess, analysisResult]);
+  }, [sessionId, partId, partName, currentStep, productPlan, competitorAnalysis, suppliers, selectedSupplier, customizationQuestions, customizationAnswers, processes, selectedProcess, analysisResult, finalReport]);
 
   // 自动保存进度（当状态变化时）
   useEffect(() => {
@@ -155,7 +216,7 @@ function ProductionAnalysisPage() {
     }, 1000);
 
     return () => clearTimeout(timer);
-  }, [currentStep, suppliers, selectedSupplier, customizationQuestions, customizationAnswers, processes, selectedProcess, analysisResult, isLoaded, sessionId, partId, saveProgress]);
+  }, [currentStep, productPlan, competitorAnalysis, suppliers, selectedSupplier, customizationQuestions, customizationAnswers, processes, selectedProcess, analysisResult, finalReport, isLoaded, sessionId, partId, saveProgress]);
 
   // 调用 API
   const callAPI = async (action: string, data: any) => {
@@ -169,12 +230,79 @@ function ProductionAnalysisPage() {
     return result.data;
   };
 
-  // 步骤1: 搜索供应商
+  // 步骤1: 产品雏形规划
+  const handleProductPlanning = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const result = await callAPI('product_planning', { partName });
+      if (result?.productPlan) {
+        setProductPlan(result.productPlan);
+        // 默认不选中任何选项，让用户自己选择
+        setSelectedUseCases([]);
+        if (result.productPlan.targetPriceRange) {
+          setSelectedBudget(`${result.productPlan.targetPriceRange.min}-${result.productPlan.targetPriceRange.max}`);
+        }
+        setSelectedMaterials([]);
+        setSelectedFeatures([]);
+      }
+    } catch (err) {
+      setError('生成产品规划失败，请重试');
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // 保存产品规划选择并进入下一步
+  const handleConfirmProductPlan = () => {
+    if (productPlan) {
+      setProductPlan({
+        ...productPlan,
+        useCases: selectedUseCases,
+        targetPriceRange: {
+          min: parseInt(selectedBudget.split('-')[0]) || 0,
+          max: parseInt(selectedBudget.split('-')[1]) || 9999,
+          currency: 'CNY'
+        },
+        materials: selectedMaterials,
+        features: selectedFeatures
+      });
+    }
+    setCurrentStep('competitor-analysis');
+  };
+
+  // 步骤2: 竞品分析
+  const handleCompetitorAnalysis = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const result = await callAPI('market_research', { partName, productPlan });
+      if (result?.marketResearch) {
+        setCompetitorAnalysis(result.marketResearch);
+      }
+    } catch (err) {
+      setError('竞品分析失败，请重试');
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // 步骤3: 搜索供应商
   const handleFindSuppliers = async () => {
     setIsLoading(true);
     setError(null);
     try {
-      const result = await callAPI('find_suppliers', { partName });
+      // 传递产品规划信息（材料、预算等）以便更精准地搜索供应商
+      const result = await callAPI('find_suppliers', {
+        partName,
+        productPlan: {
+          materials: selectedMaterials,
+          budget: selectedBudget,
+          features: selectedFeatures
+        }
+      });
       setSuppliers(result.suppliers || []);
     } catch (err) {
       setError('搜索供应商失败，请重试');
@@ -215,9 +343,22 @@ function ProductionAnalysisPage() {
     setIsLoading(true);
     setError(null);
     try {
+      // 处理"其他"选项，合并用户输入的内容
+      const processedAnswers: Record<string, string> = {};
+      Object.keys(customizationAnswers).forEach(key => {
+        if (key.endsWith('_other')) return; // 跳过其他输入框的key
+        const answer = customizationAnswers[key];
+        const otherInput = customizationAnswers[`${key}_other`];
+        if (answer === '其他' && otherInput) {
+          processedAnswers[key] = `其他: ${otherInput}`;
+        } else {
+          processedAnswers[key] = answer;
+        }
+      });
+
       const result = await callAPI('generate_processes', {
         partName,
-        customizedParams: customizationAnswers
+        customizedParams: processedAnswers
       });
       setProcesses(result.processes || []);
     } catch (err) {
@@ -228,10 +369,12 @@ function ProductionAnalysisPage() {
     }
   };
 
-  // 选择工艺后，开始分析
+  // 选择工艺后，跳转到结果页面并开始分析
   const handleSelectProcess = (process: Process) => {
     setSelectedProcess(process);
-    setCurrentStep('analyzing');
+    // 立即跳转到结果页面，显示分析中的状态
+    setCurrentStep('result');
+    // 然后开始分析
     runAnalysis(process);
   };
 
@@ -274,6 +417,8 @@ function ProductionAnalysisPage() {
               partId,
               partName,
               currentStep: 'result',
+              productPlan,
+              competitorAnalysis,
               suppliers,
               selectedSupplier,
               customizationQuestions,
@@ -301,9 +446,40 @@ function ProductionAnalysisPage() {
     }
   };
 
+  // 生成最终报告
+  const handleGenerateFinalReport = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const result = await callAPI('generate_final_report', {
+        partName,
+        productPlan,
+        competitorAnalysis,
+        selectedSupplier,
+        customizationAnswers,
+        selectedProcess,
+        analysisResult
+      });
+      if (result?.finalReport) {
+        setFinalReport(result.finalReport);
+      }
+    } catch (err) {
+      setError('生成报告失败，请重试');
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   // 重新开始
   const handleRestart = async () => {
-    setCurrentStep('supplier-select');
+    setCurrentStep('product-planning');
+    setProductPlan(null);
+    setCompetitorAnalysis(null);
+    setSelectedUseCases([]);
+    setSelectedBudget('');
+    setSelectedMaterials([]);
+    setSelectedFeatures([]);
     setSuppliers([]);
     setSelectedSupplier(null);
     setCustomizationQuestions([]);
@@ -311,6 +487,7 @@ function ProductionAnalysisPage() {
     setProcesses([]);
     setSelectedProcess(null);
     setAnalysisResult(null);
+    setFinalReport(null);
     setError(null);
 
     // 删除数据库中的进度
@@ -328,11 +505,13 @@ function ProductionAnalysisPage() {
   // 渲染步骤指示器
   const renderStepIndicator = () => {
     const steps = [
-      { key: 'supplier-select', label: '1. 选择供应商' },
-      { key: 'customization', label: '2. 定制参数' },
-      { key: 'process-select', label: '3. 选择工艺' },
-      { key: 'analyzing', label: '4. 分析中' },
-      { key: 'result', label: '5. 结果' }
+      { key: 'product-planning', label: '1. 产品规划' },
+      { key: 'competitor-analysis', label: '2. 竞品分析' },
+      { key: 'supplier-select', label: '3. 选择供应商' },
+      { key: 'customization', label: '4. 定制参数' },
+      { key: 'process-select', label: '5. 选择工艺' },
+      { key: 'result', label: '6. 评估结果' },
+      { key: 'final-report', label: '7. 最终报告' }
     ];
 
     return (
@@ -354,6 +533,211 @@ function ProductionAnalysisPage() {
       </div>
     );
   };
+
+  // 渲染产品雏形规划
+  const renderProductPlanning = () => (
+    <div className="space-y-4">
+      <div className="text-center">
+        <h2 className="text-2xl font-bold text-white mb-2">产品雏形规划</h2>
+        <p className="text-gray-400">为 "{partName}" 规划产品方向</p>
+      </div>
+
+      {!productPlan ? (
+        <div className="text-center py-8">
+          <button
+            onClick={handleProductPlanning}
+            disabled={isLoading}
+            className="px-6 py-3 bg-purple-500 hover:bg-purple-600 disabled:bg-gray-500 rounded-lg text-white font-medium transition-colors"
+          >
+            {isLoading ? '分析中...' : '🎯 开始产品规划'}
+          </button>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {/* 用途选择 */}
+          <div className="bg-white/5 rounded-xl p-4">
+            <div className="text-white font-medium mb-3">推荐用途</div>
+            <div className="flex flex-wrap gap-2">
+              {productPlan.useCases.map((useCase, index) => (
+                <button
+                  key={index}
+                  onClick={() => {
+                    setSelectedUseCases(prev =>
+                      prev.includes(useCase)
+                        ? prev.filter(u => u !== useCase)
+                        : [...prev, useCase]
+                    );
+                  }}
+                  className={`px-3 py-1 rounded-lg text-sm transition-colors ${
+                    selectedUseCases.includes(useCase)
+                      ? 'bg-purple-500 text-white'
+                      : 'bg-white/10 text-gray-300 hover:bg-white/20'
+                  }`}
+                >
+                  {useCase}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* 预算选择 */}
+          <div className="bg-white/5 rounded-xl p-4">
+            <div className="text-white font-medium mb-3">目标价格区间</div>
+            <input
+              type="text"
+              value={selectedBudget}
+              onChange={(e) => setSelectedBudget(e.target.value)}
+              placeholder="例如: 100-500"
+              className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white placeholder-gray-500"
+            />
+            <div className="text-xs text-gray-500 mt-2">格式: 最低价-最高价 (CNY)</div>
+          </div>
+
+          {/* 材料选择 */}
+          <div className="bg-white/5 rounded-xl p-4">
+            <div className="text-white font-medium mb-3">推荐材料</div>
+            <div className="flex flex-wrap gap-2">
+              {productPlan.materials.map((material, index) => (
+                <button
+                  key={index}
+                  onClick={() => {
+                    setSelectedMaterials(prev =>
+                      prev.includes(material)
+                        ? prev.filter(m => m !== material)
+                        : [...prev, material]
+                    );
+                  }}
+                  className={`px-3 py-1 rounded-lg text-sm transition-colors ${
+                    selectedMaterials.includes(material)
+                      ? 'bg-purple-500 text-white'
+                      : 'bg-white/10 text-gray-300 hover:bg-white/20'
+                  }`}
+                >
+                  {material}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* 特性选择 */}
+          <div className="bg-white/5 rounded-xl p-4">
+            <div className="text-white font-medium mb-3">产品特性</div>
+            <div className="flex flex-wrap gap-2">
+              {productPlan.features.map((feature, index) => (
+                <button
+                  key={index}
+                  onClick={() => {
+                    setSelectedFeatures(prev =>
+                      prev.includes(feature)
+                        ? prev.filter(f => f !== feature)
+                        : [...prev, feature]
+                    );
+                  }}
+                  className={`px-3 py-1 rounded-lg text-sm transition-colors ${
+                    selectedFeatures.includes(feature)
+                      ? 'bg-purple-500 text-white'
+                      : 'bg-white/10 text-gray-300 hover:bg-white/20'
+                  }`}
+                >
+                  {feature}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <button
+            onClick={handleConfirmProductPlan}
+            className="w-full py-3 bg-purple-500 hover:bg-purple-600 rounded-lg text-white font-medium transition-colors"
+          >
+            确认并继续 →
+          </button>
+        </div>
+      )}
+    </div>
+  );
+
+  // 渲染竞品分析
+  const renderCompetitorAnalysis = () => (
+    <div className="space-y-4">
+      <div className="text-center">
+        <h2 className="text-2xl font-bold text-white mb-2">竞品分析</h2>
+        <p className="text-gray-400">了解市场价格和竞争态势</p>
+      </div>
+
+      {!competitorAnalysis ? (
+        <div className="text-center py-8">
+          <button
+            onClick={handleCompetitorAnalysis}
+            disabled={isLoading}
+            className="px-6 py-3 bg-purple-500 hover:bg-purple-600 disabled:bg-gray-500 rounded-lg text-white font-medium transition-colors"
+          >
+            {isLoading ? '分析中...' : '📊 开始竞品分析'}
+          </button>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {/* 市场价格 */}
+          <div className="bg-gradient-to-r from-emerald-500/10 to-teal-500/10 rounded-xl p-4 border border-emerald-500/30">
+            <div className="text-lg font-bold text-emerald-300 mb-3">💰 市场价格区间</div>
+            <div className="grid grid-cols-3 gap-2 text-center">
+              <div className="bg-black/30 rounded p-2">
+                <div className="text-gray-500 text-xs">低端</div>
+                <div className="text-white font-bold">¥{competitorAnalysis.marketPrice.low}</div>
+              </div>
+              <div className="bg-black/30 rounded p-2">
+                <div className="text-gray-500 text-xs">中端</div>
+                <div className="text-white font-bold">¥{competitorAnalysis.marketPrice.mid}</div>
+              </div>
+              <div className="bg-black/30 rounded p-2">
+                <div className="text-gray-500 text-xs">高端</div>
+                <div className="text-white font-bold">¥{competitorAnalysis.marketPrice.high}</div>
+              </div>
+            </div>
+          </div>
+
+          {/* 竞品信息 */}
+          <div className="bg-white/5 rounded-xl p-4">
+            <div className="text-white font-medium mb-3">主要竞品</div>
+            <div className="space-y-2">
+              {competitorAnalysis.competitors.map((comp, index) => (
+                <div key={index} className="bg-black/30 rounded-lg p-3">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <div className="text-white font-medium">{comp.name}</div>
+                      <div className="text-sm text-gray-400">{comp.features.join(', ')}</div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-emerald-400 font-bold">¥{comp.price}</div>
+                      <div className="text-xs text-gray-500">{comp.marketShare}</div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* 定价建议 */}
+          <div className="bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-xl p-4 border border-purple-500/30">
+            <div className="text-white font-medium mb-2">📋 定价建议</div>
+            <div className="text-gray-300 text-sm">{competitorAnalysis.pricingAdvice}</div>
+          </div>
+
+          {/* 市场趋势 */}
+          <div className="bg-gradient-to-r from-cyan-500/10 to-blue-500/10 rounded-xl p-4 border border-cyan-500/30">
+            <div className="text-white font-medium mb-2">📈 市场趋势</div>
+            <div className="text-gray-300 text-sm">{competitorAnalysis.marketTrends}</div>
+          </div>
+
+          <button
+            onClick={() => setCurrentStep('supplier-select')}
+            className="w-full py-3 bg-purple-500 hover:bg-purple-600 rounded-lg text-white font-medium transition-colors"
+          >
+            继续 →
+          </button>
+        </div>
+      )}
+    </div>
+  );
 
   // 渲染供应商选择
   const renderSupplierSelect = () => (
@@ -430,20 +814,32 @@ function ProductionAnalysisPage() {
             <div key={index} className="bg-white/5 rounded-xl p-4">
               <div className="text-white mb-2">{q.question}</div>
               {q.type === 'select' && q.options ? (
-                <div className="flex flex-wrap gap-2">
-                  {q.options.map((opt, optIndex) => (
-                    <button
-                      key={optIndex}
-                      onClick={() => setCustomizationAnswers(prev => ({ ...prev, [index]: opt }))}
-                      className={`px-3 py-1 rounded-lg text-sm transition-colors ${
-                        customizationAnswers[index] === opt
-                          ? 'bg-purple-500 text-white'
-                          : 'bg-white/10 text-gray-300 hover:bg-white/20'
-                      }`}
-                    >
-                      {opt}
-                    </button>
-                  ))}
+                <div className="space-y-2">
+                  <div className="flex flex-wrap gap-2">
+                    {q.options.map((opt, optIndex) => (
+                      <button
+                        key={optIndex}
+                        onClick={() => setCustomizationAnswers(prev => ({ ...prev, [index]: opt }))}
+                        className={`px-3 py-1 rounded-lg text-sm transition-colors ${
+                          customizationAnswers[index] === opt
+                            ? 'bg-purple-500 text-white'
+                            : 'bg-white/10 text-gray-300 hover:bg-white/20'
+                        }`}
+                      >
+                        {opt}
+                      </button>
+                    ))}
+                  </div>
+                  {/* 如果选择了"其他"，显示输入框 */}
+                  {customizationAnswers[index] === '其他' && (
+                    <input
+                      type="text"
+                      placeholder="请输入具体内容..."
+                      value={customizationAnswers[`${index}_other`] || ''}
+                      onChange={(e) => setCustomizationAnswers(prev => ({ ...prev, [`${index}_other`]: e.target.value }))}
+                      className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white placeholder-gray-500"
+                    />
+                  )}
                 </div>
               ) : (
                 <input
@@ -520,6 +916,15 @@ function ProductionAnalysisPage() {
   // 渲染结果
   const renderResult = () => (
     <div className="space-y-4">
+      {/* 分析中状态 */}
+      {isLoading && (
+        <div className="text-center py-12">
+          <div className="inline-block animate-spin rounded-full h-16 w-16 border-4 border-purple-500 border-t-transparent mb-6"></div>
+          <h2 className="text-2xl font-bold text-white mb-2">分析中...</h2>
+          <p className="text-gray-400">正在分析成本、风险和碳排放</p>
+        </div>
+      )}
+
       {/* 综合决策 */}
       {analysisResult?.breaking && (
         <div className={`rounded-xl p-6 border ${
@@ -617,13 +1022,158 @@ function ProductionAnalysisPage() {
         >
           🔄 重新分析
         </button>
+        <button
+          onClick={() => setCurrentStep('final-report')}
+          className="flex-1 py-3 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 rounded-lg text-white font-medium transition-colors"
+        >
+          📋 查看最终报告 →
+        </button>
+      </div>
+      <div className="pt-2">
         <Link
           href={sessionId ? `/canvas?sessionId=${sessionId}` : '/canvas'}
-          className="flex-1 py-3 bg-purple-500 hover:bg-purple-600 rounded-lg text-white font-medium text-center transition-colors"
+          className="block w-full py-2 text-center text-gray-400 hover:text-white text-sm transition-colors"
         >
           ← 返回画布
         </Link>
       </div>
+    </div>
+  );
+
+  // 渲染最终报告
+  const renderFinalReport = () => (
+    <div className="space-y-4">
+      <div className="text-center">
+        <h2 className="text-2xl font-bold text-white mb-2">产品规划最终报告</h2>
+        <p className="text-gray-400">综合分析结果汇总</p>
+      </div>
+
+      {!finalReport ? (
+        <div className="text-center py-8">
+          <button
+            onClick={handleGenerateFinalReport}
+            disabled={isLoading}
+            className="px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 disabled:bg-gray-500 rounded-lg text-white font-medium transition-colors"
+          >
+            {isLoading ? '生成中...' : '📊 生成最终报告'}
+          </button>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {/* 商业底座与定位 */}
+          <div className="bg-gradient-to-r from-blue-500/20 to-cyan-500/20 rounded-xl p-4 border border-blue-500/30">
+            <div className="text-lg font-bold text-blue-300 mb-3">💼 商业底座与定位</div>
+            <div className="space-y-3 text-sm">
+              <div>
+                <div className="text-gray-400">市场定位</div>
+                <div className="text-white">{finalReport.businessBase.marketPosition}</div>
+              </div>
+              <div>
+                <div className="text-gray-400">竞争优势</div>
+                <div className="flex flex-wrap gap-2 mt-1">
+                  {finalReport.businessBase.competitiveAdvantages.map((adv, i) => (
+                    <span key={i} className="px-2 py-1 bg-white/10 rounded text-white">{adv}</span>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <div className="text-gray-400">目标客户</div>
+                <div className="text-white">{finalReport.businessBase.targetCustomers}</div>
+              </div>
+              <div>
+                <div className="text-gray-400">定价策略</div>
+                <div className="text-white">{finalReport.businessBase.priceStrategy}</div>
+              </div>
+            </div>
+          </div>
+
+          {/* 供应链与成本 */}
+          <div className="bg-gradient-to-r from-emerald-500/20 to-teal-500/20 rounded-xl p-4 border border-emerald-500/30">
+            <div className="text-lg font-bold text-emerald-300 mb-3">🔗 供应链与成本</div>
+            <div className="space-y-3 text-sm">
+              <div>
+                <div className="text-gray-400">供应商概述</div>
+                <div className="text-white">{finalReport.supplyChain.supplierOverview}</div>
+              </div>
+              <div>
+                <div className="text-gray-400">成本结构</div>
+                <div className="text-white">{finalReport.supplyChain.costStructure}</div>
+              </div>
+              <div>
+                <div className="text-gray-400">风险评估</div>
+                <div className="text-white">{finalReport.supplyChain.riskAssessment}</div>
+              </div>
+              <div>
+                <div className="text-gray-400">优化建议</div>
+                <div className="text-white">{finalReport.supplyChain.optimization}</div>
+              </div>
+            </div>
+          </div>
+
+          {/* 生产时间轴与节拍 */}
+          <div className="bg-gradient-to-r from-amber-500/20 to-orange-500/20 rounded-xl p-4 border border-amber-500/30">
+            <div className="text-lg font-bold text-amber-300 mb-3">⏱️ 生产时间轴与节拍</div>
+            <div className="space-y-3 text-sm">
+              {finalReport.productionTimeline.phases.map((phase, i) => (
+                <div key={i} className="bg-black/30 rounded-lg p-2">
+                  <div className="flex justify-between">
+                    <span className="text-white font-medium">{phase.phase}</span>
+                    <span className="text-amber-400">{phase.duration}</span>
+                  </div>
+                  <div className="text-gray-400 text-xs mt-1">{phase.milestones.join(' → ')}</div>
+                </div>
+              ))}
+              <div>
+                <div className="text-gray-400">潜在瓶颈</div>
+                <div className="text-white">{finalReport.productionTimeline.bottleneck}</div>
+              </div>
+              <div>
+                <div className="text-gray-400">建议</div>
+                <div className="text-white">{finalReport.productionTimeline.recommendations}</div>
+              </div>
+            </div>
+          </div>
+
+          {/* 上市与生命周期 */}
+          <div className="bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-xl p-4 border border-purple-500/30">
+            <div className="text-lg font-bold text-purple-300 mb-3">🚀 上市与生命周期</div>
+            <div className="space-y-3 text-sm">
+              <div>
+                <div className="text-gray-400">上市计划</div>
+                <div className="text-white">{finalReport.lifecycle.launchPlan}</div>
+              </div>
+              <div>
+                <div className="text-gray-400">预期生命周期</div>
+                <div className="text-white">{finalReport.lifecycle.expectedLifecycle}</div>
+              </div>
+              <div>
+                <div className="text-gray-400">更新计划</div>
+                <div className="text-white">{finalReport.lifecycle.updatePlan}</div>
+              </div>
+              <div>
+                <div className="text-gray-400">生命周期结束</div>
+                <div className="text-white">{finalReport.lifecycle.endOfLife}</div>
+              </div>
+            </div>
+          </div>
+
+          {/* 操作按钮 */}
+          <div className="flex gap-3 pt-4">
+            <button
+              onClick={() => setCurrentStep('result')}
+              className="flex-1 py-3 bg-white/10 hover:bg-white/20 rounded-lg text-white font-medium transition-colors"
+            >
+              ← 返回评估结果
+            </button>
+            <Link
+              href={sessionId ? `/canvas?sessionId=${sessionId}` : '/canvas'}
+              className="flex-1 py-3 bg-purple-500 hover:bg-purple-600 rounded-lg text-white font-medium text-center transition-colors"
+            >
+              ← 返回画布
+            </Link>
+          </div>
+        </div>
+      )}
     </div>
   );
 
@@ -677,11 +1227,13 @@ function ProductionAnalysisPage() {
         {renderError()}
 
         {/* 步骤内容 */}
+        {currentStep === 'product-planning' && renderProductPlanning()}
+        {currentStep === 'competitor-analysis' && renderCompetitorAnalysis()}
         {currentStep === 'supplier-select' && renderSupplierSelect()}
         {currentStep === 'customization' && renderCustomization()}
         {currentStep === 'process-select' && renderProcessSelect()}
-        {currentStep === 'analyzing' && renderAnalyzing()}
         {currentStep === 'result' && renderResult()}
+        {currentStep === 'final-report' && renderFinalReport()}
       </main>
     </div>
   );

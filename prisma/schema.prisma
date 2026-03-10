@@ -71,7 +71,11 @@ model ProductionAnalysisProgress {
   partName              String
 
   // 当前步骤
-  currentStep           String   @default("supplier-select")
+  currentStep           String   @default("product-planning")
+
+  // 产品规划和竞品分析
+  productPlan           Json?
+  competitorAnalysis    Json?
 
   // 供应商信息
   suppliers             Json?
@@ -87,6 +91,9 @@ model ProductionAnalysisProgress {
 
   // 分析结果
   analysisResult        Json?
+
+  // 最终报告
+  finalReport          Json?
 
   // 是否完成
   isCompleted           Boolean  @default(false)
