@@ -3,23 +3,6 @@
 import { useState, Suspense, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import {
-  TrophyIcon,
-  ChartBarIcon,
-  CurrencyDollarIcon,
-  DocumentTextIcon,
-  ArrowTrendingUpIcon,
-  MagnifyingGlassIcon,
-  ArrowPathIcon,
-  QuestionMarkCircleIcon,
-  Cog6ToothIcon,
-  WrenchIcon,
-  CubeIcon,
-  ExclamationTriangleIcon,
-  GlobeAltIcon,
-  RocketLaunchIcon,
-  BuildingOffice2Icon
-} from '@heroicons/react/24/outline';
 
 // 步骤类型
 type AnalysisStep =
@@ -157,9 +140,15 @@ function ProductionAnalysisPage() {
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
   const [finalReport, setFinalReport] = useState<FinalReport | null>(null);
 
+  // 当前分析的Agent进度
+  const [currentAgent, setCurrentAgent] = useState<string>('');
+
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
+
+  // AI思考过程流式内容
+  const [aiThinkingContent, setAiThinkingContent] = useState<string>('');
 
   // 加载进度
   useEffect(() => {
@@ -247,12 +236,184 @@ function ProductionAnalysisPage() {
     return result.data;
   };
 
+  // AI思考过程流式输出组件
+  // 骨架屏加载组件
+  const renderSkeletonCard = (width: string = 'full') => (
+    <div className={`bg-white/5 rounded-xl p-5 animate-pulse ${width === 'half' ? 'md:col-span-1' : 'md:col-span-2'}`}>
+      <div className="flex items-center gap-3 mb-4">
+        <div className="w-10 h-10 rounded-xl bg-white/10" />
+        <div className="h-5 w-32 bg-white/10 rounded" />
+      </div>
+      <div className="space-y-3">
+        <div className="h-4 w-full bg-white/10 rounded" />
+        <div className="h-4 w-3/4 bg-white/10 rounded" />
+        <div className="flex gap-2 mt-4">
+          <div className="h-8 w-20 bg-white/10 rounded-lg" />
+          <div className="h-8 w-20 bg-white/10 rounded-lg" />
+          <div className="h-8 w-20 bg-white/10 rounded-lg" />
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderSkeletonCards = (count: number = 3) => (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {Array.from({ length: count }).map((_, i) => (
+        <div key={i} className={`${i === 0 && count % 2 === 1 ? 'md:col-span-2' : ''}`}>
+          {renderSkeletonCard(i === 0 && count % 2 === 1 ? 'full' : 'half')}
+        </div>
+      ))}
+    </div>
+  );
+
+  const renderAIThinking = () => (
+    <div className="bg-gradient-to-br from-cyan-950/50 via-black/60 to-blue-950/30 rounded-2xl border border-cyan-500/20 overflow-hidden shadow-2xl shadow-cyan-500/10">
+      {/* 顶部装饰条 */}
+      <div className="h-1 bg-gradient-to-r from-cyan-500 via-blue-500 to-cyan-500 animate-pulse" />
+
+      <div className="px-5 py-3 flex items-center gap-3 bg-cyan-500/10 border-b border-white/5">
+        <div className="flex gap-1.5">
+          <div className="w-2.5 h-2.5 rounded-full bg-cyan-500 animate-pulse shadow-lg shadow-cyan-400/50"></div>
+          <div className="w-2.5 h-2.5 rounded-full bg-blue-500 animate-pulse shadow-lg shadow-cyan-400/50" style={{animationDelay: '0.2s'}}></div>
+          <div className="w-2.5 h-2.5 rounded-full bg-cyan-500 animate-pulse shadow-lg shadow-cyan-400/50" style={{animationDelay: '0.4s'}}></div>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="w-5 h-5 rounded-lg bg-gradient-to-br from-cyan-500 to-cyan-500 flex items-center justify-center">
+            <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+          </div>
+          <span className="text-sm font-medium text-cyan-300">AI 智能分析中</span>
+        </div>
+
+        {/* Agent进度指示器 */}
+        {currentAgent && (
+          <div className="flex items-center gap-2 ml-auto">
+            <div className="flex gap-1">
+              {['cost', 'risk', 'carbon', 'recommend'].map((agent, index) => {
+                const agentNames: Record<string, string> = {
+                  cost: '成本分析',
+                  risk: '风险评估',
+                  carbon: '碳排放',
+                  recommend: '综合决策'
+                };
+                const isActive = currentAgent === agent;
+                const isCompleted = (['cost', 'risk', 'carbon', 'recommend'].indexOf(currentAgent) > index);
+                return (
+                  <div
+                    key={agent}
+                    className={`w-2 h-2 rounded-full transition-all ${
+                      isActive ? 'bg-cyan-400 animate-pulse' :
+                      isCompleted ? 'bg-green-400' :
+                      'bg-gray-600'
+                    }`}
+                    title={agentNames[agent]}
+                  />
+                );
+              })}
+            </div>
+            <span className="text-xs text-cyan-400">
+              {currentAgent === 'cost' && '分析成本中...'}
+              {currentAgent === 'risk' && '评估风险中...'}
+              {currentAgent === 'carbon' && '计算碳排放中...'}
+              {currentAgent === 'recommend' && '生成决策中...'}
+            </span>
+          </div>
+        )}
+      </div>
+
+      <div className="p-5 font-mono text-sm max-h-96 overflow-y-auto whitespace-pre-wrap leading-relaxed">
+        <span className="text-gray-300">
+          {aiThinkingContent || (isLoading ? '正在深度分析...' : '')}
+        </span>
+        {isLoading && (
+          <span className="inline-flex gap-1 ml-1">
+            <span className="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-bounce"></span>
+            <span className="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></span>
+            <span className="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></span>
+          </span>
+        )}
+      </div>
+    </div>
+  );
+
+  // 调用流式 API (使用 fetch 读取流)
+  const callStreamingAPI = async (action: string, data: any): Promise<any> => {
+    setAiThinkingContent('');
+    setIsLoading(true);
+
+    try {
+      const response = await fetch('/api/plugins/smart-manufacturing/stream', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action, data })
+      });
+
+      if (!response.ok) {
+        throw new Error('API request failed');
+      }
+
+      if (!response.body) {
+        throw new Error('No response body');
+      }
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+      let jsonResult: any = null;
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop() || '';
+
+        for (const line of lines) {
+          const trimmed = line.trim();
+          if (trimmed.startsWith('data: ')) {
+            const dataStr = trimmed.slice(6);
+            if (dataStr === '[DONE]') continue;
+
+            try {
+              const parsed = JSON.parse(dataStr);
+
+              if (parsed.type === 'content') {
+                setAiThinkingContent(prev => prev + parsed.content);
+              } else if (parsed.type === 'json') {
+                jsonResult = parsed.data;
+              } else if (parsed.type === 'end') {
+                setIsLoading(false);
+                // 检查是否成功获取数据
+                if (!jsonResult) {
+                  throw new Error('AI解析失败，请重试');
+                }
+                return jsonResult;
+              } else if (parsed.type === 'error') {
+                throw new Error(parsed.message);
+              }
+            } catch (e) {
+              // Ignore parse errors for non-JSON lines
+            }
+          }
+        }
+      }
+
+      setIsLoading(false);
+      return jsonResult;
+    } catch (err) {
+      setIsLoading(false);
+      throw err;
+    }
+  };
+
   // 步骤1: 产品雏形规划
   const handleProductPlanning = async () => {
     setIsLoading(true);
     setError(null);
     try {
-      const result = await callAPI('product_planning', { partName });
+      const result = await callStreamingAPI('product_planning', { partName });
       if (result?.productPlan) {
         setProductPlan(result.productPlan);
         // 默认不选中任何选项，让用户自己选择
@@ -286,6 +447,7 @@ function ProductionAnalysisPage() {
         features: selectedFeatures
       });
     }
+    setAiThinkingContent('');
     setCurrentStep('competitor-analysis');
   };
 
@@ -294,7 +456,7 @@ function ProductionAnalysisPage() {
     setIsLoading(true);
     setError(null);
     try {
-      const result = await callAPI('market_research', { partName, productPlan });
+      const result = await callStreamingAPI('market_research', { partName, productPlan });
       if (result?.marketResearch) {
         setCompetitorAnalysis(result.marketResearch);
       }
@@ -312,13 +474,11 @@ function ProductionAnalysisPage() {
     setError(null);
     try {
       // 传递产品规划信息（材料、预算等）以便更精准地搜索供应商
-      const result = await callAPI('find_suppliers', {
+      const result = await callStreamingAPI('find_suppliers', {
         partName,
-        productPlan: {
-          materials: selectedMaterials,
-          budget: selectedBudget,
-          features: selectedFeatures
-        }
+        selectedMaterials,
+        selectedBudget,
+        selectedFeatures
       });
       setSuppliers(result.suppliers || []);
     } catch (err) {
@@ -329,10 +489,9 @@ function ProductionAnalysisPage() {
     }
   };
 
-  // 选择供应商后，进入下一步
+  // 选择供应商（不跳转到下一步）
   const handleSelectSupplier = (supplier: Supplier) => {
     setSelectedSupplier(supplier);
-    setCurrentStep('customization');
   };
 
   // 步骤2: 生成定制问题
@@ -340,7 +499,7 @@ function ProductionAnalysisPage() {
     setIsLoading(true);
     setError(null);
     try {
-      const result = await callAPI('start_customization', { partName });
+      const result = await callStreamingAPI('start_customization', { partName });
       setCustomizationQuestions(result.questions || []);
     } catch (err) {
       setError('生成定制问题失败，请重试');
@@ -352,6 +511,7 @@ function ProductionAnalysisPage() {
 
   // 提交定制答案后，进入下一步
   const handleSubmitCustomization = () => {
+    setAiThinkingContent('');
     setCurrentStep('process-select');
   };
 
@@ -373,7 +533,7 @@ function ProductionAnalysisPage() {
         }
       });
 
-      const result = await callAPI('generate_processes', {
+      const result = await callStreamingAPI('generate_processes', {
         partName,
         customizedParams: processedAnswers
       });
@@ -399,28 +559,36 @@ function ProductionAnalysisPage() {
   const runAnalysis = async (process: Process) => {
     setIsLoading(true);
     setError(null);
+    setAnalysisResult(null);
     try {
-      // 并行执行成本、风险、碳排放分析
-      const [costRes, riskRes, carbonRes] = await Promise.all([
-        callAPI('analyze_cost', { option: process, optionType: 'process' }),
-        callAPI('assess_risk', { option: process, optionType: 'process' }),
-        callAPI('assess_carbon', { option: process, optionType: 'process' })
-      ]);
+      // 串行执行各个分析（以便正确显示AI思考过程）
+      setCurrentAgent('cost');
+      const costRes = await callStreamingAPI('analyze_cost', { option: process, optionType: 'process' });
 
-      // 综合决策
-      const breakingRes = await callAPI('recommend', {
+      setCurrentAgent('risk');
+      const riskRes = await callStreamingAPI('assess_risk', { option: process, optionType: 'process' });
+
+      setCurrentAgent('carbon');
+      const carbonRes = await callStreamingAPI('assess_carbon', { option: process, optionType: 'process' });
+
+      // 综合决策（显示思考过程）
+      setCurrentAgent('recommend');
+      const breakingRes = await callStreamingAPI('recommend', {
         costData: costRes,
         riskData: riskRes,
         carbonData: carbonRes
       });
 
+      setCurrentAgent('');
+
       setAnalysisResult({
-        cost: costRes?.cost || null,
-        risk: riskRes?.risk || null,
-        carbon: carbonRes?.carbon || null,
-        breaking: breakingRes?.recommendation || null
+        cost: costRes?.cost || costRes || null,
+        risk: riskRes?.risk || riskRes || null,
+        carbon: carbonRes?.carbon || carbonRes || null,
+        breaking: breakingRes || null
       });
 
+      setAiThinkingContent('');
       setCurrentStep('result');
 
       // 保存为已完成
@@ -468,7 +636,7 @@ function ProductionAnalysisPage() {
     setIsLoading(true);
     setError(null);
     try {
-      const result = await callAPI('generate_final_report', {
+      const result = await callStreamingAPI('generate_final_report', {
         partName,
         productPlan,
         competitorAnalysis,
@@ -522,58 +690,102 @@ function ProductionAnalysisPage() {
   // 渲染步骤指示器
   const renderStepIndicator = () => {
     const steps = [
-      { key: 'product-planning', label: '1. 产品规划' },
-      { key: 'competitor-analysis', label: '2. 竞品分析' },
-      { key: 'supplier-select', label: '3. 选择供应商' },
-      { key: 'customization', label: '4. 定制参数' },
-      { key: 'process-select', label: '5. 选择工艺' },
-      { key: 'result', label: '6. 评估结果' },
-      { key: 'final-report', label: '7. 最终报告' }
+      { key: 'product-planning', label: '产品规划' },
+      { key: 'competitor-analysis', label: '竞品分析' },
+      { key: 'supplier-select', label: '供应商' },
+      { key: 'customization', label: '定制参数' },
+      { key: 'process-select', label: '工艺方案' },
+      { key: 'result', label: '评估结果' },
+      { key: 'final-report', label: '最终报告' }
     ];
 
+    const currentIndex = steps.findIndex(s => s.key === currentStep);
+
     return (
-      <div className="flex items-center justify-center gap-2 mb-6 flex-wrap">
-        {steps.map((step, index) => (
-          <div key={step.key} className="flex items-center">
-            <div className={`px-3 py-1 rounded-full text-sm ${
-              currentStep === step.key
-                ? 'bg-purple-500 text-white'
-                : steps.findIndex(s => s.key === currentStep) > index
-                  ? 'bg-green-500/30 text-green-300'
-                  : 'bg-white/10 text-gray-400'
-            }`}>
-              {step.label}
-            </div>
-            {index < steps.length - 1 && <span className="text-gray-600 mx-1">→</span>}
+      <div className="mb-6">
+        {/* 移动端：紧凑进度条 */}
+        <div className="md:hidden mb-4">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-sm text-gray-400">进度</span>
+            <span className="text-sm text-cyan-400">{currentIndex + 1} / {steps.length}</span>
           </div>
-        ))}
+          <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full transition-all duration-500"
+              style={{ width: `${((currentIndex + 1) / steps.length) * 100}%` }}
+            />
+          </div>
+        </div>
+
+        {/* 桌面端：紧凑步骤指示器 - 单行 */}
+        <div className="hidden md:flex items-center justify-between gap-0 bg-white/5 rounded-xl p-1.5">
+          {steps.map((step, index) => {
+            const isCompleted = currentIndex > index;
+            const isCurrent = currentStep === step.key;
+
+            return (
+              <div key={step.key} className="flex-1 flex items-center">
+                <div
+                  className={`flex-1 px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-300 text-center ${
+                    isCurrent
+                      ? 'bg-gradient-to-r from-cyan-500 to-blue-500 text-white'
+                      : isCompleted
+                        ? 'bg-cyan-500/20 text-cyan-300'
+                        : 'text-gray-500'
+                  }`}
+                >
+                  {step.label}
+                </div>
+                {index < steps.length - 1 && (
+                  <div className={`mx-1 transition-colors ${
+                    isCompleted ? 'text-cyan-500' : 'text-gray-600'
+                  }`}>
+                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
       </div>
     );
   };
 
   // 渲染产品雏形规划
   const renderProductPlanning = () => (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <div className="text-center">
-        <h2 className="text-2xl font-bold text-white mb-2">产品雏形规划</h2>
-        <p className="text-gray-400">为 "{partName}" 规划产品方向</p>
+        {/* 标题装饰 */}
+        <div className="inline-flex items-center justify-center w-16 h-16 mb-4 rounded-2xl bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border border-cyan-500/30">
+          <svg className="w-8 h-8 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg>
+        </div>
+        <h2 className="text-2xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent mb-2">产品雏形规划</h2>
+        <p className="text-gray-400">为 <span className="text-cyan-300">{partName}</span> 规划产品方向</p>
       </div>
 
       {!productPlan ? (
-        <div className="text-center py-8">
-          <button
-            onClick={handleProductPlanning}
-            disabled={isLoading}
-            className="px-6 py-3 bg-purple-500 hover:bg-purple-600 disabled:bg-gray-500 rounded-lg text-white font-medium transition-colors"
-          >
-            {isLoading ? '分析中...' : <><TrophyIcon className="w-5 h-5 mr-2" />开始产品规划</>}
-          </button>
+        <div className="space-y-4">
+          {(isLoading || aiThinkingContent) && renderAIThinking()}
+          <div className="text-center py-4">
+            <button
+              onClick={handleProductPlanning}
+              disabled={isLoading}
+              className="px-6 py-3 bg-gradient-to-r from-cyan-500 to-cyan-500 hover:from-cyan-600 hover:to-cyan-600 disabled:from-slate-600 disabled:to-slate-700 rounded-xl text-white font-medium transition-all duration-300 shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 transform hover:scale-[1.02] active:scale-[0.98]"
+            >
+              {isLoading ? 'AI 思考中...' : '🎯 开始产品规划'}
+            </button>
+          </div>
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* 用途选择 */}
-          <div className="bg-white/5 rounded-xl p-4">
-            <div className="text-white font-medium mb-3">推荐用途</div>
+          <div className="bg-white/5 rounded-xl p-5 card-animate-fade-in">
+            <div className="flex items-center gap-2 mb-4">
+              <svg className="w-5 h-5 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" /></svg>
+              <div className="text-white font-medium">推荐用途</div>
+            </div>
             <div className="flex flex-wrap gap-2">
               {productPlan.useCases.map((useCase, index) => (
                 <button
@@ -585,9 +797,9 @@ function ProductionAnalysisPage() {
                         : [...prev, useCase]
                     );
                   }}
-                  className={`px-3 py-1 rounded-lg text-sm transition-colors ${
+                  className={`px-3 py-1.5 rounded-lg text-sm transition-all ${
                     selectedUseCases.includes(useCase)
-                      ? 'bg-purple-500 text-white'
+                      ? 'bg-cyan-500 text-white shadow-lg shadow-cyan-500/30'
                       : 'bg-white/10 text-gray-300 hover:bg-white/20'
                   }`}
                 >
@@ -598,21 +810,27 @@ function ProductionAnalysisPage() {
           </div>
 
           {/* 预算选择 */}
-          <div className="bg-white/5 rounded-xl p-4">
-            <div className="text-white font-medium mb-3">目标价格区间</div>
+          <div className="bg-white/5 rounded-xl p-5 card-animate-fade-in card-delay-1">
+            <div className="flex items-center gap-2 mb-4">
+              <svg className="w-5 h-5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+              <div className="text-white font-medium">目标价格区间</div>
+            </div>
             <input
               type="text"
               value={selectedBudget}
               onChange={(e) => setSelectedBudget(e.target.value)}
               placeholder="例如: 100-500"
-              className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white placeholder-gray-500"
+              className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white placeholder-gray-500 focus:border-cyan-500 focus:outline-none"
             />
             <div className="text-xs text-gray-500 mt-2">格式: 最低价-最高价 (CNY)</div>
           </div>
 
           {/* 材料选择 */}
-          <div className="bg-white/5 rounded-xl p-4">
-            <div className="text-white font-medium mb-3">推荐材料</div>
+          <div className="bg-white/5 rounded-xl p-5 card-animate-fade-in card-delay-2">
+            <div className="flex items-center gap-2 mb-4">
+              <svg className="w-5 h-5 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>
+              <div className="text-white font-medium">推荐材料</div>
+            </div>
             <div className="flex flex-wrap gap-2">
               {productPlan.materials.map((material, index) => (
                 <button
@@ -624,9 +842,9 @@ function ProductionAnalysisPage() {
                         : [...prev, material]
                     );
                   }}
-                  className={`px-3 py-1 rounded-lg text-sm transition-colors ${
+                  className={`px-3 py-1.5 rounded-lg text-sm transition-all ${
                     selectedMaterials.includes(material)
-                      ? 'bg-purple-500 text-white'
+                      ? 'bg-cyan-500 text-white shadow-lg shadow-cyan-500/30'
                       : 'bg-white/10 text-gray-300 hover:bg-white/20'
                   }`}
                 >
@@ -637,8 +855,11 @@ function ProductionAnalysisPage() {
           </div>
 
           {/* 特性选择 */}
-          <div className="bg-white/5 rounded-xl p-4">
-            <div className="text-white font-medium mb-3">产品特性</div>
+          <div className="bg-white/5 rounded-xl p-5 card-animate-fade-in card-delay-3">
+            <div className="flex items-center gap-2 mb-4">
+              <svg className="w-5 h-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l707m2.-.707-.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg>
+              <div className="text-white font-medium">产品特性</div>
+            </div>
             <div className="flex flex-wrap gap-2">
               {productPlan.features.map((feature, index) => (
                 <button
@@ -650,9 +871,9 @@ function ProductionAnalysisPage() {
                         : [...prev, feature]
                     );
                   }}
-                  className={`px-3 py-1 rounded-lg text-sm transition-colors ${
+                  className={`px-3 py-1.5 rounded-lg text-sm transition-all ${
                     selectedFeatures.includes(feature)
-                      ? 'bg-purple-500 text-white'
+                      ? 'bg-cyan-500 text-white shadow-lg shadow-cyan-500/30'
                       : 'bg-white/10 text-gray-300 hover:bg-white/20'
                   }`}
                 >
@@ -662,12 +883,21 @@ function ProductionAnalysisPage() {
             </div>
           </div>
 
-          <button
-            onClick={handleConfirmProductPlan}
-            className="w-full py-3 bg-purple-500 hover:bg-purple-600 rounded-lg text-white font-medium transition-colors"
-          >
-            确认并继续 →
-          </button>
+          <div className="md:col-span-2 flex gap-3 pt-2">
+            <button
+              onClick={() => { setProductPlan(null); handleProductPlanning(); }}
+              disabled={isLoading}
+              className="flex-1 py-3 bg-white/10 hover:bg-white/20 rounded-xl text-white font-medium transition-colors"
+            >
+              重新分析
+            </button>
+            <button
+              onClick={handleConfirmProductPlan}
+              className="flex-1 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 rounded-xl text-white font-medium transition-all duration-300 shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 transform hover:scale-[1.02] active:scale-[0.98]"
+            >
+              确认并继续 →
+            </button>
+          </div>
         </div>
       )}
     </div>
@@ -675,82 +905,106 @@ function ProductionAnalysisPage() {
 
   // 渲染竞品分析
   const renderCompetitorAnalysis = () => (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <div className="text-center">
-        <h2 className="text-2xl font-bold text-white mb-2">竞品分析</h2>
+        {/* 标题装饰 */}
+        <div className="inline-flex items-center justify-center w-16 h-16 mb-4 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20 border border-emerald-500/30">
+          <svg className="w-8 h-8 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
+        </div>
+        <h2 className="text-2xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent mb-2">竞品分析</h2>
         <p className="text-gray-400">了解市场价格和竞争态势</p>
       </div>
 
       {!competitorAnalysis ? (
-        <div className="text-center py-8">
-          <button
-            onClick={handleCompetitorAnalysis}
-            disabled={isLoading}
-            className="px-6 py-3 bg-purple-500 hover:bg-purple-600 disabled:bg-gray-500 rounded-lg text-white font-medium transition-colors"
-          >
-            {isLoading ? '分析中...' : <><ChartBarIcon className="w-5 h-5 mr-2" />开始竞品分析</>}
-          </button>
+        <div className="space-y-4">
+          {(isLoading || aiThinkingContent) && renderAIThinking()}
+          <div className="text-center py-4">
+            <button
+              onClick={handleCompetitorAnalysis}
+              disabled={isLoading}
+              className="px-6 py-3 bg-gradient-to-r from-cyan-500 to-cyan-500 hover:from-cyan-600 hover:to-cyan-600 disabled:from-slate-600 disabled:to-slate-700 rounded-xl text-white font-medium transition-all duration-300 shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 transform hover:scale-[1.02] active:scale-[0.98]"
+            >
+              {isLoading ? 'AI 思考中...' : '📊 开始竞品分析'}
+            </button>
+          </div>
         </div>
       ) : (
-        <div className="space-y-4">
-          {/* 市场价格 */}
-          <div className="bg-gradient-to-r from-emerald-500/10 to-teal-500/10 rounded-xl p-4 border border-emerald-500/30">
-            <div className="text-lg font-bold text-emerald-300 mb-3"><CurrencyDollarIcon className="w-5 h-5 inline mr-2" />市场价格区间</div>
-            <div className="grid grid-cols-3 gap-2 text-center">
-              <div className="bg-black/30 rounded p-2">
-                <div className="text-gray-500 text-xs">低端</div>
-                <div className="text-white font-bold">¥{competitorAnalysis.marketPrice.low}</div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* 市场价格 - 占据整行 */}
+          <div className="md:col-span-2 bg-gradient-to-r from-emerald-500/10 to-teal-500/10 rounded-xl p-5 border border-emerald-500/30 card-animate-fade-in">
+            <div className="flex items-center gap-2 mb-4">
+              <svg className="w-5 h-5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+              <div className="text-lg font-bold text-emerald-300">价格区间</div>
+            </div>
+            <div className="grid grid-cols-3 gap-3">
+              <div className="bg-black/40 rounded-xl p-3 text-center">
+                <div className="text-gray-500 text-xs mb-1">低端</div>
+                <div className="text-white font-bold text-lg">¥{competitorAnalysis.marketPrice.low}</div>
               </div>
-              <div className="bg-black/30 rounded p-2">
-                <div className="text-gray-500 text-xs">中端</div>
-                <div className="text-white font-bold">¥{competitorAnalysis.marketPrice.mid}</div>
+              <div className="bg-black/40 rounded-xl p-3 text-center border border-emerald-500/30">
+                <div className="text-emerald-400 text-xs mb-1">中端</div>
+                <div className="text-emerald-300 font-bold text-xl">¥{competitorAnalysis.marketPrice.mid}</div>
               </div>
-              <div className="bg-black/30 rounded p-2">
-                <div className="text-gray-500 text-xs">高端</div>
-                <div className="text-white font-bold">¥{competitorAnalysis.marketPrice.high}</div>
+              <div className="bg-black/40 rounded-xl p-3 text-center">
+                <div className="text-gray-500 text-xs mb-1">高端</div>
+                <div className="text-white font-bold text-lg">¥{competitorAnalysis.marketPrice.high}</div>
               </div>
             </div>
           </div>
 
-          {/* 竞品信息 */}
-          <div className="bg-white/5 rounded-xl p-4">
-            <div className="text-white font-medium mb-3">主要竞品</div>
-            <div className="space-y-2">
+          {/* 竞品信息 - 占据整行 */}
+          <div className="md:col-span-2 bg-white/5 rounded-xl p-5 card-animate-fade-in card-delay-1">
+            <div className="flex items-center gap-2 mb-4">
+              <svg className="w-5 h-5 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
+              <div className="text-white font-medium">主要竞品</div>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {competitorAnalysis.competitors.map((comp, index) => (
-                <div key={index} className="bg-black/30 rounded-lg p-3">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <div className="text-white font-medium">{comp.name}</div>
-                      <div className="text-sm text-gray-400">{comp.features.join(', ')}</div>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-emerald-400 font-bold">¥{comp.price}</div>
-                      <div className="text-xs text-gray-500">{comp.marketShare}</div>
-                    </div>
+                <div key={index} className="bg-black/30 rounded-xl p-4 hover:bg-black/40 transition-colors">
+                  <div className="flex justify-between items-start mb-2">
+                    <div className="text-white font-medium">{comp.name}</div>
+                    <div className="text-emerald-400 font-bold">¥{comp.price}</div>
                   </div>
+                  <div className="text-sm text-gray-400 mb-2">{comp.features.join(', ')}</div>
+                  <div className="text-xs text-gray-500">{comp.marketShare}</div>
                 </div>
               ))}
             </div>
           </div>
 
           {/* 定价建议 */}
-          <div className="bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-xl p-4 border border-purple-500/30">
-            <div className="text-white font-medium mb-2"><DocumentTextIcon className="w-5 h-5 inline mr-2" />定价建议</div>
-            <div className="text-gray-300 text-sm">{competitorAnalysis.pricingAdvice}</div>
+          <div className="bg-gradient-to-r from-cyan-500/10 to-blue-500/10 rounded-xl p-5 border border-cyan-500/30 card-animate-fade-in card-delay-2">
+            <div className="flex items-center gap-2 mb-3">
+              <svg className="w-5 h-5 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>
+              <div className="text-white font-medium">定价建议</div>
+            </div>
+            <div className="text-gray-300 text-sm leading-relaxed">{competitorAnalysis.pricingAdvice}</div>
           </div>
 
           {/* 市场趋势 */}
-          <div className="bg-gradient-to-r from-cyan-500/10 to-blue-500/10 rounded-xl p-4 border border-cyan-500/30">
-            <div className="text-white font-medium mb-2"><ArrowTrendingUpIcon className="w-5 h-5 inline mr-2" />市场趋势</div>
-            <div className="text-gray-300 text-sm">{competitorAnalysis.marketTrends}</div>
+          <div className="bg-gradient-to-r from-blue-500/10 to-cyan-500/10 rounded-xl p-5 border border-blue-500/30 card-animate-fade-in card-delay-3">
+            <div className="flex items-center gap-2 mb-3">
+              <svg className="w-5 h-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>
+              <div className="text-white font-medium">市场趋势</div>
+            </div>
+            <div className="text-gray-300 text-sm leading-relaxed">{competitorAnalysis.marketTrends}</div>
           </div>
 
-          <button
-            onClick={() => setCurrentStep('supplier-select')}
-            className="w-full py-3 bg-purple-500 hover:bg-purple-600 rounded-lg text-white font-medium transition-colors"
-          >
-            继续 →
-          </button>
+          <div className="md:col-span-2 flex gap-3 pt-2">
+            <button
+              onClick={() => { setCompetitorAnalysis(null); handleCompetitorAnalysis(); }}
+              disabled={isLoading}
+              className="flex-1 py-3 bg-white/10 hover:bg-white/20 rounded-lg text-white font-medium transition-colors"
+            >
+              🔄 重新分析
+            </button>
+            <button
+              onClick={() => { setAiThinkingContent(''); setCurrentStep('supplier-select'); }}
+              className="flex-1 py-3 bg-gradient-to-r from-cyan-500 to-cyan-500 hover:from-cyan-600 hover:to-cyan-600 rounded-xl text-white font-medium transition-all duration-300 shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 transform hover:scale-[1.02] active:scale-[0.98]"
+            >
+              继续 →
+            </button>
+          </div>
         </div>
       )}
     </div>
@@ -758,21 +1012,28 @@ function ProductionAnalysisPage() {
 
   // 渲染供应商选择
   const renderSupplierSelect = () => (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <div className="text-center">
-        <h2 className="text-2xl font-bold text-white mb-2">选择供应商</h2>
-        <p className="text-gray-400">为 "{partName}" 选择供应商</p>
+        {/* 标题装饰 */}
+        <div className="inline-flex items-center justify-center w-16 h-16 mb-4 rounded-2xl bg-gradient-to-br from-orange-500/20 to-amber-500/20 border border-orange-500/30">
+          <svg className="w-8 h-8 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
+        </div>
+        <h2 className="text-2xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent mb-2">选择供应商</h2>
+        <p className="text-gray-400">为 <span className="text-orange-300">{partName}</span> 选择供应商</p>
       </div>
 
       {!suppliers.length ? (
-        <div className="text-center py-8">
-          <button
-            onClick={handleFindSuppliers}
-            disabled={isLoading}
-            className="px-6 py-3 bg-purple-500 hover:bg-purple-600 disabled:bg-gray-500 rounded-lg text-white font-medium transition-colors"
-          >
-            {isLoading ? '搜索中...' : <><MagnifyingGlassIcon className="w-5 h-5 mr-2" />搜索供应商</>}
-          </button>
+        <div className="space-y-4">
+          {(isLoading || aiThinkingContent) && renderAIThinking()}
+          <div className="text-center py-4">
+            <button
+              onClick={handleFindSuppliers}
+              disabled={isLoading}
+              className="px-6 py-3 bg-gradient-to-r from-cyan-500 to-cyan-500 hover:from-cyan-600 hover:to-cyan-600 disabled:from-slate-600 disabled:to-slate-700 rounded-xl text-white font-medium transition-all duration-300 shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 transform hover:scale-[1.02] active:scale-[0.98]"
+            >
+              {isLoading ? 'AI 思考中...' : '搜索供应商'}
+            </button>
+          </div>
         </div>
       ) : (
         <div className="space-y-3">
@@ -780,11 +1041,20 @@ function ProductionAnalysisPage() {
             <button
               key={index}
               onClick={() => handleSelectSupplier(supplier)}
-              className="w-full p-4 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-purple-500/50 rounded-xl text-left transition-all"
+              className={`w-full p-4 border rounded-xl text-left transition-all ${
+                selectedSupplier?.name === supplier.name
+                  ? 'bg-cyan-500/20 border-cyan-500'
+                  : 'bg-white/5 hover:bg-white/10 border-white/10 hover:border-cyan-500/50'
+              }`}
             >
               <div className="flex justify-between items-start">
                 <div>
-                  <div className="font-medium text-white">{supplier.name}</div>
+                  <div className="font-medium text-white flex items-center gap-2">
+                    {supplier.name}
+                    {selectedSupplier?.name === supplier.name && (
+                      <span className="text-xs bg-cyan-500 text-white px-2 py-0.5 rounded">已选择</span>
+                    )}
+                  </div>
                   <div className="text-sm text-gray-400">{supplier.specs}</div>
                 </div>
                 <div className="text-right">
@@ -796,12 +1066,22 @@ function ProductionAnalysisPage() {
             </button>
           ))}
 
-          <button
-            onClick={handleFindSuppliers}
-            className="w-full py-2 text-gray-400 hover:text-white text-sm"
-          >
-            <ArrowPathIcon className="w-5 h-5 mr-2" />重新搜索
-          </button>
+          <div className="flex gap-3 pt-4">
+            <button
+              onClick={() => { setSuppliers([]); setSelectedSupplier(null); handleFindSuppliers(); }}
+              disabled={isLoading}
+              className="flex-1 py-3 bg-white/10 hover:bg-white/20 rounded-lg text-white font-medium transition-colors"
+            >
+              🔄 重新分析
+            </button>
+            <button
+              onClick={() => { setAiThinkingContent(''); setCurrentStep('customization'); }}
+              disabled={!selectedSupplier}
+              className="flex-1 py-3 bg-gradient-to-r from-cyan-500 to-cyan-500 hover:from-cyan-600 hover:to-cyan-600 rounded-xl text-white font-medium transition-all duration-300 shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 transform hover:scale-[1.02] active:scale-[0.98] disabled:from-slate-600 disabled:to-slate-700 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+            >
+              继续 →
+            </button>
+          </div>
         </div>
       )}
     </div>
@@ -809,21 +1089,28 @@ function ProductionAnalysisPage() {
 
   // 渲染定制问题
   const renderCustomization = () => (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <div className="text-center">
-        <h2 className="text-2xl font-bold text-white mb-2">定制参数</h2>
+        {/* 标题装饰 */}
+        <div className="inline-flex items-center justify-center w-16 h-16 mb-4 rounded-2xl bg-gradient-to-br from-cyan-500/20 to-cyan-500/20 border border-cyan-500/30">
+          <svg className="w-8 h-8 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+        </div>
+        <h2 className="text-2xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent mb-2">定制参数</h2>
         <p className="text-gray-400">回答以下问题以优化方案</p>
       </div>
 
       {!customizationQuestions.length ? (
-        <div className="text-center py-8">
-          <button
-            onClick={handleGenerateQuestions}
-            disabled={isLoading}
-            className="px-6 py-3 bg-purple-500 hover:bg-purple-600 disabled:bg-gray-500 rounded-lg text-white font-medium transition-colors"
-          >
-            {isLoading ? '生成中...' : <><QuestionMarkCircleIcon className="w-5 h-5 mr-2" />生成定制问题</>}
-          </button>
+        <div className="space-y-4">
+          {(isLoading || aiThinkingContent) && renderAIThinking()}
+          <div className="text-center py-4">
+            <button
+              onClick={handleGenerateQuestions}
+              disabled={isLoading}
+              className="px-6 py-3 bg-gradient-to-r from-cyan-500 to-cyan-500 hover:from-cyan-600 hover:to-cyan-600 disabled:from-slate-600 disabled:to-slate-700 rounded-xl text-white font-medium transition-all duration-300 shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 transform hover:scale-[1.02] active:scale-[0.98]"
+            >
+              {isLoading ? 'AI 思考中...' : '❓ 生成定制问题'}
+            </button>
+          </div>
         </div>
       ) : (
         <div className="space-y-4">
@@ -839,7 +1126,7 @@ function ProductionAnalysisPage() {
                         onClick={() => setCustomizationAnswers(prev => ({ ...prev, [index]: opt }))}
                         className={`px-3 py-1 rounded-lg text-sm transition-colors ${
                           customizationAnswers[index] === opt
-                            ? 'bg-purple-500 text-white'
+                            ? 'bg-cyan-500 text-white'
                             : 'bg-white/10 text-gray-300 hover:bg-white/20'
                         }`}
                       >
@@ -870,12 +1157,21 @@ function ProductionAnalysisPage() {
             </div>
           ))}
 
-          <button
-            onClick={handleSubmitCustomization}
-            className="w-full py-3 bg-purple-500 hover:bg-purple-600 rounded-lg text-white font-medium transition-colors"
-          >
-            继续 →
-          </button>
+          <div className="flex gap-3 pt-4">
+            <button
+              onClick={() => { setCustomizationQuestions([]); setCustomizationAnswers({}); handleGenerateQuestions(); }}
+              disabled={isLoading}
+              className="flex-1 py-3 bg-white/10 hover:bg-white/20 rounded-lg text-white font-medium transition-colors"
+            >
+              🔄 重新分析
+            </button>
+            <button
+              onClick={handleSubmitCustomization}
+              className="flex-1 py-3 bg-gradient-to-r from-cyan-500 to-cyan-500 hover:from-cyan-600 hover:to-cyan-600 rounded-xl text-white font-medium transition-all duration-300 shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 transform hover:scale-[1.02] active:scale-[0.98]"
+            >
+              继续 →
+            </button>
+          </div>
         </div>
       )}
     </div>
@@ -883,21 +1179,28 @@ function ProductionAnalysisPage() {
 
   // 渲染工艺方案选择
   const renderProcessSelect = () => (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <div className="text-center">
-        <h2 className="text-2xl font-bold text-white mb-2">选择工艺方案</h2>
+        {/* 标题装饰 */}
+        <div className="inline-flex items-center justify-center w-16 h-16 mb-4 rounded-2xl bg-gradient-to-br from-cyan-500/20 to-cyan-500/20 border border-cyan-500/30">
+          <svg className="w-8 h-8 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 11-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 004.486-6.336l-3.276 3.277a3.004 3.004 0 01-2.25-2.25l3.276-3.276a4.5 4.5 0 00-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.745 1.437L5.909 7.5H4.5L2.25 3.75l1.5-1.5L7.5 4.5v1.409l4.26 4.26m-1.745 1.437l1.745-1.437m6.615 8.206L15.75 15.75M4.867 19.125h.008v.008h-.008v-.008z" /></svg>
+        </div>
+        <h2 className="text-2xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent mb-2">选择工艺方案</h2>
         <p className="text-gray-400">选择最适合的制造工艺</p>
       </div>
 
       {!processes.length ? (
-        <div className="text-center py-8">
-          <button
-            onClick={handleGenerateProcesses}
-            disabled={isLoading}
-            className="px-6 py-3 bg-purple-500 hover:bg-purple-600 disabled:bg-gray-500 rounded-lg text-white font-medium transition-colors"
-          >
-            {isLoading ? '生成中...' : <><Cog6ToothIcon className="w-5 h-5 mr-2" />生成工艺方案</>}
-          </button>
+        <div className="space-y-4">
+          {(isLoading || aiThinkingContent) && renderAIThinking()}
+          <div className="text-center py-4">
+            <button
+              onClick={handleGenerateProcesses}
+              disabled={isLoading}
+              className="px-6 py-3 bg-gradient-to-r from-cyan-500 to-cyan-500 hover:from-cyan-600 hover:to-cyan-600 disabled:from-slate-600 disabled:to-slate-700 rounded-xl text-white font-medium transition-all duration-300 shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 transform hover:scale-[1.02] active:scale-[0.98]"
+            >
+              {isLoading ? 'AI 思考中...' : '⚙️ 生成工艺方案'}
+            </button>
+          </div>
         </div>
       ) : (
         <div className="space-y-3">
@@ -923,163 +1226,304 @@ function ProductionAnalysisPage() {
 
   // 渲染分析中
   const renderAnalyzing = () => (
-    <div className="text-center py-12">
-      <div className="inline-block animate-spin rounded-full h-16 w-16 border-4 border-purple-500 border-t-transparent mb-6"></div>
-      <h2 className="text-2xl font-bold text-white mb-2">分析中...</h2>
-      <p className="text-gray-400">正在分析成本、风险和碳排放</p>
+    <div className="relative text-center py-16">
+      {/* 装饰光效 */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-cyan-500/20 rounded-full blur-3xl animate-pulse" />
+
+      <div className="relative">
+        {/* 多层旋转圆环 */}
+        <div className="relative w-24 h-24 mx-auto mb-8">
+          <div className="absolute inset-0 rounded-full border-4 border-cyan-500/30 animate-spin" style={{ animationDuration: '3s' }} />
+          <div className="absolute inset-2 rounded-full border-4 border-blue-500/30 animate-spin" style={{ animationDuration: '2s', animationDirection: 'reverse' }} />
+          <div className="absolute inset-4 rounded-full border-4 border-cyan-500/30 animate-spin" style={{ animationDuration: '1.5s' }} />
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="w-8 h-8 bg-gradient-to-br from-cyan-500 to-cyan-500 rounded-full animate-pulse shadow-lg shadow-cyan-500/50" />
+          </div>
+        </div>
+
+        <h2 className="text-2xl font-bold text-white mb-2">深度分析中</h2>
+        <p className="text-gray-400 mb-6">正在综合评估成本、风险与碳排放</p>
+
+        {/* 分析进度指示 */}
+        <div className="flex justify-center gap-2">
+          {[0, 1, 2].map((i) => (
+            <div
+              key={i}
+              className="w-2 h-2 rounded-full bg-cyan-500 animate-bounce"
+              style={{ animationDelay: `${i * 0.15}s` }}
+            />
+          ))}
+        </div>
+      </div>
     </div>
   );
 
   // 渲染结果
   const renderResult = () => (
-    <div className="space-y-4">
-      {/* 分析中状态 */}
-      {isLoading && (
-        <div className="text-center py-12">
-          <div className="inline-block animate-spin rounded-full h-16 w-16 border-4 border-purple-500 border-t-transparent mb-6"></div>
-          <h2 className="text-2xl font-bold text-white mb-2">分析中...</h2>
-          <p className="text-gray-400">正在分析成本、风险和碳排放</p>
-        </div>
-      )}
+    <div className="space-y-6">
+      {/* 分析中状态 - 显示AI思考过程 */}
+      {(isLoading || aiThinkingContent) && renderAIThinking()}
 
-      {/* 综合决策 */}
+      {/* 综合决策 - 最顶部 */}
       {analysisResult?.breaking && (
-        <div className={`rounded-xl p-6 border ${
+        <div className={`relative overflow-hidden rounded-2xl border card-animate-scale-in ${
           analysisResult.breaking.recommendation === 'break'
-            ? 'bg-gradient-to-r from-purple-500/20 to-pink-500/20 border-purple-500/50'
-            : 'bg-gradient-to-r from-amber-500/20 to-orange-500/20 border-amber-500/50'
+            ? 'bg-gradient-to-r from-cyan-600/30 via-cyan-500/20 to-blue-600/30 border-cyan-400/50 shadow-lg shadow-cyan-500/20'
+            : 'bg-gradient-to-r from-amber-600/30 via-orange-500/20 to-amber-600/30 border-amber-400/50 shadow-lg shadow-amber-500/20'
         }`}>
-          <div className="flex items-center justify-between mb-4">
-            <div className={`text-2xl font-bold ${
-              analysisResult.breaking.recommendation === 'break' ? 'text-purple-300' : 'text-amber-300'
-            }`}>
-              {analysisResult.breaking.recommendation === 'break' ? <><WrenchIcon className="w-5 h-5 mr-2" />建议继续拆分</> : <><CubeIcon className="w-5 h-5 mr-2" />建议保持当前</>}
-            </div>
-            <div className="text-gray-400">置信度: {analysisResult.breaking.confidence}%</div>
-          </div>
-          <div className="text-gray-300 mb-4">{analysisResult.breaking.reasoning}</div>
-          <div className="flex flex-wrap gap-2">
-            {analysisResult.breaking.keyFactors?.map((factor, i) => (
-              <span key={i} className="px-2 py-1 bg-white/10 rounded text-sm text-gray-300">{factor}</span>
-            ))}
-          </div>
-        </div>
-      )}
+          {/* 装饰光效 */}
+          <div className={`absolute top-0 right-0 w-40 h-40 rounded-full ${
+            analysisResult.breaking.recommendation === 'break'
+              ? 'bg-cyan-500/20 blur-3xl'
+              : 'bg-amber-500/20 blur-3xl'
+          }`} />
 
-      {/* 成本分析 */}
-      {analysisResult?.cost && (
-        <div className="bg-gradient-to-r from-emerald-500/10 to-teal-500/10 rounded-xl p-4 border border-emerald-500/30">
-          <div className="text-lg font-bold text-emerald-300 mb-3"><CurrencyDollarIcon className="w-5 h-5 inline mr-2" />成本分析</div>
-          <div className="text-3xl font-bold text-white mb-3">¥{analysisResult.cost.totalCost?.toFixed(0)}</div>
-          <div className="grid grid-cols-2 gap-2 text-sm">
-            <div className="bg-black/30 rounded p-2">
-              <div className="text-gray-500">材料</div>
-              <div className="text-white">¥{analysisResult.cost.breakdown?.material?.toFixed(0)}</div>
-            </div>
-            <div className="bg-black/30 rounded p-2">
-              <div className="text-gray-500">加工</div>
-              <div className="text-white">¥{analysisResult.cost.breakdown?.processing?.toFixed(0)}</div>
-            </div>
-            <div className="bg-black/30 rounded p-2">
-              <div className="text-gray-500">运输</div>
-              <div className="text-white">¥{analysisResult.cost.breakdown?.shipping?.toFixed(0)}</div>
-            </div>
-            <div className="bg-black/30 rounded p-2">
-              <div className="text-gray-500">其他</div>
-              <div className="text-white">¥{analysisResult.cost.breakdown?.other?.toFixed(0)}</div>
-            </div>
-          </div>
-          <div className="mt-3 text-sm text-gray-400">{analysisResult.cost.analysis}</div>
-        </div>
-      )}
-
-      {/* 风险评估 */}
-      {analysisResult?.risk && (
-        <div className="bg-gradient-to-r from-red-500/10 to-orange-500/10 rounded-xl p-4 border border-red-500/30">
-          <div className="flex items-center justify-between mb-3">
-            <div className="text-lg font-bold text-red-300"><ExclamationTriangleIcon className="w-5 h-5 inline mr-2" />风险评估</div>
-            <span className={`px-3 py-1 rounded-full text-sm ${
-              analysisResult.risk.riskLevel === '低' ? 'bg-green-500/30 text-green-300' :
-              analysisResult.risk.riskLevel === '中' ? 'bg-yellow-500/30 text-yellow-300' :
-              'bg-red-500/30 text-red-300'
-            }`}>
-              {analysisResult.risk.riskLevel}风险
-            </span>
-          </div>
-          <div className="space-y-2">
-            {analysisResult.risk.risks?.map((r, i) => (
-              <div key={i} className="bg-black/30 rounded-lg p-2 text-sm">
-                <div className="text-white">{r.type}</div>
-                <div className="text-gray-400">{r.description}</div>
+          <div className="relative p-8">
+            <div className="flex items-center justify-between mb-6">
+              <div className={`flex items-center gap-4 text-3xl font-bold ${
+                analysisResult.breaking.recommendation === 'break' ? 'text-cyan-300' : 'text-amber-300'
+              }`}>
+                <div className={`w-16 h-16 rounded-2xl flex items-center justify-center ${
+                  analysisResult.breaking.recommendation === 'break'
+                    ? 'bg-cyan-500/30'
+                    : 'bg-amber-500/30'
+                }`}>
+                  {analysisResult.breaking.recommendation === 'break' ? '继续拆分' : '保持当前'}
+                </div>
+                <div>
+                  <div>{analysisResult.breaking.recommendation === 'break' ? '建议继续拆分' : '建议保持当前'}</div>
+                  <div className="text-base font-normal text-gray-400 mt-1">基于综合评估结果</div>
+                </div>
               </div>
-            ))}
+              <div className="text-right">
+                <div className="text-4xl font-bold text-white">{analysisResult.breaking.confidence}%</div>
+                <div className="text-sm text-gray-400">置信度</div>
+              </div>
+            </div>
+            <div className="text-lg text-gray-300 mb-6 leading-relaxed">{analysisResult.breaking.reasoning}</div>
+            <div className="flex flex-wrap gap-3">
+              {analysisResult.breaking.keyFactors?.map((factor, i) => (
+                <span key={i} className="px-4 py-2 bg-white/10 rounded-lg text-base text-gray-300 border border-white/10">
+                  {factor}
+                </span>
+              ))}
+            </div>
           </div>
         </div>
       )}
 
-      {/* 碳排放 */}
-      {analysisResult?.carbon && (
-        <div className="bg-gradient-to-r from-cyan-500/10 to-blue-500/10 rounded-xl p-4 border border-cyan-500/30">
-          <div className="flex items-center justify-between mb-3">
-            <div className="text-lg font-bold text-cyan-300"><GlobeAltIcon className="w-5 h-5 inline mr-2" />碳排放</div>
-            <span className="px-3 py-1 rounded-full bg-cyan-500/30 text-cyan-300">
-              等级 {analysisResult.carbon.rating}
-            </span>
-          </div>
-          <div className="text-2xl font-bold text-white mb-3">{analysisResult.carbon.totalEmission?.toFixed(1)} kg CO₂</div>
-          <div className="text-sm text-gray-400">{analysisResult.carbon.analysis}</div>
+      {/* 分析卡片区域 - 左侧成本+碳排放，右侧风险评估 */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* 左侧列：成本分析 + 碳排放 */}
+        <div className="space-y-6">
+          {/* 成本分析 */}
+          {analysisResult?.cost && (
+            <div className="relative overflow-hidden rounded-2xl border border-emerald-500/30 bg-gradient-to-br from-emerald-950/50 via-emerald-900/30 to-teal-950/50 shadow-lg shadow-emerald-500/10 card-animate-fade-in">
+              {/* 装饰光效 */}
+              <div className="absolute top-0 right-0 w-20 h-20 bg-emerald-500/20 rounded-full blur-2xl" />
+
+              <div className="relative p-6">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center">
+                    <svg className="w-5 h-5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                  </div>
+                  <div className="text-base font-bold text-emerald-300">成本分析</div>
+                </div>
+
+                <div className="flex items-baseline gap-2 mb-4">
+                  <span className="text-3xl font-bold text-white">¥{analysisResult.cost.totalCost?.toFixed(0)}</span>
+                </div>
+
+                {/* 成本分解比例条 - 酷炫版 */}
+                {(() => {
+                  const breakdown = analysisResult.cost.breakdown;
+                  const total = (breakdown?.material || 0) + (breakdown?.processing || 0) + (breakdown?.shipping || 0) + (breakdown?.other || 0);
+                  const items = [
+                    { label: '材料', value: breakdown?.material || 0, gradient: 'from-orange-400 to-orange-600', color: 'bg-orange-400' },
+                    { label: '加工', value: breakdown?.processing || 0, gradient: 'from-cyan-400 to-cyan-600', color: 'bg-cyan-400' },
+                    { label: '运输', value: breakdown?.shipping || 0, gradient: 'from-pink-400 to-pink-600', color: 'bg-pink-400' },
+                    { label: '其他', value: breakdown?.other || 0, gradient: 'from-yellow-400 to-yellow-600', color: 'bg-yellow-400' },
+                  ];
+                  return (
+                    <div className="mb-4">
+                      {/* 简洁高级比例条 */}
+                      <div className="mb-3">
+                        <div className="flex h-3 rounded-full overflow-hidden bg-black/50">
+                          {items.map((item, i) => (
+                            <div
+                              key={i}
+                              className={`transition-all duration-700 ${i < items.length - 1 ? 'border-r border-black/30' : ''}`}
+                              style={{ width: total > 0 ? `${(item.value / total) * 100}%` : '0%' }}
+                            >
+                              <div className={`w-full h-full bg-gradient-to-r ${item.gradient}`} />
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                      {/* 简洁图例 */}
+                      <div className="flex flex-wrap gap-4 text-sm">
+                        {items.map((item, i) => (
+                          <div key={i} className="flex items-center gap-2">
+                            <div className={`w-2.5 h-2.5 rounded-full ${item.color}`} />
+                            <span className="text-gray-400">{item.label}</span>
+                            <span className="text-white font-medium">¥{item.value?.toFixed(0)}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })()}
+
+                <div className="text-sm text-gray-400 leading-relaxed">{analysisResult.cost.analysis}</div>
+              </div>
+            </div>
+          )}
+
+          {/* 碳排放 - 放在成本分析下方 */}
+          {analysisResult?.carbon && (
+            <div className="relative overflow-hidden rounded-2xl border border-cyan-500/30 bg-gradient-to-br from-cyan-950/50 via-cyan-900/30 to-cyan-950/50 shadow-lg shadow-cyan-500/10 card-animate-fade-in card-delay-2" style={{ minHeight: '340px' }}>
+              {/* 装饰光效 */}
+              <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-500/20 rounded-full blur-3xl" />
+
+              <div className="relative p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-xl bg-cyan-500/20 flex items-center justify-center">
+                      <svg className="w-6 h-6 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    </div>
+                    <div className="text-lg font-bold text-cyan-300">碳排放</div>
+                  </div>
+                  <span className="px-4 py-1.5 rounded-full text-base font-medium bg-cyan-500/30 text-cyan-300 border border-cyan-500/30">
+                    等级 {analysisResult.carbon.rating}
+                  </span>
+                </div>
+
+                <div className="flex items-baseline gap-2 mb-4">
+                  <span className="text-4xl font-bold text-white">{analysisResult.carbon.totalEmission?.toFixed(1)}</span>
+                  <span className="text-cyan-400 text-lg">kg CO₂</span>
+                </div>
+
+                {/* 碳排放分解 */}
+                {analysisResult.carbon.breakdown && (
+                  <div className="grid grid-cols-3 gap-3 mb-4">
+                    {[
+                      { label: '生产', value: analysisResult.carbon.breakdown.production },
+                      { label: '运输', value: analysisResult.carbon.breakdown.transportation },
+                      { label: '材料', value: analysisResult.carbon.breakdown.material },
+                    ].map((item, i) => (
+                      <div key={i} className="bg-black/30 rounded-lg p-3">
+                        <div className="text-gray-500 text-sm mb-1">{item.label}</div>
+                        <div className="text-white font-medium">{item.value?.toFixed(1)} kg</div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                <div className="text-base text-gray-400 leading-relaxed">{analysisResult.carbon.analysis}</div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* 右侧列：风险评估（高度等于左侧总高度） */}
+        <div>
+          {/* 风险评估 */}
+          {analysisResult?.risk && (
+            <div className="relative overflow-hidden rounded-2xl border border-red-500/30 bg-gradient-to-br from-red-950/50 via-red-900/30 to-orange-950/50 shadow-lg shadow-red-500/10 card-animate-fade-in card-delay-1 h-full flex flex-col">
+              {/* 装饰光效 */}
+              <div className="absolute top-0 right-0 w-20 h-20 bg-red-500/20 rounded-full blur-2xl" />
+
+              <div className="relative p-6 flex flex-col flex-1">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-red-500/20 flex items-center justify-center">
+                      <svg className="w-5 h-5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                    </div>
+                    <div className="text-base font-bold text-red-300">风险评估</div>
+                  </div>
+                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                    analysisResult.risk.riskLevel === '低' ? 'bg-green-500/30 text-green-300' :
+                    analysisResult.risk.riskLevel === '中' ? 'bg-yellow-500/30 text-yellow-300' :
+                    'bg-red-500/30 text-red-300'
+                  }`}>
+                    {analysisResult.risk.riskLevel}风险
+                  </span>
+                </div>
+
+                <div className="flex flex-col flex-1 gap-3">
+                  {analysisResult.risk.risks?.slice(0, 4)?.map((r, i) => (
+                    <div key={i} className="flex-1 bg-black/30 rounded-lg p-3 text-sm border border-white/5 flex flex-col">
+                      <div className="flex items-center gap-2">
+                        <div className="w-1.5 h-1.5 rounded-full bg-red-400 flex-shrink-0" />
+                        <div className="text-white font-medium">{r.type}</div>
+                      </div>
+                      <div className="text-gray-400 ml-4 mt-2">{r.description}</div>
+                      {r.impact && (
+                        <div className="mt-auto pt-2 ml-4 text-sm">
+                          <span className="text-gray-500">影响：</span>
+                          <span className="text-red-300">{r.impact}</span>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* 操作按钮 - 仅在分析完成后显示 */}
+      {analysisResult && !isLoading && (
+        <div className="flex gap-3 pt-4 animate-fade-in">
+          <button
+            onClick={() => { setAnalysisResult(null); if (selectedProcess) runAnalysis(selectedProcess); }}
+            disabled={!selectedProcess}
+            className="flex-1 py-3 bg-white/10 hover:bg-white/20 rounded-xl text-white font-medium transition-colors"
+          >
+            重新分析
+          </button>
+          <button
+            onClick={() => setCurrentStep('final-report')}
+            className="flex-1 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 rounded-xl text-white font-medium transition-all shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40"
+          >
+            查看最终报告
+          </button>
         </div>
       )}
-
-      {/* 操作按钮 */}
-      <div className="flex gap-3 pt-4">
-        <button
-          onClick={handleRestart}
-          className="flex-1 py-3 bg-white/10 hover:bg-white/20 rounded-lg text-white font-medium transition-colors"
-        >
-          <ArrowPathIcon className="w-5 h-5 mr-2" />重新分析
-        </button>
-        <button
-          onClick={() => setCurrentStep('final-report')}
-          className="flex-1 py-3 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 rounded-lg text-white font-medium transition-colors"
-        >
-          <DocumentTextIcon className="w-5 h-5 mr-2" />查看最终报告 →
-        </button>
-      </div>
-      <div className="pt-2">
-        <Link
-          href={sessionId ? `/canvas?sessionId=${sessionId}` : '/canvas'}
-          className="block w-full py-2 text-center text-gray-400 hover:text-white text-sm transition-colors"
-        >
-          ← 返回画布
-        </Link>
-      </div>
     </div>
   );
 
   // 渲染最终报告
   const renderFinalReport = () => (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <div className="text-center">
-        <h2 className="text-2xl font-bold text-white mb-2">产品规划最终报告</h2>
+        {/* 标题装饰 */}
+        <div className="inline-flex items-center justify-center w-16 h-16 mb-4 rounded-2xl bg-gradient-to-br from-cyan-500/20 to-indigo-500/20 border border-cyan-500/30">
+          <svg className="w-8 h-8 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+        </div>
+        <h2 className="text-2xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent mb-2">产品规划最终报告</h2>
         <p className="text-gray-400">综合分析结果汇总</p>
       </div>
 
       {!finalReport ? (
-        <div className="text-center py-8">
-          <button
-            onClick={handleGenerateFinalReport}
-            disabled={isLoading}
-            className="px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 disabled:bg-gray-500 rounded-lg text-white font-medium transition-colors"
-          >
-            {isLoading ? '生成中...' : <><ChartBarIcon className="w-5 h-5 mr-2" />生成最终报告</>}
-          </button>
+        <div className="space-y-4">
+          {(isLoading || aiThinkingContent) && renderAIThinking()}
+          <div className="text-center py-4">
+            <button
+              onClick={handleGenerateFinalReport}
+              disabled={isLoading}
+              className="px-6 py-3 bg-gradient-to-r from-cyan-500 to-cyan-500 hover:from-cyan-600 hover:to-cyan-600 disabled:bg-gray-500 rounded-lg text-white font-medium transition-colors"
+            >
+              {isLoading ? 'AI 思考中...' : '📊 生成最终报告'}
+            </button>
+          </div>
         </div>
       ) : (
         <div className="space-y-4">
           {/* 商业底座与定位 */}
-          <div className="bg-gradient-to-r from-blue-500/20 to-cyan-500/20 rounded-xl p-4 border border-blue-500/30">
-            <div className="text-lg font-bold text-blue-300 mb-3">💼 商业底座与定位</div>
+          <div className="bg-gradient-to-r from-cyan-500/20 to-cyan-500/20 rounded-xl p-4 border border-cyan-500/30">
+            <div className="text-lg font-bold text-cyan-300 mb-3">商业底座与定位</div>
             <div className="space-y-3 text-sm">
               <div>
                 <div className="text-gray-400">市场定位</div>
@@ -1106,7 +1550,7 @@ function ProductionAnalysisPage() {
 
           {/* 供应链与成本 */}
           <div className="bg-gradient-to-r from-emerald-500/20 to-teal-500/20 rounded-xl p-4 border border-emerald-500/30">
-            <div className="text-lg font-bold text-emerald-300 mb-3">🔗 供应链与成本</div>
+            <div className="text-lg font-bold text-emerald-300 mb-3">供应链与成本</div>
             <div className="space-y-3 text-sm">
               <div>
                 <div className="text-gray-400">供应商概述</div>
@@ -1152,8 +1596,8 @@ function ProductionAnalysisPage() {
           </div>
 
           {/* 上市与生命周期 */}
-          <div className="bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-xl p-4 border border-purple-500/30">
-            <div className="text-lg font-bold text-purple-300 mb-3"><RocketLaunchIcon className="w-5 h-5 inline mr-2" />上市与生命周期</div>
+          <div className="bg-gradient-to-r from-cyan-500/20 to-blue-500/20 rounded-xl p-4 border border-cyan-500/30">
+            <div className="text-lg font-bold text-cyan-300 mb-3">上市与生命周期</div>
             <div className="space-y-3 text-sm">
               <div>
                 <div className="text-gray-400">上市计划</div>
@@ -1177,17 +1621,17 @@ function ProductionAnalysisPage() {
           {/* 操作按钮 */}
           <div className="flex gap-3 pt-4">
             <button
-              onClick={() => setCurrentStep('result')}
-              className="flex-1 py-3 bg-white/10 hover:bg-white/20 rounded-lg text-white font-medium transition-colors"
+              onClick={handleRestart}
+              className="flex-1 py-3 bg-red-500/80 hover:bg-red-500 rounded-lg text-white font-medium transition-colors"
+            >
+              🗑️ 删除全部分析
+            </button>
+            <button
+              onClick={() => { setAiThinkingContent(''); setCurrentStep('result'); }}
+              className="flex-1 py-3 bg-gradient-to-r from-cyan-500 to-cyan-500 hover:from-cyan-600 hover:to-cyan-600 rounded-xl text-white font-medium transition-all duration-300 shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 transform hover:scale-[1.02] active:scale-[0.98]"
             >
               ← 返回评估结果
             </button>
-            <Link
-              href={sessionId ? `/canvas?sessionId=${sessionId}` : '/canvas'}
-              className="flex-1 py-3 bg-purple-500 hover:bg-purple-600 rounded-lg text-white font-medium text-center transition-colors"
-            >
-              ← 返回画布
-            </Link>
           </div>
         </div>
       )}
@@ -1204,10 +1648,23 @@ function ProductionAnalysisPage() {
   // 没有零件信息
   if (!partName) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-indigo-950 via-purple-950 to-slate-950 text-white flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-gray-400 mb-4">缺少零件信息</p>
-          <Link href="/setup" className="text-purple-400 hover:text-purple-300">
+      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-black text-white flex items-center justify-center relative overflow-hidden">
+        {/* 背景装饰 */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-0 left-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+          <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:50px_50px]" />
+        </div>
+
+        <div className="relative text-center">
+          <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border border-cyan-500/30 flex items-center justify-center">
+            <svg className="w-8 h-8 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+          </div>
+          <p className="text-gray-400 mb-6">缺少零件信息</p>
+          <Link href="/setup" className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-cyan-500 rounded-xl text-white font-medium hover:from-cyan-600 hover:to-cyan-600 transition-all shadow-lg shadow-cyan-500/25">
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
             返回调制界面
           </Link>
         </div>
@@ -1216,27 +1673,48 @@ function ProductionAnalysisPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-950 via-purple-950 to-slate-950 text-white">
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-black text-white relative overflow-hidden">
+      {/* 背景装饰 */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {/* 动态光效 */}
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '4s' }} />
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '5s', animationDelay: '1s' }} />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-cyan-600/5 rounded-full blur-3xl" />
+
+        {/* 网格背景 */}
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:50px_50px]" />
+      </div>
+
       {/* 头部 */}
-      <header className="border-b border-white/10 bg-black/20 backdrop-blur-xl">
-        <div className="max-w-3xl mx-auto px-6 py-4 flex items-center justify-between">
+      <header className="relative border-b border-white/10 bg-black/20 backdrop-blur-xl">
+        <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link
               href={sessionId ? `/canvas?sessionId=${sessionId}` : '/canvas'}
-              className="text-gray-400 hover:text-white transition-colors"
+              className="group flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
             >
-              ← 返回
+              <svg className="w-5 h-5 group-hover:-translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              </svg>
+              返回
             </Link>
-            <div className="w-px h-8 bg-white/20" />
-            <h1 className="text-xl font-bold"><BuildingOffice2Icon className="w-6 h-6 inline mr-2" />生产分析</h1>
+            <div className="w-px h-8 bg-white/10" />
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-500 to-cyan-500 flex items-center justify-center">
+                <span className="text-sm">🏭</span>
+              </div>
+              <h1 className="text-lg font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">生产分析</h1>
+            </div>
           </div>
-          <div className="text-gray-400">
-            {partName}
+          <div className="flex items-center gap-3">
+            <div className="px-3 py-1.5 bg-cyan-500/20 rounded-lg border border-cyan-500/30">
+              <span className="text-cyan-300 text-sm">{partName}</span>
+            </div>
           </div>
         </div>
       </header>
 
-      <main className="max-w-3xl mx-auto px-6 py-8">
+      <main className="relative max-w-4xl mx-auto px-6 py-8">
         {/* 步骤指示器 */}
         {renderStepIndicator()}
 
@@ -1259,10 +1737,22 @@ function ProductionAnalysisPage() {
 export default function ProductionAnalysis() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-gradient-to-br from-indigo-950 via-purple-950 to-slate-950 text-white flex items-center justify-center">
-        <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-16 w-16 border-4 border-purple-500 border-t-transparent mb-4"></div>
-          <p className="text-gray-400">加载中...</p>
+      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-black text-white flex items-center justify-center relative overflow-hidden">
+        {/* 背景装饰 */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-0 left-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+        </div>
+
+        <div className="relative text-center">
+          <div className="relative w-20 h-20 mx-auto mb-6">
+            <div className="absolute inset-0 rounded-full border-4 border-cyan-500/30 animate-spin" style={{ animationDuration: '3s' }} />
+            <div className="absolute inset-2 rounded-full border-4 border-blue-500/30 animate-spin" style={{ animationDuration: '2s', animationDirection: 'reverse' }} />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="w-8 h-8 bg-gradient-to-br from-cyan-500 to-cyan-500 rounded-full animate-pulse" />
+            </div>
+          </div>
+          <p className="text-gray-400">正在加载生产分析...</p>
         </div>
       </div>
     }>

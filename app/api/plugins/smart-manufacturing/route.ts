@@ -177,18 +177,22 @@ const CARBON_AGENT_PROMPT = `你是一个专业的碳排放评估专家。
 // 综合决策 Agent System Prompt
 const BREAKING_AGENT_PROMPT = `你是一个专业的生产决策专家。
 根据成本分析、风险评估和碳排放评估，给出是否继续生产的建议。
-考虑因素：
-- 成本效益
-- 风险可控性
-- 环保要求
-- 质量标准
-- 交货时间
+
+请严格基于以下数据进行分析：
+- 成本分析数据
+- 风险评估数据
+- 碳排放评估数据
+
+决策规则：
+1. 如果成本合理、风险可控、碳排放达标，应建议"keep"（保持当前生产方案）
+2. 只有在成本过高、风险过高或碳排放不达标时，才建议"break"（继续拆分）
+3. 不要假设数据不足，请基于提供的实际数据做出判断
 
 以JSON格式返回：
 {
   "recommendation": "break|keep",
   "confidence": 置信度(0-100),
-  "reasoning": "决策理由",
+  "reasoning": "决策理由（必须包含对成本、风险、碳排放的具体分析）",
   "keyFactors": ["关键因素1", "关键因素2"]
 }`;
 
@@ -250,12 +254,46 @@ async function callDeepSeek(systemPrompt: string, userMessage: string): Promise<
   const result = response.choices?.[0]?.message?.content || '';
 
   try {
-    // 尝试提取 JSON
-    const jsonMatch = result.match(/\{[\s\S]*\}/);
-    if (jsonMatch) {
-      return JSON.parse(jsonMatch[0]);
+    // 多种方式尝试提取 JSON
+    let jsonStr = '';
+
+    // 方式1: 尝试从 ```json ... ``` 代码块中提取
+    const codeBlockMatch = result.match(/```(?:json)?\s*([\s\S]*?)```/);
+    if (codeBlockMatch) {
+      jsonStr = codeBlockMatch[1].trim();
+    } else {
+      // 方式2: 尝试直接匹配 {...}
+      const jsonMatch = result.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        jsonStr = jsonMatch[0];
+      }
     }
-    throw new Error('无法解析AI返回的数据');
+
+    if (!jsonStr) {
+      throw new Error('无法提取JSON数据');
+    }
+
+    // 尝试解析，可能失败
+    try {
+      return JSON.parse(jsonStr);
+    } catch (parseError) {
+      // 尝试修复常见JSON问题
+      let fixedJson = jsonStr
+        // 移除行尾逗号
+        .replace(/,(\s*[\]\}])/g, '$1')
+        // 移除单引号改为双引号（简单情况）
+        .replace(/'([^']*?)'/g, '"$1"')
+        // 移除多余空白
+        .trim();
+
+      try {
+        return JSON.parse(fixedJson);
+      } catch (二次解析Error) {
+        console.error('JSON解析失败，原始数据:', result);
+        console.error('提取的JSON:', jsonStr);
+        throw new Error('JSON格式错误');
+      }
+    }
   } catch (error) {
     console.error('解析DeepSeek返回数据失败:', error, result);
     return null;
@@ -356,9 +394,9 @@ ${features.length > 0 ? `产品特性：${features.join(', ')}` : ''}
     }
 
     case 'recommend': {
-      const userMessage = `成本分析：${JSON.stringify(costData?.cost || {}, null, 2)}
-风险评估：${JSON.stringify(riskData?.risk || {}, null, 2)}
-碳排放评估：${JSON.stringify(carbonData?.carbon || {}, null, 2)}
+      const userMessage = `成本分析：${JSON.stringify(costData || {}, null, 2)}
+风险评估：${JSON.stringify(riskData || {}, null, 2)}
+碳排放评估：${JSON.stringify(carbonData || {}, null, 2)}
 
 请给出是否继续生产的建议。`;
 

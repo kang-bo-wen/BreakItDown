@@ -7,6 +7,74 @@
   --foreground: #f8fafc;
 }
 
+/* 卡片淡入动画 */
+@keyframes cardFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes cardFadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes cardSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes cardScaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.card-animate-fade-in {
+  animation: cardFadeIn 0.4s ease-out forwards;
+}
+
+.card-animate-fade-in-up {
+  animation: cardFadeInUp 0.5s ease-out forwards;
+}
+
+.card-animate-slide-in {
+  animation: cardSlideIn 0.4s ease-out forwards;
+}
+
+.card-animate-scale-in {
+  animation: cardScaleIn 0.3s ease-out forwards;
+}
+
+/* 交错动画延迟 */
+.card-delay-1 { animation-delay: 0.1s; }
+.card-delay-2 { animation-delay: 0.2s; }
+.card-delay-3 { animation-delay: 0.3s; }
+.card-delay-4 { animation-delay: 0.4s; }
+.card-delay-5 { animation-delay: 0.5s; }
+
 * {
   scroll-behavior: smooth;
 }
