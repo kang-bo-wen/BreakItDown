@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { useTheme } from '../hooks/useTheme';
+import { BoltIcon, MagnifyingGlassIcon, FaceSmileIcon, AcademicCapIcon, CubeIcon, BuildingOffice2Icon, RocketLaunchIcon, PhotoIcon, PencilSquareIcon, DocumentTextIcon } from '@heroicons/react/24/outline';
 
 interface IdentificationResult {
   name: string;
@@ -460,7 +461,7 @@ function SetupContent() {
                     }`}
                   >
                     <span className="flex items-center justify-center gap-1.5">
-                      <span>🖼️</span>
+                      <PhotoIcon className="w-4 h-4" />
                       <span>图片</span>
                     </span>
                   </button>
@@ -481,7 +482,7 @@ function SetupContent() {
                     }`}
                   >
                     <span className="flex items-center justify-center gap-1.5">
-                      <span>✏️</span>
+                      <PencilSquareIcon className="w-4 h-4" />
                       <span>文字</span>
                     </span>
                   </button>
@@ -524,12 +525,12 @@ function SetupContent() {
                         >
                           {isIdentifying ? (
                             <>
-                              <span className="inline-block animate-spin text-base">⚡</span>
+                              <BoltIcon className="w-4 h-4 animate-spin text-amber-400" />
                               <span>识别中...</span>
                             </>
                           ) : (
                             <>
-                              <span>🔍</span>
+                              <MagnifyingGlassIcon className="w-5 h-5 text-cyan-400" />
                               <span>开始识别</span>
                             </>
                           )}
@@ -558,12 +559,12 @@ function SetupContent() {
                         >
                           {isIdentifying ? (
                             <>
-                              <span className="inline-block animate-spin text-base">⚡</span>
+                              <BoltIcon className="w-4 h-4 animate-spin text-amber-400" />
                               <span>识别中...</span>
                             </>
                           ) : (
                             <>
-                              <span>🔍</span>
+                              <MagnifyingGlassIcon className="w-5 h-5 text-cyan-400" />
                               <span>开始识别</span>
                             </>
                           )}
@@ -662,7 +663,7 @@ function SetupContent() {
                         <div>
                           <label className="block text-base font-medium mb-2 flex items-center justify-between">
                             <span className="flex items-center gap-1.5">
-                              <span>😄</span>
+                              <FaceSmileIcon className="w-5 h-5 text-yellow-400" />
                               <span className={isDarkTheme ? 'text-cyan-100' : 'text-slate-700'}>幽默度</span>
                             </span>
                             <span className={`font-mono px-2 py-0.5 rounded-full text-xs transition-colors duration-300 ${
@@ -691,7 +692,7 @@ function SetupContent() {
                         <div>
                           <label className="block text-base font-medium mb-2 flex items-center justify-between">
                             <span className="flex items-center gap-1.5">
-                              <span>🎓</span>
+                              <AcademicCapIcon className="w-5 h-5 text-blue-400" />
                               <span className={isDarkTheme ? 'text-cyan-100' : 'text-slate-700'}>专业度</span>
                             </span>
                             <span className={`font-mono px-2 py-0.5 rounded-full text-xs transition-colors duration-300 ${
@@ -720,7 +721,7 @@ function SetupContent() {
                         <div>
                           <label className="block text-base font-medium mb-2 flex items-center justify-between">
                             <span className="flex items-center gap-1.5">
-                              <span>🔍</span>
+                              <MagnifyingGlassIcon className="w-5 h-5 text-cyan-400" />
                               <span className={isDarkTheme ? 'text-cyan-100' : 'text-slate-700'}>细致度</span>
                             </span>
                             <span className={`font-mono px-2 py-0.5 rounded-full text-xs transition-colors duration-300 ${
@@ -777,7 +778,7 @@ function SetupContent() {
                               : 'text-blue-600 hover:text-blue-700'
                           }`}
                         >
-                          <span>📋</span>
+                          <DocumentTextIcon className="w-4 h-4" />
                           <span>加载默认模板</span>
                         </button>
                       </div>
@@ -802,7 +803,7 @@ function SetupContent() {
                             : 'bg-slate-100 border-slate-200 text-slate-500 hover:bg-slate-200'
                       }`}
                     >
-                      <div className="text-xl mb-1">📦</div>
+                      <CubeIcon className="w-6 h-6 text-cyan-400" />
                       <div className="font-medium">基础模式</div>
                       <div className="text-xs text-slate-500">知识卡片</div>
                     </button>
@@ -818,7 +819,7 @@ function SetupContent() {
                             : 'bg-slate-100 border-slate-200 text-slate-500 hover:bg-slate-200'
                       }`}
                     >
-                      <div className="text-xl mb-1">🏭</div>
+                      <BuildingOffice2Icon className="w-6 h-6 text-violet-400" />
                       <div className="font-medium">生产模式</div>
                       <div className="text-xs text-slate-500">含供应链</div>
                     </button>
@@ -830,7 +831,7 @@ function SetupContent() {
                   onClick={navigateToCanvas}
                   className={`tech-btn ${isDarkTheme ? 'tech-btn-primary' : 'tech-btn-primary-theme3'} w-full py-3 text-base flex items-center justify-center gap-2`}
                 >
-                  <span className="text-lg">🚀</span>
+                  <RocketLaunchIcon className="w-5 h-5 text-emerald-400" />
                   <span>开始拆解</span>
                 </button>
               </>

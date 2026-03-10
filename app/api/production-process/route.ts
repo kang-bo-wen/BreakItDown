@@ -55,7 +55,7 @@ ${childrenList}
   "flowchart": [
     {
       "stage": "阶段名称",
-      "icon": "图标emoji",
+      "icon": "Heroicons图标名称（如 beaker、cog、wrench、cube 等）",
       "steps": [
         {
           "step_id": "A1",

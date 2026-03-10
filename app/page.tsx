@@ -4,6 +4,24 @@ import { useRef, useState, useCallback } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
+import {
+  TrophyIcon,
+  LightBulbIcon,
+  SparklesIcon,
+  PhotoIcon,
+  MagnifyingGlassIcon,
+  CubeIcon,
+  WrenchScrewdriverIcon,
+  CpuChipIcon,
+  PaintBrushIcon,
+  RocketLaunchIcon,
+  LockClosedIcon,
+  BoltIcon,
+  CubeTransparentIcon,
+  DocumentTextIcon,
+  ArrowPathIcon,
+  BuildingOffice2Icon
+} from '@heroicons/react/24/outline';
 
 // 前后对比滑块组件
 function ComparisonSlider({ before, after, alt }: { before: React.ReactNode; after: React.ReactNode; alt: string }) {
@@ -301,13 +319,15 @@ export default function Home() {
                 whileInView={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6, delay: 0.1 }}
                 viewport={{ once: true }}
-                className="bg-white/10 backdrop-blur-lg rounded-xl p-8 border border-white/20"
+                className="group bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20 hover:border-green-500 hover:shadow-xl transition-all cursor-pointer"
               >
-                <h3 className="text-2xl font-bold mb-4 flex items-center gap-3">
-                  <span>🎓</span>
-                  <span className="bg-gradient-to-r from-green-400 to-cyan-400 bg-clip-text text-transparent">教育学习</span>
-                </h3>
-                <p className="text-gray-300 leading-relaxed">
+                <div className="w-14 h-14 bg-green-500/20 rounded-2xl flex items-center justify-center text-green-400 mb-5 group-hover:scale-110 transition-transform">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-7 h-7">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5" />
+                  </svg>
+                </div>
+                <h3 className="text-2xl font-bold mb-3 text-white">教育学习</h3>
+                <p className="text-gray-400 leading-relaxed">
                   帮助学生理解物品的构成，将复杂的物体拆解为简单的组成部分，让学习更加直观有趣。
                 </p>
               </motion.div>
@@ -317,13 +337,15 @@ export default function Home() {
                 whileInView={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
                 viewport={{ once: true }}
-                className="bg-white/10 backdrop-blur-lg rounded-xl p-8 border border-white/20"
+                className="group bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20 hover:border-purple-500 hover:shadow-xl transition-all cursor-pointer"
               >
-                <h3 className="text-2xl font-bold mb-4 flex items-center gap-3">
-                  <span>🎨</span>
-                  <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">产品设计</span>
-                </h3>
-                <p className="text-gray-300 leading-relaxed">
+                <div className="w-14 h-14 bg-purple-500/20 rounded-2xl flex items-center justify-center text-purple-400 mb-5 group-hover:scale-110 transition-transform">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-7 h-7">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9.53 16.122a3 3 0 0 0-5.78 1.128 2.25 2.25 0 0 1-2.4 2.245 4.5 4.5 0 0 0 8.4-2.245c0-.399-.078-.78-.22-1.128Zm0 0a15.998 15.998 0 0 0 3.388-1.62m-5.043-.025a15.994 15.994 0 0 1 1.622-3.395m3.42 3.42a15.995 15.995 0 0 0 4.764-4.648l3.876-5.814a1.151 1.151 0 0 0-1.597-1.597L14.146 6.32a15.996 15.996 0 0 0-4.649 4.763m3.42 3.42a6.776 6.776 0 0 0-3.42-3.42" />
+                  </svg>
+                </div>
+                <h3 className="text-2xl font-bold mb-3 text-white">产品设计</h3>
+                <p className="text-gray-400 leading-relaxed">
                   分析竞品的材料组成，了解产品的内部结构和原材料来源，为产品设计提供参考。
                 </p>
               </motion.div>
@@ -333,13 +355,15 @@ export default function Home() {
                 whileInView={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6, delay: 0.3 }}
                 viewport={{ once: true }}
-                className="bg-white/10 backdrop-blur-lg rounded-xl p-8 border border-white/20"
+                className="group bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20 hover:border-emerald-500 hover:shadow-xl transition-all cursor-pointer"
               >
-                <h3 className="text-2xl font-bold mb-4 flex items-center gap-3">
-                  <span>🌍</span>
-                  <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">环保意识</span>
-                </h3>
-                <p className="text-gray-300 leading-relaxed">
+                <div className="w-14 h-14 bg-emerald-500/20 rounded-2xl flex items-center justify-center text-emerald-400 mb-5 group-hover:scale-110 transition-transform">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-7 h-7">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 0 0 8.716-6.747M12 21a9.004 9.004 0 0 1-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 0 1 7.843 4.582M12 3a8.997 8.997 0 0 0-7.843 4.582m15.686 0A11.953 11.953 0 0 1 12 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0 1 21 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0 1 12 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 0 1 3 12c0-1.605.42-3.113 1.157-4.418" />
+                  </svg>
+                </div>
+                <h3 className="text-2xl font-bold mb-3 text-white">环保意识</h3>
+                <p className="text-gray-400 leading-relaxed">
                   了解产品的原材料来源和生产过程，增强环保意识，促进可持续消费。
                 </p>
               </motion.div>
@@ -349,13 +373,15 @@ export default function Home() {
                 whileInView={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6, delay: 0.4 }}
                 viewport={{ once: true }}
-                className="bg-white/10 backdrop-blur-lg rounded-xl p-8 border border-white/20"
+                className="group bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20 hover:border-orange-500 hover:shadow-xl transition-all cursor-pointer"
               >
-                <h3 className="text-2xl font-bold mb-4 flex items-center gap-3">
-                  <span>🎮</span>
-                  <span className="bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent">趣味探索</span>
-                </h3>
-                <p className="text-gray-300 leading-relaxed">
+                <div className="w-14 h-14 bg-orange-500/20 rounded-2xl flex items-center justify-center text-orange-400 mb-5 group-hover:scale-110 transition-transform">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-7 h-7">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.59 14.37a6 6 0 0 1-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 0 0 6.16-12.12A14.98 14.98 0 0 0 9.631 8.41m5.96 5.96a14.926 14.926 0 0 1-5.841 2.58m-.119-8.54a6 6 0 0 0-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 0 0-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 0 1-2.448-2.448 14.9 14.9 0 0 1 .06-.312m-2.24 2.39a4.493 4.493 0 0 0-1.757 4.306 4.493 4.493 0 0 0 4.306-1.758M16.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z" />
+                  </svg>
+                </div>
+                <h3 className="text-2xl font-bold mb-3 text-white">趣味探索</h3>
+                <p className="text-gray-400 leading-relaxed">
                   探索日常物品的内在世界，满足好奇心，带来意想不到的知识收获。
                 </p>
               </motion.div>
@@ -392,7 +418,7 @@ export default function Home() {
                 className="bg-white/10 backdrop-blur-lg rounded-xl p-8 border border-white/20"
               >
                 <h3 className="text-2xl font-bold mb-4 flex items-center gap-3">
-                  <span>🎯</span>
+                  <TrophyIcon className="w-7 h-7 text-blue-400" />
                   <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">项目简介</span>
                 </h3>
                 <p className="text-gray-300 leading-relaxed">
@@ -410,7 +436,7 @@ export default function Home() {
                 className="bg-white/10 backdrop-blur-lg rounded-xl p-8 border border-white/20"
               >
                 <h3 className="text-2xl font-bold mb-4 flex items-center gap-3">
-                  <span>💡</span>
+                  <LightBulbIcon className="w-7 h-7 text-purple-400" />
                   <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">核心理念</span>
                 </h3>
                 <div className="space-y-3 text-gray-300">
@@ -436,26 +462,26 @@ export default function Home() {
               className="bg-white/10 backdrop-blur-lg rounded-xl p-8 mb-12 border border-white/20"
             >
               <h3 className="text-2xl font-bold mb-6 flex items-center gap-3">
-                <span>✨</span>
+                <SparklesIcon className="w-7 h-7 text-cyan-400" />
                 <span className="bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">功能特性</span>
               </h3>
               <div className="grid md:grid-cols-3 gap-6">
                 <div className="bg-black/30 rounded-lg p-6">
-                  <div className="text-4xl mb-3">🖼️</div>
+                  <PhotoIcon className="w-10 h-10 text-cyan-400" />
                   <h4 className="text-xl font-semibold mb-2 text-white">AI 图片识别</h4>
                   <p className="text-sm text-gray-400">
                     上传图片，AI 自动识别物体类型和名称
                   </p>
                 </div>
                 <div className="bg-black/30 rounded-lg p-6">
-                  <div className="text-4xl mb-3">🔍</div>
+                  <MagnifyingGlassIcon className="w-10 h-10 text-cyan-400" />
                   <h4 className="text-xl font-semibold mb-2 text-white">递归拆解</h4>
                   <p className="text-sm text-gray-400">
                     逐层拆解物体，直至最基本的原材料
                   </p>
                 </div>
                 <div className="bg-black/30 rounded-lg p-6">
-                  <div className="text-4xl mb-3">🌳</div>
+                  <CubeIcon className="w-10 h-10 text-cyan-400" />
                   <h4 className="text-xl font-semibold mb-2 text-white">交互式可视化</h4>
                   <p className="text-sm text-gray-400">
                     树状图展示，支持拖拽、缩放、查看详情
@@ -475,26 +501,26 @@ export default function Home() {
                 className="bg-white/10 backdrop-blur-lg rounded-xl p-8 border border-white/20"
               >
                 <h3 className="text-2xl font-bold mb-6 flex items-center gap-3">
-                  <span>🛠️</span>
+                  <WrenchScrewdriverIcon className="w-7 h-7 text-orange-400" />
                   <span className="bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent">技术栈</span>
                 </h3>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="flex items-center gap-3 bg-black/30 rounded-lg p-4">
-                    <span className="text-2xl">⚛️</span>
+                    <CpuChipIcon className="w-8 h-8 text-cyan-400" />
                     <div>
                       <div className="font-semibold text-white">Next.js 15</div>
                       <div className="text-xs text-gray-400">前端框架</div>
                     </div>
                   </div>
                   <div className="flex items-center gap-3 bg-black/30 rounded-lg p-4">
-                    <span className="text-2xl">🤖</span>
+                    <CpuChipIcon className="w-8 h-8 text-purple-400" />
                     <div>
                       <div className="font-semibold text-white">AI 大模型</div>
                       <div className="text-xs text-gray-400">智能识别</div>
                     </div>
                   </div>
                   <div className="flex items-center gap-3 bg-black/30 rounded-lg p-4">
-                    <span className="text-2xl">🎨</span>
+                    <PaintBrushIcon className="w-8 h-8 text-pink-400" />
                     <div>
                       <div className="font-semibold text-white">React Flow</div>
                       <div className="text-xs text-gray-400">图形可视化</div>
@@ -542,14 +568,14 @@ export default function Home() {
                     router.push('/setup');
                   }}
                 >
-                  🚀 新建拆解
+                  <RocketLaunchIcon className="w-5 h-5 mr-2" />新建拆解
                 </button>
               ) : (
                 <button
                   className="px-12 py-5 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl font-bold text-xl shadow-2xl hover:shadow-purple-500/50 transition-all duration-300 hover:scale-105"
                   onClick={() => router.push('/login')}
                 >
-                  🔐 登录 / 注册
+                  <LockClosedIcon className="w-5 h-5 mr-2" />登录 / 注册
                 </button>
               )}
             </div>

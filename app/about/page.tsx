@@ -3,6 +3,17 @@
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import {
+  TrophyIcon,
+  LightBulbIcon,
+  SparklesIcon,
+  PhotoIcon,
+  MagnifyingGlassIcon,
+  CubeIcon,
+  WrenchScrewdriverIcon,
+  CpuChipIcon,
+  RocketLaunchIcon
+} from '@heroicons/react/24/outline';
 
 export default function About() {
   const router = useRouter();
@@ -65,7 +76,7 @@ export default function About() {
             className="bg-white/10 backdrop-blur-lg rounded-xl p-8 mb-8 border border-white/20"
           >
             <h2 className="text-3xl font-bold mb-4 flex items-center gap-3">
-              <span>🎯</span>
+              <TrophyIcon className="w-7 h-7 text-blue-400" />
               <span>项目简介</span>
             </h2>
             <p className="text-lg text-gray-300 leading-relaxed">
@@ -80,7 +91,7 @@ export default function About() {
             className="bg-white/10 backdrop-blur-lg rounded-xl p-8 mb-8 border border-white/20"
           >
             <h2 className="text-3xl font-bold mb-4 flex items-center gap-3">
-              <span>💡</span>
+              <LightBulbIcon className="w-7 h-7 text-purple-400" />
               <span>核心理念</span>
             </h2>
             <div className="space-y-4 text-gray-300">
@@ -102,26 +113,26 @@ export default function About() {
             className="bg-white/10 backdrop-blur-lg rounded-xl p-8 mb-8 border border-white/20"
           >
             <h2 className="text-3xl font-bold mb-6 flex items-center gap-3">
-              <span>✨</span>
+              <SparklesIcon className="w-7 h-7 text-cyan-400" />
               <span>功能特性</span>
             </h2>
             <div className="grid md:grid-cols-3 gap-6">
               <div className="bg-black/30 rounded-lg p-6">
-                <div className="text-4xl mb-3">🖼️</div>
+                <PhotoIcon className="w-10 h-10 text-cyan-400" />
                 <h3 className="text-xl font-semibold mb-2">AI 图片识别</h3>
                 <p className="text-sm text-gray-400">
                   上传图片，AI 自动识别物体类型和名称
                 </p>
               </div>
               <div className="bg-black/30 rounded-lg p-6">
-                <div className="text-4xl mb-3">🔍</div>
+                <MagnifyingGlassIcon className="w-10 h-10 text-cyan-400" />
                 <h3 className="text-xl font-semibold mb-2">递归拆解</h3>
                 <p className="text-sm text-gray-400">
                   逐层拆解物体，直至最基本的原材料
                 </p>
               </div>
               <div className="bg-black/30 rounded-lg p-6">
-                <div className="text-4xl mb-3">🌳</div>
+                <CubeIcon className="w-10 h-10 text-cyan-400" />
                 <h3 className="text-xl font-semibold mb-2">交互式可视化</h3>
                 <p className="text-sm text-gray-400">
                   树状图展示，支持拖拽、缩放、查看详情
@@ -136,26 +147,26 @@ export default function About() {
             className="bg-white/10 backdrop-blur-lg rounded-xl p-8 mb-8 border border-white/20"
           >
             <h2 className="text-3xl font-bold mb-6 flex items-center gap-3">
-              <span>🛠️</span>
+              <WrenchScrewdriverIcon className="w-7 h-7 text-orange-400" />
               <span>技术栈</span>
             </h2>
             <div className="grid md:grid-cols-2 gap-4">
               <div className="flex items-center gap-3 bg-black/30 rounded-lg p-4">
-                <span className="text-2xl">⚛️</span>
+                <CpuChipIcon className="w-8 h-8 text-cyan-400" />
                 <div>
                   <div className="font-semibold">Next.js 15 + React 19</div>
                   <div className="text-sm text-gray-400">现代化前端框架</div>
                 </div>
               </div>
               <div className="flex items-center gap-3 bg-black/30 rounded-lg p-4">
-                <span className="text-2xl">🤖</span>
+                <CpuChipIcon className="w-8 h-8 text-purple-400" />
                 <div>
                   <div className="font-semibold">AI 大模型</div>
                   <div className="text-sm text-gray-400">智能识别与拆解</div>
                 </div>
               </div>
               <div className="flex items-center gap-3 bg-black/30 rounded-lg p-4">
-                <span className="text-2xl">🎨</span>
+                <SparklesIcon className="w-8 h-8 text-pink-400" />
                 <div>
                   <div className="font-semibold">React Flow</div>
                   <div className="text-sm text-gray-400">交互式图形可视化</div>
@@ -177,7 +188,7 @@ export default function About() {
             className="bg-white/10 backdrop-blur-lg rounded-xl p-8 mb-8 border border-white/20"
           >
             <h2 className="text-3xl font-bold mb-4 flex items-center gap-3">
-              <span>🎓</span>
+              <SparklesIcon className="w-7 h-7 text-green-400" />
               <span>使用场景</span>
             </h2>
             <ul className="space-y-3 text-gray-300">
@@ -224,7 +235,7 @@ export default function About() {
                 router.push('/setup');
               }}
             >
-              🚀 新建拆解
+              <RocketLaunchIcon className="w-5 h-5 mr-2" />新建拆解
             </motion.button>
           </motion.div>
 

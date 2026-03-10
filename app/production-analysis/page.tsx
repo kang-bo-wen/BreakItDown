@@ -3,6 +3,23 @@
 import { useState, Suspense, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import {
+  TrophyIcon,
+  ChartBarIcon,
+  CurrencyDollarIcon,
+  DocumentTextIcon,
+  ArrowTrendingUpIcon,
+  MagnifyingGlassIcon,
+  ArrowPathIcon,
+  QuestionMarkCircleIcon,
+  Cog6ToothIcon,
+  WrenchIcon,
+  CubeIcon,
+  ExclamationTriangleIcon,
+  GlobeAltIcon,
+  RocketLaunchIcon,
+  BuildingOffice2Icon
+} from '@heroicons/react/24/outline';
 
 // 步骤类型
 type AnalysisStep =
@@ -549,7 +566,7 @@ function ProductionAnalysisPage() {
             disabled={isLoading}
             className="px-6 py-3 bg-purple-500 hover:bg-purple-600 disabled:bg-gray-500 rounded-lg text-white font-medium transition-colors"
           >
-            {isLoading ? '分析中...' : '🎯 开始产品规划'}
+            {isLoading ? '分析中...' : <><TrophyIcon className="w-5 h-5 mr-2" />开始产品规划</>}
           </button>
         </div>
       ) : (
@@ -671,14 +688,14 @@ function ProductionAnalysisPage() {
             disabled={isLoading}
             className="px-6 py-3 bg-purple-500 hover:bg-purple-600 disabled:bg-gray-500 rounded-lg text-white font-medium transition-colors"
           >
-            {isLoading ? '分析中...' : '📊 开始竞品分析'}
+            {isLoading ? '分析中...' : <><ChartBarIcon className="w-5 h-5 mr-2" />开始竞品分析</>}
           </button>
         </div>
       ) : (
         <div className="space-y-4">
           {/* 市场价格 */}
           <div className="bg-gradient-to-r from-emerald-500/10 to-teal-500/10 rounded-xl p-4 border border-emerald-500/30">
-            <div className="text-lg font-bold text-emerald-300 mb-3">💰 市场价格区间</div>
+            <div className="text-lg font-bold text-emerald-300 mb-3"><CurrencyDollarIcon className="w-5 h-5 inline mr-2" />市场价格区间</div>
             <div className="grid grid-cols-3 gap-2 text-center">
               <div className="bg-black/30 rounded p-2">
                 <div className="text-gray-500 text-xs">低端</div>
@@ -718,13 +735,13 @@ function ProductionAnalysisPage() {
 
           {/* 定价建议 */}
           <div className="bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-xl p-4 border border-purple-500/30">
-            <div className="text-white font-medium mb-2">📋 定价建议</div>
+            <div className="text-white font-medium mb-2"><DocumentTextIcon className="w-5 h-5 inline mr-2" />定价建议</div>
             <div className="text-gray-300 text-sm">{competitorAnalysis.pricingAdvice}</div>
           </div>
 
           {/* 市场趋势 */}
           <div className="bg-gradient-to-r from-cyan-500/10 to-blue-500/10 rounded-xl p-4 border border-cyan-500/30">
-            <div className="text-white font-medium mb-2">📈 市场趋势</div>
+            <div className="text-white font-medium mb-2"><ArrowTrendingUpIcon className="w-5 h-5 inline mr-2" />市场趋势</div>
             <div className="text-gray-300 text-sm">{competitorAnalysis.marketTrends}</div>
           </div>
 
@@ -754,7 +771,7 @@ function ProductionAnalysisPage() {
             disabled={isLoading}
             className="px-6 py-3 bg-purple-500 hover:bg-purple-600 disabled:bg-gray-500 rounded-lg text-white font-medium transition-colors"
           >
-            {isLoading ? '搜索中...' : '🔍 搜索供应商'}
+            {isLoading ? '搜索中...' : <><MagnifyingGlassIcon className="w-5 h-5 mr-2" />搜索供应商</>}
           </button>
         </div>
       ) : (
@@ -783,7 +800,7 @@ function ProductionAnalysisPage() {
             onClick={handleFindSuppliers}
             className="w-full py-2 text-gray-400 hover:text-white text-sm"
           >
-            🔄 重新搜索
+            <ArrowPathIcon className="w-5 h-5 mr-2" />重新搜索
           </button>
         </div>
       )}
@@ -805,7 +822,7 @@ function ProductionAnalysisPage() {
             disabled={isLoading}
             className="px-6 py-3 bg-purple-500 hover:bg-purple-600 disabled:bg-gray-500 rounded-lg text-white font-medium transition-colors"
           >
-            {isLoading ? '生成中...' : '❓ 生成定制问题'}
+            {isLoading ? '生成中...' : <><QuestionMarkCircleIcon className="w-5 h-5 mr-2" />生成定制问题</>}
           </button>
         </div>
       ) : (
@@ -879,7 +896,7 @@ function ProductionAnalysisPage() {
             disabled={isLoading}
             className="px-6 py-3 bg-purple-500 hover:bg-purple-600 disabled:bg-gray-500 rounded-lg text-white font-medium transition-colors"
           >
-            {isLoading ? '生成中...' : '⚙️ 生成工艺方案'}
+            {isLoading ? '生成中...' : <><Cog6ToothIcon className="w-5 h-5 mr-2" />生成工艺方案</>}
           </button>
         </div>
       ) : (
@@ -936,7 +953,7 @@ function ProductionAnalysisPage() {
             <div className={`text-2xl font-bold ${
               analysisResult.breaking.recommendation === 'break' ? 'text-purple-300' : 'text-amber-300'
             }`}>
-              {analysisResult.breaking.recommendation === 'break' ? '🔨 建议继续拆分' : '📦 建议保持当前'}
+              {analysisResult.breaking.recommendation === 'break' ? <><WrenchIcon className="w-5 h-5 mr-2" />建议继续拆分</> : <><CubeIcon className="w-5 h-5 mr-2" />建议保持当前</>}
             </div>
             <div className="text-gray-400">置信度: {analysisResult.breaking.confidence}%</div>
           </div>
@@ -952,7 +969,7 @@ function ProductionAnalysisPage() {
       {/* 成本分析 */}
       {analysisResult?.cost && (
         <div className="bg-gradient-to-r from-emerald-500/10 to-teal-500/10 rounded-xl p-4 border border-emerald-500/30">
-          <div className="text-lg font-bold text-emerald-300 mb-3">💰 成本分析</div>
+          <div className="text-lg font-bold text-emerald-300 mb-3"><CurrencyDollarIcon className="w-5 h-5 inline mr-2" />成本分析</div>
           <div className="text-3xl font-bold text-white mb-3">¥{analysisResult.cost.totalCost?.toFixed(0)}</div>
           <div className="grid grid-cols-2 gap-2 text-sm">
             <div className="bg-black/30 rounded p-2">
@@ -980,7 +997,7 @@ function ProductionAnalysisPage() {
       {analysisResult?.risk && (
         <div className="bg-gradient-to-r from-red-500/10 to-orange-500/10 rounded-xl p-4 border border-red-500/30">
           <div className="flex items-center justify-between mb-3">
-            <div className="text-lg font-bold text-red-300">⚠️ 风险评估</div>
+            <div className="text-lg font-bold text-red-300"><ExclamationTriangleIcon className="w-5 h-5 inline mr-2" />风险评估</div>
             <span className={`px-3 py-1 rounded-full text-sm ${
               analysisResult.risk.riskLevel === '低' ? 'bg-green-500/30 text-green-300' :
               analysisResult.risk.riskLevel === '中' ? 'bg-yellow-500/30 text-yellow-300' :
@@ -1004,7 +1021,7 @@ function ProductionAnalysisPage() {
       {analysisResult?.carbon && (
         <div className="bg-gradient-to-r from-cyan-500/10 to-blue-500/10 rounded-xl p-4 border border-cyan-500/30">
           <div className="flex items-center justify-between mb-3">
-            <div className="text-lg font-bold text-cyan-300">🌍 碳排放</div>
+            <div className="text-lg font-bold text-cyan-300"><GlobeAltIcon className="w-5 h-5 inline mr-2" />碳排放</div>
             <span className="px-3 py-1 rounded-full bg-cyan-500/30 text-cyan-300">
               等级 {analysisResult.carbon.rating}
             </span>
@@ -1020,13 +1037,13 @@ function ProductionAnalysisPage() {
           onClick={handleRestart}
           className="flex-1 py-3 bg-white/10 hover:bg-white/20 rounded-lg text-white font-medium transition-colors"
         >
-          🔄 重新分析
+          <ArrowPathIcon className="w-5 h-5 mr-2" />重新分析
         </button>
         <button
           onClick={() => setCurrentStep('final-report')}
           className="flex-1 py-3 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 rounded-lg text-white font-medium transition-colors"
         >
-          📋 查看最终报告 →
+          <DocumentTextIcon className="w-5 h-5 mr-2" />查看最终报告 →
         </button>
       </div>
       <div className="pt-2">
@@ -1055,7 +1072,7 @@ function ProductionAnalysisPage() {
             disabled={isLoading}
             className="px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 disabled:bg-gray-500 rounded-lg text-white font-medium transition-colors"
           >
-            {isLoading ? '生成中...' : '📊 生成最终报告'}
+            {isLoading ? '生成中...' : <><ChartBarIcon className="w-5 h-5 mr-2" />生成最终报告</>}
           </button>
         </div>
       ) : (
@@ -1136,7 +1153,7 @@ function ProductionAnalysisPage() {
 
           {/* 上市与生命周期 */}
           <div className="bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-xl p-4 border border-purple-500/30">
-            <div className="text-lg font-bold text-purple-300 mb-3">🚀 上市与生命周期</div>
+            <div className="text-lg font-bold text-purple-300 mb-3"><RocketLaunchIcon className="w-5 h-5 inline mr-2" />上市与生命周期</div>
             <div className="space-y-3 text-sm">
               <div>
                 <div className="text-gray-400">上市计划</div>
@@ -1211,7 +1228,7 @@ function ProductionAnalysisPage() {
               ← 返回
             </Link>
             <div className="w-px h-8 bg-white/20" />
-            <h1 className="text-xl font-bold">🏭 生产分析</h1>
+            <h1 className="text-xl font-bold"><BuildingOffice2Icon className="w-6 h-6 inline mr-2" />生产分析</h1>
           </div>
           <div className="text-gray-400">
             {partName}

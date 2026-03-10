@@ -268,7 +268,7 @@ export const IDENTIFICATION_PROMPT = `识别图片中的主要物体，返回JSO
   "name": "具体名称（如'iPhone 15 Pro'而非'手机'）",
   "category": "类别（如'电子产品'、'交通工具'、'家具'）",
   "brief_description": "客观描述（2-3句话，包含材料、功能）",
-  "icon": "一个最能代表该物体的emoji图标",
+  "icon": "一个最能代表该物体的Heroicons图标名称（如 cpu-chip、cube、device-phone-mobile、globe-alt 等）",
   "searchTerm": "English search term - use popular words with lots of photos (e.g., 'smartphone', 'car', 'laptop', 'watch', 'headphones')"
 }
 
@@ -291,17 +291,17 @@ export const IDENTIFICATION_PROMPT = `识别图片中的主要物体，返回JSO
      * ❌ "M3 chip" (图片太少)
    - 如果不确定，选择更通用、更常见的词汇
 
-图标选择指南：
-- 电子产品：📱(手机)、💻(笔记本)、🖥️(台式机)、⌚(手表)、📷(相机)、🎧(耳机)、⌨️(键盘)、🖱️(鼠标)
-- 交通工具：🚗(汽车)、🚙(SUV)、🚕(出租车)、🚌(公交)、🚂(火车)、✈️(飞机)、🚁(直升机)、🚀(火箭)、🚲(自行车)、🛵(摩托)、🚢(船)
-- 家具家电：🪑(椅子)、🛋️(沙发)、🛏️(床)、🚪(门)、🪟(窗)、📺(电视)、🔌(插座)、💡(灯)
-- 工具器械：🔧(扳手)、🔨(锤子)、🪛(螺丝刀)、⚙️(齿轮)、🔩(螺丝)
-- 武器装备：🔫(枪械)、🗡️(刀剑)
-- 食品饮料：🍔(汉堡)、🍕(披萨)、🍎(苹果)、🥤(饮料)、☕(咖啡)
-- 服装配饰：👕(衣服)、👖(裤子)、👟(鞋)、👓(眼镜)、⌚(手表)、💼(包)
-- 文具书籍：📚(书)、📖(笔记本)、✏️(铅笔)、🖊️(钢笔)、📏(尺子)
-- 运动器材：⚽(足球)、🏀(篮球)、🎾(网球)、🏓(乒乓球)、🎯(飞镖)
-- 乐器：🎸(吉他)、🎹(钢琴)、🎺(小号)、🥁(鼓)、🎻(小提琴)
+图标选择指南（使用 Heroicons 图标名称）：
+- 电子产品：cpu-chip(芯片)、device-phone-mobile(手机)、computer-desktop(台式机)、laptop(笔记本)、watch(手表)、camera(相机)、speakerphone(耳机/音箱)、keyboard(键盘)、mouse(鼠标)、tv(电视)、printer(打印机)
+- 交通工具：truck(卡车)、car(汽车)、taxi(出租车)、bus(公交车)、train(火车)、paper-airplane(飞机)、rocket-launch(火箭)、globe-alt(地球/自行车)、ship(船)
+- 家具家电：chair(椅子)、sofa(沙发)、bed(床)、door-open(门)、window(窗)、tv(电视)、bolt(插座/电源)、light-bulb(灯)、refrigerator(冰箱)、washing-machine(洗衣机)
+- 工具器械：wrench(扳手)、hammer(锤子)、screwdriver(螺丝刀)、cog(齿轮)、scissors(剪刀)、paint-brush(刷子)
+- 武器装备：shield(盾牌)、sword(剑)
+- 食品饮料：burger(汉堡)、pizza(披萨)、apple(苹果)、cup-and-saucer(饮料/咖啡)、cake(蛋糕)
+- 服装配饰：tshirt(衣服)、shopping-bag(包)、shoe(鞋)、glasses(眼镜)、watch(手表)
+- 文具书籍：book-open(书)、document-text(文档)、pencil(铅笔)、ruler(尺子)、paper-clip(回形针)
+- 运动器材：trophy(奖杯/足球)、basketball(篮球)、tennis-ball(网球)
+- 乐器：musical-note(音乐/吉他)、piano(钢琴)
 
 **关键：选择最具体、最有代表性的图标，让用户一眼就能认出物体！**
 **searchTerm 要简洁通用，便于在图库中找到相关图片！**`;

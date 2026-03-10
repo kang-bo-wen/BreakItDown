@@ -5,6 +5,17 @@ import dynamic from 'next/dynamic';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { useTheme } from '../hooks/useTheme';
+import {
+  CubeIcon,
+  BoltIcon,
+  WrenchIcon,
+  DocumentTextIcon,
+  GlobeAltIcon,
+  MagnifyingGlassIcon,
+  LightBulbIcon,
+  ArrowPathIcon,
+  SparklesIcon
+} from '@heroicons/react/24/outline';
 
 // Dynamic import GraphView to avoid SSR issues
 const GraphView = dynamic(() => import('../components/GraphView'), {
@@ -900,7 +911,7 @@ function CanvasContent() {
         {identificationResult && (
           <div className={`${themeConfig.cardBg} backdrop-blur-md ${themeConfig.cardBorder} rounded-xl p-5 mb-6`}>
             <div className="flex items-center gap-4">
-              <div className="text-3xl">{identificationResult.icon || '📦'}</div>
+              <div className="text-3xl">{identificationResult.icon || <CubeIcon className="w-8 h-8" />}</div>
               <div>
                 <div className={`text-xl font-bold ${themeConfig.textPrimary}`}>{identificationResult.name}</div>
                 <div className={`text-sm ${themeConfig.textMuted}`}>{identificationResult.brief_description}</div>
@@ -919,12 +930,12 @@ function CanvasContent() {
             >
               {isDeconstructing ? (
                 <>
-                  <span className="inline-block animate-spin text-xl">⚡</span>
+                  <BoltIcon className="w-5 h-5 inline-block animate-spin text-yellow-400" />
                   <span>AI 拆解中...</span>
                 </>
               ) : (
                 <>
-                  <span>🔨</span>
+                  <WrenchIcon className="w-5 h-5" />
                   <span>开始拆解</span>
                 </>
               )}
@@ -938,7 +949,7 @@ function CanvasContent() {
             {/* 左侧分解结构栏 */}
             <div className={`w-80 flex-shrink-0 ${themeConfig.cardBg} backdrop-blur-md ${themeConfig.cardBorder} rounded-xl p-4 max-h-[700px] overflow-hidden flex flex-col`}>
               <h3 className={`text-lg font-bold flex items-center gap-2 mb-4 ${themeConfig.textPrimary}`}>
-                <span>📋</span>
+                <DocumentTextIcon className="w-5 h-5" />
                 <span>分解结构</span>
               </h3>
               <div className="flex-1 overflow-y-auto custom-scrollbar">
@@ -1009,7 +1020,7 @@ function CanvasContent() {
             <div className={`flex-1 ${themeConfig.cardBg} backdrop-blur-md ${themeConfig.cardBorder} rounded-xl p-6`}>
             <div className="flex items-center justify-between mb-4">
               <h2 className={`text-2xl font-bold flex items-center gap-3 ${themeConfig.textPrimary}`}>
-                <span className="text-3xl">🌌</span>
+                <GlobeAltIcon className="w-8 h-8 text-indigo-400" />
                 <span>拆解图谱</span>
               </h2>
               <button
@@ -1025,7 +1036,7 @@ function CanvasContent() {
                 }}
                 className={`px-4 py-2 ${themeConfig.cardBg} hover:${themeConfig.cardLightBg} ${themeConfig.cardBorder} rounded-lg ${themeConfig.textSecondary} hover:${themeConfig.textPrimary} transition-all duration-300 flex items-center gap-2 text-sm`}
               >
-                <span>🔍</span>
+                <MagnifyingGlassIcon className="w-5 h-5" />
                 <span>全屏</span>
               </button>
             </div>
@@ -1063,7 +1074,7 @@ function CanvasContent() {
                   >
                     <div className="flex items-center justify-between mb-4">
                       <h3 className="text-2xl font-bold flex items-center gap-2">
-                        <span>💡</span>
+                        <LightBulbIcon className="w-5 h-5" />
                         <span>知识卡片：{knowledgeCard.node.name}</span>
                       </h3>
                       <button
@@ -1077,7 +1088,7 @@ function CanvasContent() {
                     {loadingKnowledge ? (
                       <div className="flex items-center justify-center py-12">
                         <div className="flex flex-col items-center gap-3">
-                          <span className="text-4xl animate-spin">🔄</span>
+                          <ArrowPathIcon className="w-10 h-10 animate-spin" />
                           <span className={themeConfig.textMuted}>正在生成知识卡片...</span>
                         </div>
                       </div>
@@ -1133,13 +1144,13 @@ function CanvasContent() {
 
                         <div className="bg-blue-500/10 rounded-lg p-4 border border-blue-500/30">
                           <div className="text-sm text-blue-300 font-semibold mb-2">
-                            📦 使用的组成部分
+                            <CubeIcon className="w-5 h-5 mr-2" />使用的组成部分
                           </div>
                           <div className="flex flex-wrap gap-2">
                             {knowledgeCard.node.children.map((child, idx) => (
                               <div key={idx} className={`${themeConfig.cardLightBg} rounded-full px-3 py-1 text-sm ${themeConfig.cardBorder} flex items-center gap-1`}>
                                 <span className={themeConfig.textPrimary}>{child.name}</span>
-                                {child.isRawMaterial && <span className="text-green-400 text-xs">🌿</span>}
+                                {child.isRawMaterial && <SparklesIcon className="w-4 h-4 text-green-400" />}
                               </div>
                             ))}
                           </div>
@@ -1166,7 +1177,7 @@ function CanvasContent() {
             >
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-2xl font-bold flex items-center gap-2">
-                  <span>💡</span>
+                  <LightBulbIcon className="w-5 h-5" />
                   <span>知识卡片：{knowledgeCard.node.name}</span>
                 </h3>
                 <button
@@ -1180,7 +1191,7 @@ function CanvasContent() {
               {loadingKnowledge ? (
                 <div className="flex items-center justify-center py-12">
                   <div className="flex flex-col items-center gap-3">
-                    <span className="text-4xl animate-spin">🔄</span>
+                    <ArrowPathIcon className="w-10 h-10 animate-spin" />
                     <span className={themeConfig.textMuted}>正在生成知识卡片...</span>
                   </div>
                 </div>
@@ -1236,13 +1247,13 @@ function CanvasContent() {
 
                   <div className="bg-blue-500/10 rounded-lg p-4 border border-blue-500/30">
                     <div className="text-sm text-blue-300 font-semibold mb-2">
-                      📦 使用的组成部分
+                      <CubeIcon className="w-5 h-5 mr-2" />使用的组成部分
                     </div>
                     <div className="flex flex-wrap gap-2">
                       {knowledgeCard.node.children.map((child, idx) => (
                         <div key={idx} className={`${themeConfig.cardLightBg} rounded-full px-3 py-1 text-sm ${themeConfig.cardBorder} flex items-center gap-1`}>
                           <span className={themeConfig.textPrimary}>{child.name}</span>
-                          {child.isRawMaterial && <span className="text-green-400 text-xs">🌿</span>}
+                          {child.isRawMaterial && <SparklesIcon className="w-4 h-4 text-green-400" />}
                         </div>
                       ))}
                     </div>
