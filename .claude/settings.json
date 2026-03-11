@@ -24,7 +24,11 @@
       "Bash(git remote set-url origin https://github.com/kang-bo-wen/BreakItDown.git)",
       "Bash(git reset --hard f719ddf)",
       "Bash(ffprobe -v error -show_entries format=duration,size -show_entries stream=codec_name,width,height \"c:\\\\Users\\\\12393\\\\Desktop\\\\BreakItDown-main\\\\public\\\\videos\\\\hero-background.mp4\")",
-      "Bash(powershell -Command \"\\(Get-Item ''c:\\\\Users\\\\12393\\\\Desktop\\\\BreakItDown-main\\\\public\\\\videos\\\\hero-background.mp4''\\).Length\")"
+      "Bash(powershell -Command \"\\(Get-Item ''c:\\\\Users\\\\12393\\\\Desktop\\\\BreakItDown-main\\\\public\\\\videos\\\\hero-background.mp4''\\).Length\")",
+      "Bash(npx playwright test*)",
+      "Bash(npx playwright show-report)",
+      "Bash(npx playwright codegen*)",
+      "Bash(npx playwright install)"
     ],
     "additionalDirectories": [
       "c:\\Users\\12393\\Desktop\\BreakItDown-main\\public"

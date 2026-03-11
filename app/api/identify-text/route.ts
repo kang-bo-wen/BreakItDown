@@ -4,6 +4,11 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { callTextAPI } from '@/lib/ai-client';
 import { IdentificationResponse } from '@/types/graph';
+import {
+  detectTemplateMatch,
+  simulateAIDelay,
+  extractIdentificationFromTemplate
+} from '@/lib/template-interceptor';
 
 // Prompt for text-based identification
 const TEXT_IDENTIFICATION_PROMPT = `根据用户输入的物品名称，识别该物品并返回JSON格式（中文）：
@@ -74,6 +79,48 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+
+    // ✨ 新增：模板拦截逻辑
+    const templateMatch = await detectTemplateMatch(text);
+
+    if (templateMatch && templateMatch.confidence >= 0.8) {
+      console.log(`🎯 Template hit: ${templateMatch.template.displayName}`);
+
+      // 模拟 AI 处理延迟（让用户感觉是真实生成）
+      await simulateAIDelay();
+
+      // 直接返回模板数据
+      const identificationData = extractIdentificationFromTemplate(templateMatch.template);
+
+      // 🔥 重要：和真实 AI 一样，搜索 Wikimedia 图片
+      let imageUrl: string | undefined;
+      if (identificationData.searchTerm) {
+        try {
+          const wikimediaResponse = await fetch(`${request.nextUrl.origin}/api/wikimedia-search`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ searchTerm: identificationData.searchTerm })
+          });
+
+          if (wikimediaResponse.ok) {
+            const wikimediaData = await wikimediaResponse.json();
+            imageUrl = wikimediaData.thumbnail || wikimediaData.imageUrl;
+          }
+        } catch (wikimediaError) {
+          console.error('Error searching Wikimedia:', wikimediaError);
+        }
+      }
+
+      return NextResponse.json({
+        ...identificationData,
+        imageUrl, // 添加图片 URL
+        _isTemplate: true, // 标记这是模板数据（调试用）
+        _templateKey: templateMatch.template.templateKey
+      });
+    }
+
+    // 未命中模板，继续原有的 AI 识别流程
+    console.log('🤖 Using real AI identification...');
 
     // Generate prompt with user input
     const prompt = TEXT_IDENTIFICATION_PROMPT.replace('{{INPUT}}', text.trim());

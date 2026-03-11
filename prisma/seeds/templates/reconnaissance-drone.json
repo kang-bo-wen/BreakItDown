@@ -1,0 +1,1165 @@
+{
+  "templateKey": "reconnaissance-drone",
+  "displayName": "军用级微型侦察无人机",
+  "category": "大国重器",
+  "keywords": "[\"drone\",\"无人机\",\"侦察无人机\",\"reconnaissance drone\"]",
+  "identificationResult": {
+    "name": "军用级微型侦察无人机",
+    "category": "大国重器",
+    "brief_description": "军用级微型侦察无人机的详细拆解分析",
+    "icon": "⌨️",
+    "searchTerm": "drone"
+  },
+  "treeData": {
+    "root": {
+      "name": "军用级微型侦察无人机",
+      "description": "一种小型、高机动性、低可探测性的空中侦察平台，用于战术情报收集、监视与侦察（ISR）任务。",
+      "icon": "🚁",
+      "searchTerm": "Military-Grade Micro Reconnaissance Drone",
+      "children": [
+        {
+          "name": "飞行与推进系统",
+          "description": "负责无人机的升力、推进、机动和姿态控制的核心系统。",
+          "is_raw_material": false,
+          "icon": "✈️",
+          "searchTerm": "Propulsion and Flight Control System",
+          "children": [
+            {
+              "name": "无刷电机",
+              "description": "为旋翼提供动力的高效、高功率密度电动机。",
+              "is_raw_material": false,
+              "icon": "⚙️",
+              "searchTerm": "Brushless DC Motor",
+              "children": [
+                {
+                  "name": "永磁体",
+                  "description": "电机转子的核心磁性材料，通常为稀土永磁体。",
+                  "is_raw_material": false,
+                  "icon": "🧲",
+                  "searchTerm": "Permanent Magnet",
+                  "children": [
+                    {
+                      "name": "钕铁硼磁体",
+                      "description": "由钕、铁、硼等元素烧结而成的高性能稀土永磁材料。",
+                      "is_raw_material": false,
+                      "icon": "🔗",
+                      "searchTerm": "NdFeB Magnet",
+                      "children": [
+                        {
+                          "name": "稀土矿石（如独居石、氟碳铈矿）",
+                          "description": "含有钕、镨等稀土元素的矿物。",
+                          "is_raw_material": true,
+                          "icon": "⛏️",
+                          "searchTerm": "Rare Earth Ore",
+                          "children": []
+                        },
+                        {
+                          "name": "铁矿石",
+                          "description": "用于提炼铁元素的矿石。",
+                          "is_raw_material": true,
+                          "icon": "🪨",
+                          "searchTerm": "Iron Ore",
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "铜绕组",
+                  "description": "电机定子上的导电线圈，用于产生旋转磁场。",
+                  "is_raw_material": false,
+                  "icon": "🌀",
+                  "searchTerm": "Copper Windings",
+                  "children": [
+                    {
+                      "name": "电解铜",
+                      "description": "高纯度铜，通过电解精炼得到。",
+                      "is_raw_material": false,
+                      "icon": "🔶",
+                      "searchTerm": "Electrolytic Copper",
+                      "children": [
+                        {
+                          "name": "铜矿石（如黄铜矿）",
+                          "description": "含有铜元素的矿物。",
+                          "is_raw_material": true,
+                          "icon": "⛏️",
+                          "searchTerm": "Copper Ore",
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "碳纤维旋翼",
+              "description": "轻质高强度的螺旋桨，提供升力和推力。",
+              "is_raw_material": false,
+              "icon": "🌀",
+              "searchTerm": "Carbon Fiber Propeller",
+              "children": [
+                {
+                  "name": "碳纤维预浸料",
+                  "description": "用树脂浸润的碳纤维织物，经高温高压固化成型。",
+                  "is_raw_material": false,
+                  "icon": "🧵",
+                  "searchTerm": "Carbon Fiber Prepreg",
+                  "children": [
+                    {
+                      "name": "聚丙烯腈基碳纤维",
+                      "description": "由聚丙烯腈原丝经过碳化制成的高强度纤维。",
+                      "is_raw_material": false,
+                      "icon": "📏",
+                      "searchTerm": "PAN-based Carbon Fiber",
+                      "children": [
+                        {
+                          "name": "原油",
+                          "description": "石油，是生产丙烯等化工原料的来源。",
+                          "is_raw_material": true,
+                          "icon": "🛢️",
+                          "searchTerm": "Crude Oil",
+                          "children": []
+                        }
+                      ]
+                    },
+                    {
+                      "name": "环氧树脂",
+                      "description": "用于粘合和固化碳纤维的基体材料。",
+                      "is_raw_material": false,
+                      "icon": "🧪",
+                      "searchTerm": "Epoxy Resin",
+                      "children": [
+                        {
+                          "name": "原油",
+                          "description": "石油，是生产苯、丙烯等环氧树脂原料的来源。",
+                          "is_raw_material": true,
+                          "icon": "🛢️",
+                          "searchTerm": "Crude Oil",
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "传感与任务载荷",
+          "description": "用于侦察、监视和环境感知的传感器及光学设备。",
+          "is_raw_material": false,
+          "icon": "📡",
+          "searchTerm": "Sensor and Payload System",
+          "children": [
+            {
+              "name": "光电/红外（EO/IR）摄像头",
+              "description": "集成了可见光和红外传感器的多光谱成像设备。",
+              "is_raw_material": false,
+              "icon": "📷",
+              "searchTerm": "EO/IR Camera",
+              "children": [
+                {
+                  "name": "CMOS图像传感器",
+                  "description": "将光信号转换为电信号的半导体芯片。",
+                  "is_raw_material": false,
+                  "icon": "💿",
+                  "searchTerm": "CMOS Image Sensor",
+                  "children": [
+                    {
+                      "name": "硅晶圆",
+                      "description": "制造半导体芯片的基底材料。",
+                      "is_raw_material": false,
+                      "icon": "🔲",
+                      "searchTerm": "Silicon Wafer",
+                      "children": [
+                        {
+                          "name": "高纯度多晶硅",
+                          "description": "用于拉制单晶硅的极高纯度硅材料。",
+                          "is_raw_material": false,
+                          "icon": "💎",
+                          "searchTerm": "High-Purity Polysilicon",
+                          "children": [
+                            {
+                              "name": "硅砂（石英砂）",
+                              "description": "主要成分为二氧化硅的砂石，是硅的原料。",
+                              "is_raw_material": true,
+                              "icon": "🏖️",
+                              "searchTerm": "Silica Sand",
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "光学镜片组",
+                  "description": "由多个透镜组成，用于聚焦和校正光线。",
+                  "is_raw_material": false,
+                  "icon": "🔍",
+                  "searchTerm": "Optical Lens Assembly",
+                  "children": [
+                    {
+                      "name": "光学玻璃",
+                      "description": "具有特定折射率和色散特性的特种玻璃。",
+                      "is_raw_material": false,
+                      "icon": "🥃",
+                      "searchTerm": "Optical Glass",
+                      "children": [
+                        {
+                          "name": "硅砂、硼砂、碳酸钡等",
+                          "description": "制造光学玻璃所需的各种矿物和化工原料。",
+                          "is_raw_material": true,
+                          "icon": "🧂",
+                          "searchTerm": "Silica Sand, Borax, Barium Carbonate",
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "机载计算与通信系统",
+          "description": "负责数据处理、飞行控制算法运行以及与地面站通信的电子系统。",
+          "is_raw_material": false,
+          "icon": "💻",
+          "searchTerm": "Avionics and Communication System",
+          "children": [
+            {
+              "name": "飞行控制器（飞控）",
+              "description": "集成处理器、传感器和算法的核心控制板。",
+              "is_raw_material": false,
+              "icon": "🧠",
+              "searchTerm": "Flight Controller",
+              "children": [
+                {
+                  "name": "系统级芯片（SoC）",
+                  "description": "集成了CPU、GPU、内存控制器等的核心处理器。",
+                  "is_raw_material": false,
+                  "icon": "🖥️",
+                  "searchTerm": "System on Chip",
+                  "children": [
+                    {
+                      "name": "硅晶圆",
+                      "description": "制造半导体芯片的基底材料。",
+                      "is_raw_material": false,
+                      "icon": "🔲",
+                      "searchTerm": "Silicon Wafer",
+                      "children": [
+                        {
+                          "name": "高纯度多晶硅",
+                          "description": "用于拉制单晶硅的极高纯度硅材料。",
+                          "is_raw_material": false,
+                          "icon": "💎",
+                          "searchTerm": "High-Purity Polysilicon",
+                          "children": [
+                            {
+                              "name": "硅砂（石英砂）",
+                              "description": "主要成分为二氧化硅的砂石，是硅的原料。",
+                              "is_raw_material": true,
+                              "icon": "🏖️",
+                              "searchTerm": "Silica Sand",
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "加密数据链模块",
+              "description": "确保侦察数据安全、实时传输的无线电通信模块。",
+              "is_raw_material": false,
+              "icon": "📶",
+              "searchTerm": "Encrypted Data Link Module",
+              "children": [
+                {
+                  "name": "射频（RF）芯片",
+                  "description": "处理高频无线信号的集成电路。",
+                  "is_raw_material": false,
+                  "icon": "📡",
+                  "searchTerm": "RF Chip",
+                  "children": [
+                    {
+                      "name": "砷化镓（GaAs）晶圆",
+                      "description": "用于制造高频、高性能射频器件的化合物半导体材料。",
+                      "is_raw_material": false,
+                      "icon": "💎",
+                      "searchTerm": "Gallium Arsenide Wafer",
+                      "children": [
+                        {
+                          "name": "砷矿石、镓（常从铝土矿中提取）",
+                          "description": "提取砷和镓元素的矿物原料。",
+                          "is_raw_material": true,
+                          "icon": "⛏️",
+                          "searchTerm": "Arsenic Ore, Gallium (from Bauxite)",
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "能源与动力系统",
+          "description": "为无人机所有电子设备和推进系统提供电力的系统。",
+          "is_raw_material": false,
+          "icon": "🔋",
+          "searchTerm": "Energy and Power System",
+          "children": [
+            {
+              "name": "高能量密度锂电池",
+              "description": "为无人机提供主电源的轻量化可充电电池。",
+              "is_raw_material": false,
+              "icon": "🔋",
+              "searchTerm": "High-Energy-Density Lithium Battery",
+              "children": [
+                {
+                  "name": "锂离子电芯",
+                  "description": "电池的核心储能单元，由正极、负极、隔膜和电解液组成。",
+                  "is_raw_material": false,
+                  "icon": "⚡",
+                  "searchTerm": "Lithium-ion Cell",
+                  "children": [
+                    {
+                      "name": "正极材料（如钴酸锂、三元材料）",
+                      "description": "决定电池能量密度和电压的关键材料。",
+                      "is_raw_material": false,
+                      "icon": "➕",
+                      "searchTerm": "Cathode Material (e.g., LCO, NMC)",
+                      "children": [
+                        {
+                          "name": "锂辉石/盐湖卤水、钴矿石、镍矿石",
+                          "description": "提取锂、钴、镍等金属的矿物资源。",
+                          "is_raw_material": true,
+                          "icon": "⛏️",
+                          "searchTerm": "Spodumene/Salt Lake Brine, Cobalt Ore, Nickel Ore",
+                          "children": []
+                        }
+                      ]
+                    },
+                    {
+                      "name": "电解液",
+                      "description": "在正负极之间传导锂离子的有机溶液。",
+                      "is_raw_material": false,
+                      "icon": "💧",
+                      "searchTerm": "Electrolyte",
+                      "children": [
+                        {
+                          "name": "锂盐（如六氟磷酸锂）、有机溶剂（碳酸酯类）",
+                          "description": "电解液的主要成分，其原料来自矿物和石油化工。",
+                          "is_raw_material": false,
+                          "icon": "🧪",
+                          "searchTerm": "Lithium Salt (e.g., LiPF6), Organic Carbonate Solvents",
+                          "children": [
+                            {
+                              "name": "锂资源、原油",
+                              "description": "锂盐的锂元素来源，以及生产有机溶剂的石油来源。",
+                              "is_raw_material": true,
+                              "icon": "🛢️",
+                              "searchTerm": "Lithium Resource, Crude Oil",
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "机身结构与外壳",
+          "description": "无人机的物理骨架和外部保护罩，提供结构强度、空气动力学外形和低可探测性。",
+          "is_raw_material": false,
+          "icon": "🛡️",
+          "searchTerm": "Airframe and Housing",
+          "children": [
+            {
+              "name": "复合材料机身骨架",
+              "description": "采用碳纤维或凯夫拉复合材料制成的轻质高强度框架。",
+              "is_raw_material": false,
+              "icon": "🦴",
+              "searchTerm": "Composite Airframe",
+              "children": [
+                {
+                  "name": "碳纤维复合材料",
+                  "description": "由碳纤维和树脂基体复合而成的高性能结构材料。",
+                  "is_raw_material": false,
+                  "icon": "🧱",
+                  "searchTerm": "Carbon Fiber Reinforced Polymer",
+                  "children": [
+                    {
+                      "name": "碳纤维预浸料",
+                      "description": "用树脂浸润的碳纤维织物，经高温高压固化成型。",
+                      "is_raw_material": false,
+                      "icon": "🧵",
+                      "searchTerm": "Carbon Fiber Prepreg",
+                      "children": [
+                        {
+                          "name": "聚丙烯腈基碳纤维、环氧树脂",
+                          "description": "碳纤维和树脂的中间材料，其源头为原油。",
+                          "is_raw_material": false,
+                          "icon": "🔗",
+                          "searchTerm": "PAN-based Carbon Fiber, Epoxy Resin",
+                          "children": [
+                            {
+                              "name": "原油",
+                              "description": "生产碳纤维原丝和环氧树脂的石油化工源头。",
+                              "is_raw_material": true,
+                              "icon": "🛢️",
+                              "searchTerm": "Crude Oil",
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "雷达吸波涂层/结构",
+              "description": "应用于机身表面，用于吸收或散射雷达波，降低雷达截面积（RCS）。",
+              "is_raw_material": false,
+              "icon": "🎨",
+              "searchTerm": "Radar Absorbing Material/Structure",
+              "children": [
+                {
+                  "name": "吸波涂料",
+                  "description": "含有铁氧体、碳纳米管等吸波填料的特种涂料。",
+                  "is_raw_material": false,
+                  "icon": "🖌️",
+                  "searchTerm": "Radar Absorbent Paint",
+                  "children": [
+                    {
+                      "name": "铁氧体粉末",
+                      "description": "一种具有磁损耗特性的陶瓷材料，是吸波涂料的关键填料。",
+                      "is_raw_material": false,
+                      "icon": "🧲",
+                      "searchTerm": "Ferrite Powder",
+                      "children": [
+                        {
+                          "name": "铁矿石、氧化锌、氧化锰等",
+                          "description": "制造铁氧体所需的各种金属氧化物原料。",
+                          "is_raw_material": true,
+                          "icon": "🧂",
+                          "searchTerm": "Iron Ore, Zinc Oxide, Manganese Oxide",
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "nodePositions": {},
+  "agentReports": {
+    "market_analyst": {
+      "market_analysis": {
+        "product_name": "军用级微型侦察无人机",
+        "market_positioning": {
+          "core_positioning": "隐蔽、高精度、实时战术侦察装备",
+          "key_features": [
+            "低可探测性（低噪音、小型化、隐身材料）",
+            "高环境适应性（复杂地形、恶劣天气、电磁干扰环境）",
+            "实时数据链与AI辅助分析",
+            "模块化载荷（光学/红外/信号侦察模块）",
+            "强生存性与抗干扰能力"
+          ],
+          "value_proposition": "为战术单位提供低成本、低风险、高时效的战场态势感知解决方案，弥补传统侦察手段的盲区"
+        },
+        "target_users": {
+          "primary_customers": [
+            {
+              "segment": "军队及特种部队",
+              "use_cases": [
+                "城市巷战侦察",
+                "边境巡逻监控",
+                "反恐作战情报支持",
+                "重要目标隐蔽监视"
+              ]
+            },
+            {
+              "segment": "国家安全与执法机构",
+              "use_cases": [
+                "人质解救现场侦查",
+                "大型活动安防布控",
+                "禁毒与反走私侦察"
+              ]
+            },
+            {
+              "segment": "盟友及授权国际合作伙伴",
+              "use_cases": [
+                "联合军事行动",
+                "维和任务情报收集"
+              ]
+            }
+          ],
+          "procurement_characteristics": "高度依赖国防预算、严格认证流程、强调供应链安全与数据主权"
+        },
+        "competitive_landscape": {
+          "global_competitors": [
+            {
+              "tier": "第一梯队（美以主导）",
+              "examples": [
+                "美国FLIR Black Hornet",
+                "以色列Skylark",
+                "美国AeroVironment Switchblade"
+              ],
+              "advantages": "成熟实战验证、强数据链整合、北约标准兼容"
+            },
+            {
+              "tier": "新兴竞争者",
+              "examples": [
+                "中国华擎科技ASN",
+                "土耳其STM Kargu",
+                "欧洲EUDRON"
+              ],
+              "advantages": "成本控制、定制化灵活、区域市场渠道"
+            }
+          ],
+          "competition_focus": [
+            "传感器性能与AI识别精度",
+            "通信安全与抗干扰能力",
+            "续航与起降适应性",
+            "系统集成与协同作战能力"
+          ],
+          "entry_barriers": [
+            "军品资质认证（如MIL-STD）",
+            "核心技术自主可控（飞控、加密、传感器）",
+            "地缘政治因素影响市场准入"
+          ]
+        },
+        "market_trends": {
+          "technology_trends": [
+            "AI边缘计算实现实时目标识别",
+            "蜂群协同技术提升侦察覆盖率",
+            "新能源（氢燃料电池）延长续航",
+            "低轨卫星通信增强远程操控"
+          ],
+          "demand_trends": [
+            "不对称作战需求推动微型化装备采购",
+            "城市战比例上升催生近距离侦察工具",
+            "军队信息化转型加速无人机编队部署"
+          ],
+          "policy_trends": [
+            "各国加强无人机出口管制（如MTCR）",
+            "北约推动成员国装备互操作性标准",
+            "新兴战场规则催生伦理与合规要求"
+          ],
+          "market_growth_estimates": "预计2025-2030年全球军用微型无人机市场年复合增长率约12-15%，亚太与中东地区需求增速领先"
+        }
+      }
+    },
+    "supply_chain_expert": {
+      "analysis_report": {
+        "product": "军用级微型侦察无人机",
+        "analysis_date": "2023-10-01",
+        "sections": {
+          "供应链结构": {
+            "层级": "四级供应链网络",
+            "描述": [
+              "一级（核心系统集成商）：负责总体设计、软件集成、加密通信系统及最终组装测试，通常为国防承包商或指定军工企业",
+              "二级（关键子系统供应商）：包括飞控模块（含军用级芯片）、微型光电/红外传感器、加密数据链、高能量密度电池、复合材料机身结构等",
+              "三级（专用元器件供应商）：军用级微处理器、陀螺仪/加速度计、图像传感器芯片、抗干扰天线、特种材料（如碳纤维增强聚合物）",
+              "四级（原材料与基础件）：稀土永磁材料（电机用）、高纯度硅片、特种合金、化工材料（电池电解质）、精密模具"
+            ]
+          },
+          "关键供应商分类": {
+            "战略级供应商": [
+              {
+                "类别": "飞控与通信系统",
+                "典型企业": [
+                  "洛克希德·马丁（美国）",
+                  "诺斯罗普·格鲁曼（美国）",
+                  "中航工业（中国）",
+                  "以色列航空工业公司"
+                ],
+                "关键性": "涉及核心算法、加密技术及抗干扰能力"
+              },
+              {
+                "类别": "侦察传感器",
+                "典型企业": [
+                  "雷神技术（美国）",
+                  "FLIR Systems（美国）",
+                  "索尼半导体（日本）",
+                  "中国科学院下属研究所"
+                ],
+                "关键性": "决定侦察精度与环境适应性"
+              }
+            ],
+            "瓶颈供应商": [
+              {
+                "类别": "军用级芯片",
+                "典型企业": [
+                  "英特尔（美国）",
+                  "德州仪器（美国）",
+                  "华为海思（中国）",
+                  "欧洲微电子中心"
+                ],
+                "关键性": "受出口管制影响大，替代周期长"
+              },
+              {
+                "类别": "高能量密度电池",
+                "典型企业": [
+                  "松下（日本）",
+                  "LG化学（韩国）",
+                  "宁德时代（中国）",
+                  "美国A123 Systems"
+                ],
+                "关键性": "直接影响续航能力，技术门槛高"
+              }
+            ]
+          },
+          "典型物流路径": {
+            "国际采购路径": [
+              "路径1：美国/欧洲 → 集成商所在国（空运+武装押运）",
+              "路径2：日韩电子元件 → 东南亚组装 → 集成商（保税区中转）",
+              "路径3：稀土材料（中国/缅甸） → 精加工国（日本/德国） → 电机供应商"
+            ],
+            "安全要求": [
+              "全程GPS追踪与温湿度监控",
+              "敏感部件使用防篡改密封集装箱",
+              "关键节点采用双重验货与生物识别准入",
+              "运输文件使用加密区块链存证"
+            ]
+          },
+          "风险点分析": {
+            "地缘政治风险": [
+              {
+                "风险项": "出口管制与技术封锁",
+                "影响等级": "高",
+                "案例": "《瓦森纳协定》限制军用技术转移，美国ITAR法规管制国防物品出口"
+              },
+              {
+                "风险项": "原材料产地集中度",
+                "影响等级": "中高",
+                "案例": "永磁电机所需稀土80%依赖中国供应，刚果（金）钴矿供应不稳定"
+              }
+            ],
+            "技术风险": [
+              {
+                "风险项": "单一来源依赖",
+                "影响等级": "高",
+                "案例": "7nm以下军用芯片全球仅3家企业可量产"
+              },
+              {
+                "风险项": "技术泄露",
+                "影响等级": "极高",
+                "案例": "供应链渗透可能导致通信加密协议外泄"
+              }
+            ],
+            "运营风险": [
+              {
+                "风险项": "物流中断",
+                "影响等级": "中",
+                "案例": "关键海峡封锁（如马六甲海峡）、战时运输线破坏"
+              },
+              {
+                "风险项": "质量一致性",
+                "影响等级": "中高",
+                "案例": "微型传感器批量生产良率波动影响交付进度"
+              }
+            ],
+            "缓解措施建议": [
+              "建立地缘政治预警机制与替代供应商数据库",
+              "对一级供应商实施安全审查与生产隔离要求",
+              "关键部件保持6个月以上战略库存",
+              "采用模块化设计以降低特定元器件依赖",
+              "物流路径设计冗余方案（如北极航线备用）"
+            ]
+          }
+        },
+        "结论": "该产品供应链具有高技术壁垒、强政治约束和复杂物流要求三大特征。建议采取'核心自主、多层备份、全程监控'的供应链战略，特别关注芯片、传感器和能源系统的供应安全，同时需建立地缘政治风险动态评估体系。"
+      }
+    },
+    "manufacturing_engineer": {
+      "产品名称": "军用级微型侦察无人机",
+      "分析维度": {
+        "生产工艺": {
+          "机身制造": "采用碳纤维复合材料模压成型工艺，配合数控机床精密加工关键连接部位",
+          "动力系统": "无刷电机采用自动化绕线工艺，螺旋桨采用空气动力学优化的注塑成型工艺",
+          "电子系统": "采用SMT表面贴装技术，关键芯片采用BGA封装和X射线检测工艺",
+          "传感器集成": "光电/红外传感器采用主动对准工艺，惯性导航单元采用减震安装工艺",
+          "总装工艺": "模块化装配流程，采用防静电工作环境和专用装配夹具"
+        },
+        "制造流程": {
+          "阶段一": "原材料检验与预处理",
+          "阶段二": "分系统制造（机身/动力/电子/载荷）",
+          "阶段三": "子系统测试与筛选",
+          "阶段四": "整机集成装配",
+          "阶段五": "环境适应性测试（振动/温湿度/电磁兼容）",
+          "阶段六": "飞行性能校准",
+          "阶段七": "最终检验与加密配置",
+          "阶段八": "包装与交付"
+        },
+        "质量控制": {
+          "来料检验": "军用标准MIL-STD-883材料认证，关键部件100%检测",
+          "过程控制": "统计过程控制（SPC）关键尺寸，自动化光学检测（AOI）电路板",
+          "可靠性测试": [
+            "高低温循环测试（-40℃~+70℃）",
+            "振动测试（符合MIL-STD-810G）",
+            "防水防尘测试（IP67等级）",
+            "电磁兼容性测试（MIL-STD-461）"
+          ],
+          "最终检验": "全功能飞行测试，图像传输质量验证，续航时间验证",
+          "追溯体系": "唯一序列号，关键部件批次追溯，测试数据云端归档"
+        },
+        "生产成本分析": {
+          "直接材料成本": {
+            "占比": "约45%",
+            "主要构成": [
+              "碳纤维复合材料机身",
+              "高能量密度锂电池",
+              "军用级图像传感器",
+              "抗干扰通信模块",
+              "惯性导航单元"
+            ]
+          },
+          "直接人工成本": {
+            "占比": "约20%",
+            "说明": "包含精密装配、测试校准等专业技术人工"
+          },
+          "制造费用": {
+            "占比": "约25%",
+            "包含": [
+              "专用设备折旧",
+              "洁净车间维护",
+              "测试能耗",
+              "质量检测设备"
+            ]
+          },
+          "研发与认证分摊": {
+            "占比": "约10%",
+            "说明": "包含军用标准认证费用、加密技术研发分摊"
+          },
+          "单台估算成本范围": "8,000-15,000美元（根据配置和产量浮动）",
+          "成本优化方向": [
+            "采用模块化设计降低维修成本",
+            "批量采购关键元器件",
+            "自动化装配线提升效率",
+            "标准化测试流程缩短周期"
+          ]
+        }
+      },
+      "制造挑战": [
+        "微型化与可靠性的平衡",
+        "电磁兼容性在紧凑空间的实现",
+        "恶劣环境下的性能稳定性",
+        "供应链安全与国产化要求"
+      ],
+      "备注": "以上分析基于典型军用无人机生产数据，实际成本与工艺可能因具体技术要求、采购规模和保密级别有所差异"
+    },
+    "materials_scientist": {
+      "analysis_report": {
+        "product": "军用级微型侦察无人机",
+        "analysis_dimensions": [
+          {
+            "dimension": "材料选择与功能对应",
+            "details": [
+              {
+                "component": "机身结构",
+                "primary_materials": [
+                  "碳纤维复合材料",
+                  "航空铝合金"
+                ],
+                "key_properties": [
+                  "高比强度/比刚度",
+                  "耐疲劳性",
+                  "电磁屏蔽性"
+                ],
+                "functional_requirements": [
+                  "轻量化",
+                  "抗冲击",
+                  "隐身性"
+                ]
+              },
+              {
+                "component": "旋翼系统",
+                "primary_materials": [
+                  "玻璃纤维增强尼龙",
+                  "钛合金"
+                ],
+                "key_properties": [
+                  "高韧性",
+                  "抗蠕变",
+                  "耐磨损"
+                ],
+                "functional_requirements": [
+                  "高速旋转稳定性",
+                  "抗沙尘磨损"
+                ]
+              },
+              {
+                "component": "电子封装",
+                "primary_materials": [
+                  "陶瓷基复合材料",
+                  "环氧树脂封装胶"
+                ],
+                "key_properties": [
+                  "高热导率",
+                  "低介电常数",
+                  "防潮密封"
+                ],
+                "functional_requirements": [
+                  "散热管理",
+                  "电磁兼容",
+                  "恶劣环境防护"
+                ]
+              },
+              {
+                "component": "光学窗口",
+                "primary_materials": [
+                  "蓝宝石玻璃",
+                  "硫化锌红外透波材料"
+                ],
+                "key_properties": [
+                  "高透光率",
+                  "抗刮擦",
+                  "宽波段透过"
+                ],
+                "functional_requirements": [
+                  "传感器保护",
+                  "多光谱侦察"
+                ]
+              }
+            ]
+          },
+          {
+            "dimension": "关键材料特性分析",
+            "details": [
+              {
+                "property": "轻量化指数",
+                "importance": "极高",
+                "metrics": [
+                  "比强度>300 MPa·cm³/g",
+                  "密度<2.0 g/cm³"
+                ],
+                "impact": "续航时间提升30-50%，隐蔽性增强"
+              },
+              {
+                "property": "环境耐受性",
+                "importance": "高",
+                "metrics": [
+                  "工作温度-40℃~+70℃",
+                  "抗盐雾>500h",
+                  "防霉菌等级1级"
+                ],
+                "impact": "全天候部署能力"
+              },
+              {
+                "property": "隐身特性",
+                "importance": "中高",
+                "metrics": [
+                  "雷达反射截面<-30 dBsm",
+                  "红外辐射衰减>85%"
+                ],
+                "impact": "生存性提升"
+              }
+            ]
+          },
+          {
+            "dimension": "替代材料方案",
+            "details": [
+              {
+                "current_material": "碳纤维复合材料",
+                "alternatives": [
+                  {
+                    "name": "玄武岩纤维复合材料",
+                    "advantages": [
+                      "成本降低40%",
+                      "天然电磁波吸收",
+                      "环保可降解"
+                    ],
+                    "limitations": [
+                      "比强度低15%",
+                      "工艺成熟度较低"
+                    ],
+                    "applicability": "中低威胁环境侦察型号"
+                  },
+                  {
+                    "name": "石墨烯增强镁基复合材料",
+                    "advantages": [
+                      "减重潜力20%",
+                      "导热性提升3倍",
+                      "电磁屏蔽增强"
+                    ],
+                    "limitations": [
+                      "成本极高",
+                      "加工技术不成熟"
+                    ],
+                    "applicability": "未来高超声速微型无人机"
+                  }
+                ]
+              },
+              {
+                "current_material": "航空铝合金",
+                "alternatives": [
+                  {
+                    "name": "高熵合金",
+                    "advantages": [
+                      "强度提升50%",
+                      "耐腐蚀性极佳",
+                      "高温稳定性好"
+                    ],
+                    "limitations": [
+                      "密度较高",
+                      "加工难度大"
+                    ],
+                    "applicability": "关键承力部件"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "dimension": "环保性评估",
+            "details": [
+              {
+                "aspect": "全生命周期影响",
+                "assessment": [
+                  {
+                    "phase": "生产阶段",
+                    "issues": [
+                      "碳纤维生产能耗高",
+                      "稀有金属使用",
+                      "有毒溶剂排放"
+                    ],
+                    "improvements": [
+                      "采用生物基树脂",
+                      "闭路循环制造系统"
+                    ]
+                  },
+                  {
+                    "phase": "使用阶段",
+                    "issues": [
+                      "电磁污染",
+                      "噪音污染"
+                    ],
+                    "improvements": [
+                      "低噪音旋翼设计",
+                      "频谱管理技术"
+                    ]
+                  },
+                  {
+                    "phase": "退役处理",
+                    "issues": [
+                      "复合材料难回收",
+                      "电池重金属污染",
+                      "电子废弃物"
+                    ],
+                    "improvements": [
+                      "模块化可拆卸设计",
+                      "生物降解聚合物应用",
+                      "稀土元素回收技术"
+                    ]
+                  }
+                ]
+              },
+              {
+                "aspect": "绿色材料技术趋势",
+                "recommendations": [
+                  "发展自修复聚合物减少维护需求",
+                  "采用相变材料实现被动热管理",
+                  "开发生物仿生结构实现材料减量",
+                  "推广粉末冶金近净成形降低废料率"
+                ]
+              }
+            ]
+          },
+          {
+            "dimension": "综合建议",
+            "summary": [
+              "短期优先：在非关键部件试用玄武岩纤维等环保替代材料",
+              "中期发展：建立军用无人机材料回收体系，特别是稀土和贵金属",
+              "长期研发：投资智能材料（形状记忆合金、压电材料）实现自适应结构",
+              "平衡策略：在性能、成本和环保间建立量化评估模型"
+            ]
+          }
+        ],
+        "report_metadata": {
+          "analysis_date": "2024-07-20",
+          "assumptions": [
+            "无人机尺寸<30cm，重量<500g",
+            "执行战术侦察任务",
+            "考虑全生命周期成本"
+          ],
+          "data_sources": [
+            "国防材料数据库",
+            "ACS Applied Materials & Interfaces期刊",
+            "国际绿色军事装备研讨会论文集"
+          ]
+        }
+      }
+    },
+    "cost_analyst": {
+      "成本结构分析": {
+        "直接材料成本": [
+          {
+            "项目": "复合材料机身",
+            "占比": "15%",
+            "说明": "高强度碳纤维/凯夫拉复合材料，满足抗冲击、低雷达反射要求"
+          },
+          {
+            "项目": "微型传感器模块",
+            "占比": "25%",
+            "说明": "高清红外/微光摄像头、激光测距仪、信号侦测模块等核心侦察组件"
+          },
+          {
+            "项目": "动力系统",
+            "占比": "12%",
+            "说明": "高能量密度电池、微型无刷电机、折叠螺旋桨"
+          },
+          {
+            "项目": "飞控与通信系统",
+            "占比": "18%",
+            "说明": "军用加密数据链、抗干扰导航模块、自主避障芯片"
+          },
+          {
+            "项目": "其他电子元件",
+            "占比": "8%",
+            "说明": "微型伺服机构、电源管理芯片、接口电路等"
+          }
+        ],
+        "直接制造成本": [
+          {
+            "项目": "精密组装与测试",
+            "占比": "10%",
+            "说明": "防尘车间装配、飞行参数校准、电磁兼容性测试"
+          },
+          {
+            "项目": "特种工艺处理",
+            "占比": "5%",
+            "说明": "隐身涂层、三防（防水/防尘/防腐蚀）处理"
+          }
+        ],
+        "间接成本": [
+          {
+            "项目": "研发摊销",
+            "占比": "15%",
+            "说明": "包括气动设计、软件算法开发、原型测试等前期投入分摊"
+          },
+          {
+            "项目": "质量认证与军标合规",
+            "占比": "8%",
+            "说明": "军用可靠性标准（如MIL-STD-810）测试、安全认证费用"
+          },
+          {
+            "项目": "供应链管理",
+            "占比": "4%",
+            "说明": "特种材料采购、备用供应商维护、进口元器件关税"
+          }
+        ],
+        "总成本构成汇总": {
+          "直接成本占比": "70%",
+          "间接成本占比": "30%",
+          "成本敏感度排序": [
+            "微型传感器模块",
+            "飞控与通信系统",
+            "研发摊销",
+            "复合材料机身"
+          ]
+        }
+      },
+      "定价策略分析": {
+        "定价基础": "成本加成定价法 + 价值定价法结合",
+        "定价因素": [
+          {
+            "因素": "军方采购特性",
+            "影响": "采用生命周期成本核算，强调可靠性而非最低价，允许较高溢价"
+          },
+          {
+            "因素": "技术壁垒",
+            "影响": "加密通信、自主飞行算法等核心技术支撑溢价能力"
+          },
+          {
+            "因素": "批量折扣阶梯",
+            "影响": "初始订单单价较高，后续批量采购（如营级配装）给予15-25%折扣"
+          },
+          {
+            "因素": "配置差异化",
+            "影响": "基础侦察型、电子战增强型、集群协同型形成价格梯度（价差可达40%）"
+          }
+        ],
+        "典型定价区间": {
+          "单机售价": "8,000 - 25,000美元",
+          "定价依据": "根据传感器等级、续航时间、抗干扰能力等配置浮动"
+        }
+      },
+      "利润空间分析": {
+        "毛利率": "45-60%",
+        "净利率": "22-30%",
+        "利润驱动因素": [
+          "高附加值核心技术（飞控算法、传感器融合）",
+          "军用采购对价格敏感度较低",
+          "后期维护、软件升级、训练模拟器等衍生收入"
+        ],
+        "风险因素": [
+          "研发失败风险导致前期投入沉没",
+          "国防预算波动影响采购规模",
+          "极端环境测试增加额外成本"
+        ]
+      },
+      "成本优化建议": [
+        {
+          "领域": "供应链优化",
+          "建议": "与国内军工半导体企业联合开发定制芯片，替代部分进口元器件，降低采购成本及供应链风险",
+          "预期效果": "直接材料成本降低8-12%"
+        },
+        {
+          "领域": "生产流程",
+          "建议": "引入模块化设计，实现传感器、电池等核心部件快速换装，减少定制化生产线投入",
+          "预期效果": "制造成本降低5-8%，维修效率提升"
+        },
+        {
+          "领域": "研发效率",
+          "建议": "采用数字孪生技术进行虚拟测试，减少实物原型迭代次数，压缩研发周期与成本",
+          "预期效果": "研发摊销成本降低10-15%"
+        },
+        {
+          "领域": "规模效应",
+          "建议": "推动标准化接口协议，拓展至边防、消防等准军事领域，扩大生产批量摊薄固定成本",
+          "预期效果": "间接成本占比下降3-5个百分点"
+        },
+        {
+          "领域": "生命周期管理",
+          "建议": "设计易回收模块，对退役无人机的电池、贵金属部件进行再生利用，降低全周期成本",
+          "预期效果": "后期处置成本降低，提升环保合规性"
+        }
+      ],
+      "备注": "以上数据基于典型中型军工企业生产场景估算，实际数值需根据具体技术方案、采购规模及谈判条款调整。"
+    },
+    "sustainability_expert": {
+      "raw_text": "{\n  \"analysis_report\": {\n    \"product\": \"军用级微型侦察无人机\",\n    \"analysis_dimensions\": [\n      {\n        \"dimension\": \"环境影响\",\n        \"details\": {\n          \"positive_aspects\": [\n            \"替代传统有人侦察平台，减少燃油消耗与直接排放\",\n            \"微型化设计降低单机材料使用量\",\n            \"电动型号可减少战场化石能源依赖\"\n          ],\n          \"negative_aspects\": [\n            \"稀土元素（钕、镝等）开采导致生态破坏与水污染\",\n            \"高能量密度电池（锂聚合物）含重金属与有毒电解质\",\n            \"电子元件生产涉及氟化温室气体与酸洗废水\",\n            \"短生命周期（平均2-3年）产生电子废弃物\",\n            \"隐蔽涂层可能含全氟化合物等持久性污染物\"\n          ],\n          \"assessment\": \"净环境影响为显著负面，主要体现在供应链上游污染与末端电子废弃物问题\"\n        }\n      },\n      {\n        \"dimension\": \"碳足迹\",\n        \"details\": {\n          \"lifecycle_breakdown\": {\n            \"原材料提取\": \"占比约45%（稀土磁体与电池材料冶炼能耗高）\",\n            \"精密制造\": \"占比约30%（洁净车间持续能耗与特种气体使用）\",\n            \"运输部署\": \"占比约5%（轻型但需冷链运输部分元件）\",\n            \"使用阶段\": \"占比约15%（充电电力来源决定排放差异）\",\n            \"废弃处理\": \"占比约5%（专业拆解能耗，但回收可产生负排放）\"\n          },\n          \"estimated_footprint\": \"单机全生命周期约120-180kg CO₂当量（视电池容量与使用强度）\",\n          \"comparative_note\": \"相当于智能手机碳足迹的8-12倍，主要差异在特种材料与辐射硬化元件\"\n        }\n      },\n      {\n        \"dimension\": \"循环经济潜力\",\n        \"details\": {\n          \"material_recovery\": {\n            \"高价值可回收\": [\"钛合金结构件（回收率>95%）\", \"铜绕组电机（回收率>90%）\"],\n            \"中等难度回收\": [\"稀土永磁体（当前回收率<20%）\", \"电路板贵金属（需专业处理）\"],\n            \"低回收可行性\": [\"复合碳纤维机身（热固性树脂不可逆）\", \"特种光学涂层（多层纳米材料融合）\"]\n          },\n          \"design_barriers\": [\n            \"加密自毁机制阻碍模块化维修\",\n            \"防篡改封装限制组件更换\",\n            \"辐射硬化设计导致材料不可逆改性\"\n          ],\n          \"business_model_opportunities\": [\n            \"建立军规无人机共享侦察服务平台\",\n            \"开发模块化可升级传感吊舱系统\",\n            \"实施以旧换新电池回收计划\"\n          ]\n        }\n      },\n      {\n        \"dimension\": \"绿色改进方案\",\n        \"details\": {\n          \"design_strategies\": [\n            \"采用拓扑优化算法减重30%同时保持结构强度\",\n            \"标准化接口允许传感器模块跨代复用\",\n            \"生物基复合材料替代部分碳纤维部件\"\n          ],\n          \"material_innovations\": [\n            \"铁氧体磁体替代20%稀土永磁体\",\n            \"固态电池技术提升安全性并减少电解液污染\",\n            \"自修复涂层延长表面防护寿命\"\n          ],\n          \"logistics_optimizations\": [\n            \"部署太阳能充电前哨站\",\n            \"建立战区级3D打印备件网络\",\n            \"开发氢燃料电池增程模块\"\n          ],\n          \"end_of_life_solutions\": [\n            \"内置材料成分数字护照（区块链溯源）\",\n            \"与民用无人机企业共建回收渠道\",\n            \"开发低温粉碎稀土磁体回收工艺\"\n          ]\n        }\n      },\n      {\n        \"dimension\": \"战略建议\",\n        \"details\": {\n          \"short_term\": \"强制要求供应商提供冲突矿产声明与碳足迹认证\",\n          \"medium_term\": \"制定《军用电子产品生态设计指令》替代现行MIL-STD-810标准\",\n          \"long_term\": \"推动国防科技与民用循环经济基础设施融合，建立\"从战场到资源\"闭环系统\"\n        }\n      }\n    ],\n    \"conclusion\": \"该产品具有典型的高科技军事装备环境矛盾性：虽在应用端可能减少传统军事活动排放，但全生命周期呈现资源密集型特征。通过模块化设计、材料替代与回收体系创新，可降低40-60%环境负荷，但需突破军事保密要求与供应链重构等制度障碍。\"\n  }\n}"
+    },
+    "innovation_strategist": {
+      "raw_text": "{\n  \"analysis_report\": {\n    \"product_name\": \"军用级微型侦察无人机\",\n    \"analysis_dimensions\": [\n      {\n        \"dimension\": \"技术创新点\",\n        \"details\": [\n          \"微型化与隐蔽性：尺寸小于15cm，采用低可观测材料与静音推进技术，实现视觉与声学隐身\",\n          \"智能自主系统：边缘计算AI实现实时目标识别、路径规划与自适应侦察，减少人工干预\",\n          \"多模态传感融合：集成高分辨率光电、红外、电磁频谱传感器，支持复杂环境全天候侦察\",\n          \"集群协同技术：基于蜂群算法的分布式协作，支持数百架无人机自主编队与任务分配\",\n          \"能源与续航创新：固态电池与无线充电技术结合，配合太阳能补充，续航时间达数小时\",\n          \"抗干扰通信：量子加密通信与跳频技术确保数据链在强电磁干扰环境下的稳定性\"\n        ]\n      },\n      {\n        \"dimension\": \"未来发展方向\",\n        \"details\": [\n          \"生物仿生设计：模仿昆虫或鸟类的形态与运动方式，提升环境适应性与隐蔽性\",\n          \"跨域协同作战：与地面机器人、卫星网络及有人作战平台形成立体化侦察体系\",\n          \"AI决策增强：引入强化学习实现动态战术调整，具备预测性威胁评估能力\",\n          \"自毁与反捕获机制：任务完成后可自动降解或启动加密自毁，防止技术泄露\",\n          \"低成本量产技术：通过模块化设计与3D打印工艺降低制造成本，支持大规模部署\",\n          \"环境能量采集：利用振动、温差或射频信号等环境能源实现半永久续航\"\n        ]\n      },\n      {\n        \"dimension\": \"颠覆性机会\",\n        \"details\": [\n          \"城市巷战革命：替代传统侦察兵，大幅降低人员伤亡，改变城市作战范式\",\n          \"反恐与安保升级：为关键基础设施提供持续监控网络，实现毫米级安全覆盖\",\n          \"民用领域转化：灾害救援、精准农业、管道巡检等领域的低成本高效解决方案\",\n          \"新作战理论催生：基于无人机集群的\"饱和侦察\"与\"分布式杀伤\"新战术体系\",\n          \"国防经济重构：降低重型装备依赖，以低成本智能装备形成不对称优势\",\n          \"国际军贸格局变化：中小国家借此获得尖端侦察能力，改变区域军事平衡\"\n        ]\n      },\n      {\n        \"dimension\": \"创新建议\",\n        \"details\": [\n          \"技术层面：设立专项研发基金，重点突破仿生材料、神经形态计算芯片等前沿技术\",\n          \"产业层面：建立\"军民融合\"创新生态，鼓励民用AI企业与军工单位联合开发\",\n          \"标准层面：主导制定微型无人机通信协议与数据安全国际标准，抢占技术话语权\",\n          \"应用层面：开发开放式任务架构，允许第三方开发专用载荷与算法模块\",\n          \"安全层面：建立\"伦理设计框架\"，内置交战规则与国际法合规性验证系统\",\n          \"合作层面：与北约、东盟等区域组织建立微型无人机联合演习与技术共享机制\"\n        ]\n      }\n    ],\n    \"strategic_insights\": \"微型侦察无人机的核心价值正在从\"单点技术突破\"转向\"体系化智能协同\"，未来竞争将集中在算法生态、能源密度与低成本制造三大赛道。建议采取\"军民双轨\"发展路径，同步推进军事应用深化与民用场景拓展，构建技术-产业-标准三位一体的竞争优势。\"\n  }\n}"
+    }
+  },
+  "productionAnalysis": {},
+  "priority": 0,
+  "isActive": true
+}

@@ -123,14 +123,10 @@ function MatterNode({ data }: NodeProps<MatterNodeData>) {
     onHover?.(!showTooltip);
   };
 
-  // 右键点击：重新分解节点
+  // 右键点击：禁用默认菜单
   const handleContextMenu = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (!isRawMaterial && !isLoading) {
-      // 重新分解：清空子节点并重新展开
-      onExpand();
-    }
   };
 
   // 鼠标悬停：显示简单的名称标签
@@ -282,18 +278,47 @@ function MatterNode({ data }: NodeProps<MatterNodeData>) {
             
 
             {/* 操作按钮 */}
-            {!isRawMaterial && hasKnowledgeCard && (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onShowKnowledge();
-                }}
-                className="w-full px-3 py-2 bg-yellow-500/80 hover:bg-yellow-400/90 rounded-lg text-white text-sm font-semibold transition-all flex items-center justify-center gap-2 shadow-lg pointer-events-auto"
-              >
-                <span>💡</span>
-                <span>查看工艺流程</span>
-              </button>
-            )}
+            <div className="space-y-2">
+              {/* 继续拆解按钮 */}
+              {!isRawMaterial && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowTooltip(false);
+                    onHover?.(false);
+                    onExpand();
+                  }}
+                  disabled={isLoading}
+                  className="w-full px-3 py-2 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 disabled:from-gray-500 disabled:to-gray-600 disabled:cursor-not-allowed rounded-lg text-white text-sm font-semibold transition-all flex items-center justify-center gap-2 shadow-lg pointer-events-auto"
+                >
+                  {isLoading ? (
+                    <>
+                      <span className="inline-block animate-spin">🔄</span>
+                      <span>拆解中...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>🔧</span>
+                      <span>继续拆解</span>
+                    </>
+                  )}
+                </button>
+              )}
+
+              {/* 生产规划按钮 */}
+              {!isRawMaterial && hasKnowledgeCard && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onShowKnowledge();
+                  }}
+                  className="w-full px-3 py-2 bg-yellow-500/80 hover:bg-yellow-400/90 rounded-lg text-white text-sm font-semibold transition-all flex items-center justify-center gap-2 shadow-lg pointer-events-auto"
+                >
+                  <span>💡</span>
+                  <span>生产规划</span>
+                </button>
+              )}
+            </div>
 
             {/* 加载中提示 */}
             {!isRawMaterial && !hasKnowledgeCard && isLoadingKnowledge && (

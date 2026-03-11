@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -104,4 +104,37 @@ model ProductionAnalysisProgress {
   session              DeconstructionSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
 
   @@unique([sessionId, partId])
+}
+
+// 模板会话（用于路演的预设案例）
+model TemplateSession {
+  id                String   @id @default(cuid())
+
+  // 模板基本信息
+  templateKey       String   @unique  // 用于关键词匹配，如 "mechanical-keyboard"
+  displayName       String              // 显示名称，如 "客制化机械键盘"
+  category          String              // 分类：大国重器、极客定制、生活黑科技、绿色新消费
+  keywords          String              // 关键词列表（JSON数组），用于匹配用户输入
+
+  // 识别结果
+  identificationResult Json             // IdentificationResponse 格式
+
+  // 完整拆解树
+  treeData          Json                // 完整的节点和边数据
+  nodePositions     Json?               // React Flow 节点位置
+
+  // 7 个多智能体分析报告
+  agentReports      Json                // 包含所有智能体分析结果
+
+  // 生产分析数据（预设）
+  productionAnalysis Json?              // 预设的生产分析结果
+
+  // 元数据
+  priority          Int      @default(0)  // 优先级（用于匹配冲突时）
+  isActive          Boolean  @default(true)  // 是否启用
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([templateKey])
+  @@index([category])
 }

@@ -1,0 +1,1170 @@
+{
+  "templateKey": "mechanical-keyboard",
+  "displayName": "客制化机械键盘",
+  "category": "极客定制",
+  "keywords": "[\"mechanical keyboard\",\"机械键盘\",\"客制化键盘\",\"定制键盘\",\"custom keyboard\"]",
+  "identificationResult": {
+    "name": "客制化机械键盘",
+    "category": "极客定制",
+    "brief_description": "客制化机械键盘的详细拆解分析",
+    "icon": "⌨️",
+    "searchTerm": "mechanical keyboard"
+  },
+  "treeData": {
+    "root": {
+      "name": "客制化机械键盘",
+      "description": "一种允许用户高度自定义组件、手感和外观的机械键盘。",
+      "icon": "⌨️",
+      "searchTerm": "custom mechanical keyboard",
+      "children": [
+        {
+          "name": "外壳",
+          "description": "键盘的主体结构，用于固定内部组件并决定外观和触感。",
+          "is_raw_material": false,
+          "icon": "🧱",
+          "searchTerm": "keyboard case",
+          "children": [
+            {
+              "name": "上盖/下盖",
+              "description": "外壳的主要组成部分，通常由塑料、金属或亚克力制成。",
+              "is_raw_material": false,
+              "icon": "🔲",
+              "searchTerm": "case top/bottom",
+              "children": [
+                {
+                  "name": "铝合金",
+                  "description": "一种轻质、坚固且易于加工的金属合金，常用于高端客制化键盘。",
+                  "is_raw_material": false,
+                  "icon": "⚙️",
+                  "searchTerm": "aluminum alloy",
+                  "children": [
+                    {
+                      "name": "铝土矿",
+                      "description": "提炼铝的主要矿石。",
+                      "is_raw_material": true,
+                      "icon": "⛰️",
+                      "searchTerm": "bauxite ore",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "name": "ABS塑料",
+                  "description": "一种常见的工程塑料，具有良好的强度和加工性。",
+                  "is_raw_material": false,
+                  "icon": "🧪",
+                  "searchTerm": "ABS plastic",
+                  "children": [
+                    {
+                      "name": "丙烯腈、丁二烯、苯乙烯",
+                      "description": "合成ABS塑料的三种主要单体。",
+                      "is_raw_material": false,
+                      "icon": "⚗️",
+                      "searchTerm": "acrylonitrile butadiene styrene",
+                      "children": [
+                        {
+                          "name": "原油",
+                          "description": "石化产品的主要原料。",
+                          "is_raw_material": true,
+                          "icon": "🛢️",
+                          "searchTerm": "crude oil",
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "PCB（印刷电路板）",
+          "description": "键盘的“大脑”，负责连接所有开关并将按键信号传输给电脑。",
+          "is_raw_material": false,
+          "icon": "🟢",
+          "searchTerm": "PCB keyboard",
+          "children": [
+            {
+              "name": "覆铜板",
+              "description": "PCB的基材，由绝缘层和铜箔层压而成。",
+              "is_raw_material": false,
+              "icon": "📏",
+              "searchTerm": "copper clad laminate",
+              "children": [
+                {
+                  "name": "玻璃纤维布/环氧树脂",
+                  "description": "构成绝缘基板的主要材料。",
+                  "is_raw_material": false,
+                  "icon": "🧵",
+                  "searchTerm": "fiberglass epoxy",
+                  "children": [
+                    {
+                      "name": "硅砂/原油",
+                      "description": "硅砂用于制造玻璃纤维；原油用于合成环氧树脂。",
+                      "is_raw_material": true,
+                      "icon": "🏖️",
+                      "searchTerm": "silica sand crude oil",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "name": "电解铜箔",
+                  "description": "用于制作电路导线的铜层。",
+                  "is_raw_material": false,
+                  "icon": "🥮",
+                  "searchTerm": "electrolytic copper foil",
+                  "children": [
+                    {
+                      "name": "铜矿石",
+                      "description": "提炼铜金属的矿石。",
+                      "is_raw_material": true,
+                      "icon": "🪨",
+                      "searchTerm": "copper ore",
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "电子元件",
+              "description": "包括主控MCU、二极管、电阻、电容等。",
+              "is_raw_material": false,
+              "icon": "💎",
+              "searchTerm": "electronic components",
+              "children": [
+                {
+                  "name": "硅芯片",
+                  "description": "微控制器（MCU）的核心。",
+                  "is_raw_material": false,
+                  "icon": "🔬",
+                  "searchTerm": "silicon chip",
+                  "children": [
+                    {
+                      "name": "高纯度硅",
+                      "description": "由硅砂提炼并提纯得到，用于制造半导体。",
+                      "is_raw_material": false,
+                      "icon": "💠",
+                      "searchTerm": "high purity silicon",
+                      "children": [
+                        {
+                          "name": "硅砂",
+                          "description": "提炼硅的主要原料。",
+                          "is_raw_material": true,
+                          "icon": "🏖️",
+                          "searchTerm": "silica sand",
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "机械轴体",
+          "description": "决定按键手感、声音和触发特性的核心开关。",
+          "is_raw_material": false,
+          "icon": "🔘",
+          "searchTerm": "mechanical switch",
+          "children": [
+            {
+              "name": "轴心",
+              "description": "开关的活动部分，通常由塑料制成，决定按键行程和手感。",
+              "is_raw_material": false,
+              "icon": "⬇️",
+              "searchTerm": "switch stem",
+              "children": [
+                {
+                  "name": "POM塑料",
+                  "description": "一种自润滑、耐磨的工程塑料，常用于高端轴心。",
+                  "is_raw_material": false,
+                  "icon": "🧊",
+                  "searchTerm": "POM plastic",
+                  "children": [
+                    {
+                      "name": "甲醛/原油",
+                      "description": "合成POM（聚甲醛）的主要原料。",
+                      "is_raw_material": false,
+                      "icon": "⚗️",
+                      "searchTerm": "formaldehyde crude oil",
+                      "children": [
+                        {
+                          "name": "原油/天然气",
+                          "description": "石化产品的源头。",
+                          "is_raw_material": true,
+                          "icon": "🛢️",
+                          "searchTerm": "crude oil natural gas",
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "弹簧",
+              "description": "提供回弹力，影响按键压力和手感。",
+              "is_raw_material": false,
+              "icon": "🌀",
+              "searchTerm": "switch spring",
+              "children": [
+                {
+                  "name": "弹簧钢",
+                  "description": "一种具有高弹性的特种钢材。",
+                  "is_raw_material": false,
+                  "icon": "🦾",
+                  "searchTerm": "spring steel",
+                  "children": [
+                    {
+                      "name": "铁矿石",
+                      "description": "炼钢的主要原料。",
+                      "is_raw_material": true,
+                      "icon": "🪨",
+                      "searchTerm": "iron ore",
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "金属触点",
+              "description": "用于导通电路的金属片，通常为镀金以提高寿命。",
+              "is_raw_material": false,
+              "icon": "⚡",
+              "searchTerm": "metal contact",
+              "children": [
+                {
+                  "name": "磷青铜/金",
+                  "description": "磷青铜具有良好的弹性和导电性，表面镀金防氧化。",
+                  "is_raw_material": false,
+                  "icon": "🟡",
+                  "searchTerm": "phosphor bronze gold plating",
+                  "children": [
+                    {
+                      "name": "铜矿石/金矿石",
+                      "description": "铜和金的来源矿石。",
+                      "is_raw_material": true,
+                      "icon": "⛏️",
+                      "searchTerm": "copper ore gold ore",
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "键帽",
+          "description": "用户直接接触的部分，刻有字符，影响外观和触感。",
+          "is_raw_material": false,
+          "icon": "🔠",
+          "searchTerm": "keycap",
+          "children": [
+            {
+              "name": "PBT键帽",
+              "description": "一种耐磨、抗打油的工程塑料键帽。",
+              "is_raw_material": false,
+              "icon": "🛡️",
+              "searchTerm": "PBT keycap",
+              "children": [
+                {
+                  "name": "聚对苯二甲酸丁二醇酯",
+                  "description": "PBT塑料的化学名称。",
+                  "is_raw_material": false,
+                  "icon": "🧬",
+                  "searchTerm": "polybutylene terephthalate",
+                  "children": [
+                    {
+                      "name": "对苯二甲酸/丁二醇",
+                      "description": "合成PBT的单体原料。",
+                      "is_raw_material": false,
+                      "icon": "⚗️",
+                      "searchTerm": "terephthalic acid butanediol",
+                      "children": [
+                        {
+                          "name": "原油",
+                          "description": "石化单体的主要来源。",
+                          "is_raw_material": true,
+                          "icon": "🛢️",
+                          "searchTerm": "crude oil",
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "连接线与接口",
+          "description": "用于键盘与电脑之间的连接和数据传输。",
+          "is_raw_material": false,
+          "icon": "🔌",
+          "searchTerm": "cable connector",
+          "children": [
+            {
+              "name": "USB数据线",
+              "description": "包含导线、屏蔽层和外皮。",
+              "is_raw_material": false,
+              "icon": "🖇️",
+              "searchTerm": "USB cable",
+              "children": [
+                {
+                  "name": "铜导线",
+                  "description": "传输电信号的核心导体。",
+                  "is_raw_material": false,
+                  "icon": "📈",
+                  "searchTerm": "copper wire",
+                  "children": [
+                    {
+                      "name": "铜矿石",
+                      "description": "提炼铜的原料。",
+                      "is_raw_material": true,
+                      "icon": "🪨",
+                      "searchTerm": "copper ore",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "name": "PVC外皮",
+                  "description": "保护内部导线的绝缘层。",
+                  "is_raw_material": false,
+                  "icon": "🧤",
+                  "searchTerm": "PVC sheath",
+                  "children": [
+                    {
+                      "name": "聚氯乙烯",
+                      "description": "PVC塑料。",
+                      "is_raw_material": false,
+                      "icon": "🧪",
+                      "searchTerm": "polyvinyl chloride",
+                      "children": [
+                        {
+                          "name": "原油/盐",
+                          "description": "原油提供乙烯，盐提供氯。",
+                          "is_raw_material": true,
+                          "icon": "🛢️",
+                          "searchTerm": "crude oil salt",
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "nodePositions": {},
+  "agentReports": {
+    "market_analyst": {
+      "market_analysis": {
+        "product": "客制化机械键盘",
+        "market_positioning": {
+          "core_value": "高度个性化、可定制化、高品质输入体验",
+          "price_segment": "高端市场（通常单价500-5000元人民币以上）",
+          "differentiation": "模块化设计（轴体、键帽、外壳、PCB可更换）、客制化软件支持、小众文化认同、手工艺与科技结合"
+        },
+        "target_users": [
+          {
+            "user_group": "键盘发烧友/极客",
+            "characteristics": "追求极致手感与个性化，具备较强DIY能力，活跃于社群（如Reddit、国内键盘论坛）"
+          },
+          {
+            "user_group": "电竞玩家/游戏爱好者",
+            "characteristics": "注重低延迟、特定轴体手感、外观灯光定制，预算较高"
+          },
+          {
+            "user_group": "程序员/文字工作者",
+            "characteristics": "对长时间输入的舒适度、键位布局（如HHKB布局）、静音性有特殊需求"
+          },
+          {
+            "user_group": "设计师/创意工作者",
+            "characteristics": "重视美学设计、材质搭配（如金属、树脂外壳）、视觉个性化"
+          },
+          {
+            "user_group": "收藏爱好者",
+            "characteristics": "关注限量版设计、艺术家联名、稀有轴体/键帽，具备收藏与投资属性"
+          }
+        ],
+        "competitive_landscape": {
+          "market_tiers": [
+            {
+              "tier": "高端客制化品牌/工作室",
+              "examples": "Keycult, RAMA Works, 国内如Matrix、Owlab",
+              "competitive_edge": "限量发售、顶级材质、设计独特性、社群口碑"
+            },
+            {
+              "tier": "中高端量产客制化品牌",
+              "examples": "Drop（原Massdrop）、Glorious、Keychron（部分型号）、IQUNIX",
+              "competitive_edge": "平衡定制性与价格、供应链成熟、开箱即用与DIY兼容"
+            },
+            {
+              "tier": "配件与组件供应商",
+              "examples": "轴体厂商（Cherry、Gateron、TTC）、键帽厂商（GMK、SP、国内PBTFans）、PCB/套件供应商",
+              "competitive_edge": "核心技术组件、模块化生态支持"
+            },
+            {
+              "tier": "传统外设品牌延伸线",
+              "examples": "Razer（Razer客制化项目）、Logitech（有限定制）、海盗船",
+              "competitive_edge": "品牌影响力、渠道优势、面向大众市场的轻度定制"
+            }
+          ],
+          "key_competition_factors": [
+            "设计独特性与美学认可度",
+            "组件兼容性与生态丰富度",
+            "社群运营与用户粘性",
+            "供应链稳定性与交付周期",
+            "软件支持（如VIA/QMK开源固件）"
+          ]
+        },
+        "market_trends": [
+          {
+            "trend": "模块化与标准化并行",
+            "description": "轴体热插拔、可换外壳成为标配；同时出现标准化接口（如三模连接、轴座兼容）以降低入门门槛"
+          },
+          {
+            "trend": "客制化向下沉市场渗透",
+            "description": "国产轴体/套件性价比提升，出现500元以下客制化入门套件，吸引新用户"
+          },
+          {
+            "trend": "内容驱动与社群经济",
+            "description": "键盘测评视频、组装教程、社群团购（Group Buy）模式推动市场增长，KOL影响力显著"
+          },
+          {
+            "trend": "跨界联名与艺术化",
+            "description": "与动漫IP、独立艺术家、潮流品牌合作，强化收藏属性与情感价值"
+          },
+          {
+            "trend": "技术融合创新",
+            "description": "无线三模、OLED屏幕、旋钮编码器、静电容混合轴体等新技术集成"
+          },
+          {
+            "trend": "环保与可持续材料",
+            "description": "生物基塑料、可回收包装、长寿命设计逐渐受到关注"
+          },
+          {
+            "trend": "软件开源化",
+            "description": "QMK/VIA等开源固件普及，允许用户深度自定义键位与宏设置，形成技术护城河"
+          }
+        ]
+      }
+    },
+    "supply_chain_expert": {
+      "供应链结构分析": {
+        "上游": {
+          "原材料供应商": [
+            "键轴制造商（Cherry、Gateron、Kailh）",
+            "PCB板制造商",
+            "键帽注塑厂（PBT/PABS材料）",
+            "金属外壳加工厂（CNC铝材）",
+            "电子元件供应商（MCU、二极管、LED）"
+          ],
+          "核心特征": "高度分散化、技术门槛分层、存在专利壁垒（如Cherry MX专利）"
+        },
+        "中游": {
+          "生产组装环节": [
+            "OEM代工厂（大规模基础型号）",
+            "客制化工作室（小批量手工组装）",
+            "PCB焊接加工厂",
+            "固件开发团队"
+          ],
+          "核心特征": "柔性生产与标准化生产并存、小批量多批次为主"
+        },
+        "下游": {
+          "销售渠道": [
+            "客制化社群团购（Group Buy）",
+            "跨境电商平台（Drop.com）",
+            "专业键盘商城（KBDFans）",
+            "二手交易市场（r/mechmarket）"
+          ],
+          "服务环节": [
+            "固件定制服务",
+            "维修改装服务",
+            "键帽设计社区"
+          ]
+        }
+      },
+      "关键供应商类型": [
+        {
+          "类别": "核心部件供应商",
+          "代表企业": [
+            "Cherry（德国）",
+            "Gateron（中国）",
+            "JWK（中国）",
+            "Keychron（中国香港）"
+          ],
+          "关键性": "键轴性能决定键盘核心手感，存在供应商锁定风险"
+        },
+        {
+          "类别": "结构件供应商",
+          "代表企业": [
+            "KPRepublic（中国）",
+            "Aluminum Keyboard Case（多家CNC代工厂）"
+          ],
+          "关键性": "金属加工精度影响成品质感和公差配合"
+        },
+        {
+          "类别": "技术服务商",
+          "代表企业": [
+            "QMK/VIA开源固件团队",
+            "专业PCB设计工作室"
+          ],
+          "关键性": "软件生态决定键盘可定制化程度"
+        }
+      ],
+      "典型物流路径": {
+        "国际组套模式": [
+          "中国（键轴/PCB生产）→ 越南/马来西亚（组装）→ 美国/欧洲（分销中心）→ 终端消费者",
+          "特点：利用东南亚劳动力成本优势，适用于大规模客制化品牌"
+        ],
+        "跨境直邮模式": [
+          "中国（深圳/东莞工厂）→ DHL/FedEx国际快递 → 全球消费者",
+          "特点：小批量客制化订单主流路径，物流成本占比可达20-30%"
+        ],
+        "本地化组装模式": [
+          "全球采购部件 → 区域组装中心（如美国加州）→ 本地配送",
+          "特点：缩短交付周期，但增加本地库存成本"
+        ]
+      },
+      "主要风险点": [
+        {
+          "风险类别": "供应风险",
+          "具体表现": [
+            "键轴专利技术垄断（如Cherry MX结构）",
+            "小众键帽材质供应不稳定（如树脂、特殊涂层PBT）",
+            "CNC产能季节性紧张（与消费电子行业竞争产能）"
+          ],
+          "影响程度": "高"
+        },
+        {
+          "风险类别": "生产风险",
+          "具体表现": [
+            "Group Buy模式下的最小起订量风险（MOQ）",
+            "小批量PCB生产良率波动",
+            "手工组装环节质量一致性控制"
+          ],
+          "影响程度": "中高"
+        },
+        {
+          "风险类别": "物流风险",
+          "具体表现": [
+            "国际快递时效不稳定（影响客制化体验）",
+            "高价值金属外壳运输损耗（平均损坏率3-5%）",
+            "跨境电商关税政策变动（如美国Section 301关税）"
+          ],
+          "影响程度": "中"
+        },
+        {
+          "风险类别": "需求风险",
+          "具体表现": [
+            "客制化社群偏好快速变化（如热插拔轴座突然流行）",
+            "Group Buy模式资金链断裂风险（预售制依赖信用）",
+            "开源固件法律风险（GPL协议合规性）"
+          ],
+          "影响程度": "中高"
+        }
+      ],
+      "供应链优化建议": [
+        "建立键轴二级供应体系（避免单一供应商依赖）",
+        "推广模块化设计（PCB/外壳标准化接口）",
+        "在主要市场设立保税仓库（降低国际物流风险）",
+        "开发供应链可视化平台（针对Group Buy参与者）"
+      ]
+    },
+    "manufacturing_engineer": {
+      "analysis_report": {
+        "product": "客制化机械键盘",
+        "analysis_date": "2023-10-05",
+        "sections": {
+          "production_process": {
+            "description": "客制化机械键盘的生产工艺强调小批量、高灵活性和个性化定制，与传统标准化键盘的大规模流水线生产有显著区别。",
+            "key_processes": [
+              {
+                "process_name": "设计与打样",
+                "details": "根据客户需求进行结构设计（配列、布局、外壳造型）、PCB电路设计、固件编程，并通过3D打印或CNC小批量加工进行原型验证。"
+              },
+              {
+                "process_name": "外壳加工",
+                "details": "常用CNC铝合金加工（阳极氧化/电泳着色）、塑料注塑（适用于复杂造型）或亚克力激光切割（分层结构）。表面处理包括喷砂、阳极氧化、喷涂、UV印刷等。"
+              },
+              {
+                "process_name": "PCB制造",
+                "details": "采用小批量PCB生产流程：电路板蚀刻、元器件SMT贴片（主控MCU、二极管、RGB LED等）、焊接（部分手工焊接以支持客制化布局）。"
+              },
+              {
+                "process_name": "组装与调试",
+                "details": "手工组装轴体（热插拔或焊接）、卫星轴调校、键帽安装、固件烧录、功能测试（全键无冲、RGB灯光、宏编程等）。"
+              },
+              {
+                "process_name": "包装与交付",
+                "details": "根据客户要求进行个性化包装（定制包装盒、配件组合）。"
+              }
+            ]
+          },
+          "manufacturing_flow": {
+            "flow_steps": [
+              "需求确认与设计定型",
+              "外壳/结构件加工（CNC/注塑）",
+              "PCB生产与元器件贴装",
+              "轴体/键帽采购（客户可选不同品牌与材质）",
+              "手工组装与电气连接",
+              "功能测试与QC检验",
+              "软件调试与固件更新",
+              "清洁与包装",
+              "出货"
+            ],
+            "characteristics": "柔性生产流程，订单驱动，多采用并行作业以缩短交付周期。"
+          },
+          "quality_control": {
+            "qc_points": [
+              {
+                "checkpoint": "材料检验",
+                "methods": "外壳材质硬度测试、涂层附着力测试、轴体按键寿命抽样"
+              },
+              {
+                "checkpoint": "尺寸精度",
+                "methods": "外壳结构件三坐标测量、PCB板孔径与线路通断测试"
+              },
+              {
+                "checkpoint": "电气性能",
+                "methods": "全键无冲测试、RGB灯光一致性检测、功耗与接口稳定性测试"
+              },
+              {
+                "checkpoint": "功能测试",
+                "methods": "固件烧录验证、宏编程测试、按键触发一致性（使用按键测试仪）"
+              },
+              {
+                "checkpoint": "外观与手感",
+                "methods": "视觉检查（划痕、色差）、按键手感一致性人工评估"
+              }
+            ],
+            "challenges": "小批量多品种导致全检成本高，依赖熟练技工的经验判断。"
+          },
+          "production_cost": {
+            "cost_breakdown": {
+              "materials": {
+                "percentage": "45-60%",
+                "details": [
+                  "外壳（铝合金CNC成本最高，占比约20-30%）",
+                  "PCB及电子元件（主控、二极管、LED等）",
+                  "机械轴体（Cherry、Gateron等品牌影响成本）",
+                  "键帽（材质从ABS到PBT、树脂定制不等）",
+                  "辅料（硅胶垫、消音棉、连接线等）"
+                ]
+              },
+              "labor": {
+                "percentage": "15-25%",
+                "details": "手工组装、调试、QC占比高，自动化程度低"
+              },
+              "overhead": {
+                "percentage": "20-30%",
+                "details": [
+                  "设备折旧（CNC机床、SMT贴片机、测试仪器）",
+                  "小批量加工导致的单位能耗与工时损耗较高",
+                  "设计研发成本分摊"
+                ]
+              }
+            },
+            "cost_drivers": [
+              "外壳材质与加工复杂度",
+              "轴体与键帽的品牌/定制等级",
+              "订单批量（规模效应不明显）",
+              "个性化设计导致的模具/编程专属成本"
+            ],
+            "estimated_unit_cost_range": "中端客制化键盘（CNC铝壳+热插拔PCB+品牌轴体）约500-1500元人民币，高端全定制可达3000元以上。"
+          },
+          "summary": {
+            "key_insights": [
+              "客制化键盘生产是典型的高附加值、低批量柔性制造模式",
+              "质量控制高度依赖工艺成熟度和人员技能，标准化难度大",
+              "成本结构中材料占比高，但设计与手工附加值显著",
+              "生产周期通常为2-8周，取决于定制复杂度与供应链协同"
+            ],
+            "improvement_suggestions": [
+              "建立模块化设计库以平衡定制化与部件通用性",
+              "引入自动化测试设备减少人工测试偏差",
+              "与轴体/键帽供应商建立稳定协作以降低采购成本",
+              "采用数字化管理平台跟踪订单生产状态"
+            ]
+          }
+        }
+      }
+    },
+    "materials_scientist": {
+      "analysis_report": {
+        "product": "客制化机械键盘",
+        "analysis_dimensions": [
+          {
+            "dimension": "材料选择与功能对应",
+            "details": [
+              {
+                "component": "键帽",
+                "common_materials": [
+                  "ABS塑料",
+                  "PBT塑料",
+                  "POM塑料",
+                  "金属（铝/黄铜）",
+                  "树脂"
+                ],
+                "material_properties": {
+                  "ABS": "轻质、成本低、易加工、表面细腻，但易打油（表面磨损）",
+                  "PBT": "耐磨、耐高温、抗打油性强、触感干爽，但成本较高",
+                  "POM": "自润滑、耐磨、声音清脆，但颜色选择少",
+                  "金属": "高耐久、质感强、导热性好，但重量大、成本高、易冷凝",
+                  "树脂": "艺术化设计、透光性好，但硬度较低、易划伤"
+                }
+              },
+              {
+                "component": "轴体（开关）",
+                "common_materials": [
+                  "塑料外壳（PC/尼龙）",
+                  "金属触点（铜/金合金）",
+                  "弹簧（不锈钢/镀金）",
+                  "润滑脂（硅基/氟基）"
+                ],
+                "material_properties": {
+                  "塑料外壳": "PC透明度高，尼龙韧性好、声音闷",
+                  "金属触点": "铜导电性好，金合金耐氧化、寿命长",
+                  "弹簧": "不锈钢耐疲劳，镀金防腐蚀",
+                  "润滑脂": "减少摩擦、优化手感，需化学稳定性高"
+                }
+              },
+              {
+                "component": "定位板",
+                "common_materials": [
+                  "钢",
+                  "铝",
+                  "黄铜",
+                  "FR4玻璃纤维板",
+                  "聚碳酸酯"
+                ],
+                "material_properties": {
+                  "钢": "刚性高、反馈强、声音清脆",
+                  "铝": "轻量、中等刚性、声音柔和",
+                  "黄铜": "高密度、反馈扎实、声音低沉",
+                  "FR4": "弹性适中、声音平衡、绝缘性好",
+                  "聚碳酸酯": "弹性大、声音闷、减震好"
+                }
+              },
+              {
+                "component": "外壳",
+                "common_materials": [
+                  "铝（CNC）",
+                  "塑料（ABS/PBT）",
+                  "实木（胡桃木/枫木）",
+                  "亚克力"
+                ],
+                "material_properties": {
+                  "铝": "质感高级、散热好、重量大、成本高",
+                  "塑料": "轻量、成本低、易加工多彩设计",
+                  "实木": "美观独特、吸音性好，但易受湿度影响",
+                  "亚克力": "透光性好、易加工分层设计，但易划伤"
+                }
+              },
+              {
+                "component": "PCB板",
+                "common_materials": [
+                  "玻璃纤维基板（FR4）",
+                  "铜箔线路",
+                  "焊料（含铅/无铅）"
+                ],
+                "material_properties": {
+                  "FR4": "绝缘性佳、机械强度高",
+                  "铜箔": "高导电性、易蚀刻加工",
+                  "焊料": "无铅焊料更环保但熔点高、润湿性稍差"
+                }
+              }
+            ]
+          },
+          {
+            "dimension": "替代材料方案",
+            "details": [
+              {
+                "component": "键帽",
+                "alternatives": [
+                  "生物基塑料（如PLA）",
+                  "回收PBT/ABS",
+                  "竹纤维复合材料",
+                  "可降解树脂"
+                ],
+                "advantages": "降低碳足迹，提升可持续性",
+                "challenges": "耐热性、耐磨性可能降低，成本较高"
+              },
+              {
+                "component": "外壳",
+                "alternatives": [
+                  "再生铝",
+                  "生物复合材料（木塑复合材料）",
+                  "可回收聚碳酸酯"
+                ],
+                "advantages": "减少原生资源消耗",
+                "challenges": "一致性、加工难度、强度可能受影响"
+              },
+              {
+                "component": "包装",
+                "alternatives": [
+                  "纸基材料替代塑料泡沫",
+                  "可降解缓冲材料"
+                ],
+                "advantages": "易回收、减少塑料污染"
+              }
+            ]
+          },
+          {
+            "dimension": "环保性评估",
+            "details": [
+              {
+                "aspect": "材料来源",
+                "issues": [
+                  "塑料依赖石油基原料",
+                  "金属开采能耗高",
+                  "实木可能涉及森林可持续性问题"
+                ],
+                "improvements": [
+                  "使用再生塑料/金属",
+                  "采用FSC认证木材",
+                  "开发生物基材料"
+                ]
+              },
+              {
+                "aspect": "生产与加工",
+                "issues": [
+                  "CNC加工产生金属碎屑",
+                  "塑料注塑能耗较高",
+                  "表面处理（电镀/喷涂）可能使用有害化学品"
+                ],
+                "improvements": [
+                  "优化加工工艺减少废料",
+                  "使用水性涂料或粉末喷涂",
+                  "废料回收再利用"
+                ]
+              },
+              {
+                "aspect": "使用寿命与回收",
+                "strengths": [
+                  "模块化设计便于维修更换",
+                  "金属/部分塑料可回收"
+                ],
+                "weaknesses": [
+                  "混合材料组装导致拆解困难",
+                  "焊料、润滑脂可能污染回收流",
+                  "小众产品回收体系不完善"
+                ],
+                "recommendations": [
+                  "设计易于拆解的结构",
+                  "标注材料分类代码",
+                  "建立客制化键盘回收计划"
+                ]
+              }
+            ]
+          },
+          {
+            "dimension": "综合建议",
+            "summary": [
+              "优先选择PBT键帽、铝外壳等耐用材料以延长寿命，减少更换频率",
+              "在非关键部件试用生物基或回收材料，平衡性能与环保",
+              "推动模块化、易维修设计，并提供零件更换服务",
+              "探索键盘租赁或回收再制造商业模式",
+              "采用环保包装并公开材料成分，提升消费者意识"
+            ]
+          }
+        ],
+        "disclaimer": "本分析基于当前常见客制化键盘配置，实际材料选择因设计、成本、工艺等因素可能有所差异。"
+      }
+    },
+    "cost_analyst": {
+      "analysis_report": {
+        "product": "客制化机械键盘",
+        "analysis_date": "2024-10-15",
+        "cost_structure": {
+          "direct_materials": [
+            {
+              "component": "PCB（印刷电路板）",
+              "cost_percentage": "15-25%",
+              "description": "支持热插拔、RGB灯光控制等定制功能的主板"
+            },
+            {
+              "component": "机械轴体",
+              "cost_percentage": "10-20%",
+              "description": "Cherry、Gateron、Kailh等品牌轴体，或客制化静电容轴"
+            },
+            {
+              "component": "键帽",
+              "cost_percentage": "8-15%",
+              "description": "PBT、ABS材质，可能含定制图案、侧刻、热升华工艺"
+            },
+            {
+              "component": "外壳",
+              "cost_percentage": "20-35%",
+              "description": "铝合金、塑料、碳纤维等材质，CNC加工或注塑成型"
+            },
+            {
+              "component": "定位板与内部结构",
+              "cost_percentage": "5-10%",
+              "description": "钢、铝、PC等材质的定位板，硅胶/poron垫片等减震结构"
+            },
+            {
+              "component": "连接线与配件",
+              "cost_percentage": "3-8%",
+              "description": "Type-C数据线、拔键器、防尘罩等"
+            }
+          ],
+          "direct_labor": [
+            {
+              "category": "组装与焊接",
+              "cost_percentage": "5-12%",
+              "description": "轴体焊接（若非热插拔）、调试、QC检测"
+            },
+            {
+              "category": "固件编程与测试",
+              "cost_percentage": "3-7%",
+              "description": "键盘固件烧录、按键功能测试、灯光效果调试"
+            }
+          ],
+          "manufacturing_overhead": [
+            {
+              "category": "设备折旧与维护",
+              "cost_percentage": "4-9%",
+              "description": "CNC机床、注塑机、测试设备等"
+            },
+            {
+              "category": "生产耗材与能源",
+              "cost_percentage": "2-5%",
+              "description": "电力、润滑剂、焊接材料等"
+            }
+          ],
+          "indirect_costs": [
+            {
+              "category": "研发与设计",
+              "cost_percentage": "6-15%",
+              "description": "外观设计、结构优化、PCB layout、固件开发"
+            },
+            {
+              "category": "营销与销售",
+              "cost_percentage": "8-18%",
+              "description": "社交媒体推广、KOL合作、电商平台佣金、包装设计"
+            },
+            {
+              "category": "物流与仓储",
+              "cost_percentage": "4-10%",
+              "description": "国际/国内运费、库存管理、退货处理"
+            },
+            {
+              "category": "管理与行政",
+              "cost_percentage": "5-12%",
+              "description": "人员薪资、办公费用、平台服务费"
+            }
+          ]
+        },
+        "pricing_strategy": {
+          "common_methods": [
+            {
+              "method": "成本加成定价",
+              "description": "总成本 × (1 + 目标利润率)，利润率通常为30-60%"
+            },
+            {
+              "method": "市场导向定价",
+              "description": "参考类似定位竞品（如Keychron、Drop、国内客制化工作室）定价"
+            },
+            {
+              "method": "分层定价",
+              "description": "提供不同配置档位（入门、中端、高端），价格从800元至5000元以上不等"
+            },
+            {
+              "method": "预售/团购定价",
+              "description": "通过Group Buy降低库存风险，早期预订享受折扣"
+            }
+          ],
+          "price_range": {
+            "entry_level": "800-1500元",
+            "mid_range": "1500-3000元",
+            "high_end": "3000-8000元以上"
+          }
+        },
+        "profit_margin_analysis": {
+          "gross_margin": "通常为40-65%，高端配置可达70%以上",
+          "net_margin": "通常为15-35%，受销量、间接成本控制能力影响较大",
+          "key_influencing_factors": [
+            "销量规模（小批量生产单位成本较高）",
+            "供应链稳定性（轴体、芯片等关键物料价格波动）",
+            "品牌溢价与社区口碑",
+            "汇率变动（进口组件成本影响）"
+          ]
+        },
+        "cost_optimization_recommendations": [
+          {
+            "area": "供应链管理",
+            "recommendations": [
+              "与轴体、键帽供应商签订长期协议以锁定价格",
+              "考虑国产替代方案（如使用TTC轴替代Cherry轴）",
+              "优化物流路线，采用集中采购降低运输成本"
+            ]
+          },
+          {
+            "area": "生产流程",
+            "recommendations": [
+              "推广热插拔设计以减少焊接人工成本",
+              "采用模块化设计，提高外壳、PCB的通用性",
+              "引入半自动化测试设备提升QC效率"
+            ]
+          },
+          {
+            "area": "研发与设计",
+            "recommendations": [
+              "开源部分固件以降低开发成本并吸引社区贡献",
+              "采用标准化接口设计，减少定制PCB版本数量",
+              "使用仿真软件优化结构，减少试产次数"
+            ]
+          },
+          {
+            "area": "营销与运营",
+            "recommendations": [
+              "加强社区运营，利用用户生成内容降低营销成本",
+              "采用预售模式降低库存成本和资金压力",
+              "提供升级套件（如单独销售外壳、PCB）以提高客户终身价值"
+            ]
+          }
+        ],
+        "summary": "客制化机械键盘行业具有高附加值特性，成本结构中外壳、PCB及营销占比显著。利润空间受配置定位与销量影响较大，可通过供应链整合、设计模块化及社区化营销实现成本优化，同时维持较高的品牌溢价能力。"
+      }
+    },
+    "sustainability_expert": {
+      "raw_text": "{\n  \"产品类别\": \"客制化机械键盘\",\n  \"分析维度\": {\n    \"环境影响分析\": {\n      \"资源消耗\": [\n        \"PCB电路板（玻璃纤维/环氧树脂）生产产生挥发性有机物\",\n        \"铝合金/锌合金外壳加工能耗高（每公斤铝材约产生12-15kg CO2当量）\",\n        \"PBT/ABS键帽原料依赖石油基塑料\",\n        \"包装材料过度使用（多层防震泡沫+硬质外盒）\"\n      ],\n      \"化学物质\": [\n        \"焊接工艺使用含铅/无铅焊料可能产生重金属污染\",\n        \"电路板清洗剂可能含氟化物\",\n        \"键帽染料中的偶氮化合物风险\"\n      ],\n      \"电子废弃物\": [\n        \"平均寿命3-5年短于传统键盘（设计更替快）\",\n        \"模块化设计导致部分元件提前淘汰\",\n        \"小众配件停产导致整体报废\"\n      ]\n    },\n    \"碳足迹评估\": {\n      \"阶段分布\": {\n        \"原材料阶段\": \"约占总碳足迹45%（金属加工+塑料生产）\",\n        \"制造阶段\": \"约占总碳足迹30%（CNC精密加工+焊接）\",\n        \"运输阶段\": \"约占总碳足迹15%（国际分散供应链+空运比例高）\",\n        \"使用阶段\": \"约占总碳足迹8%（RGB背光增加能耗）\",\n        \"废弃阶段\": \"约占总碳足迹2%\"\n      },\n      \"单件估算\": \"每套客制化键盘约产生18-25kg CO2当量（标准键盘约5-8kg）\"\n    },\n    \"循环经济潜力\": {\n      \"设计改进点\": [\n        \"模块化程度高便于维修升级\",\n        \"金属外壳可无限次重熔再造\",\n        \"热插拔轴体设计延长PCB寿命\"\n      ],\n      \"当前障碍\": [\n        \"非标准接口导致兼容性差\",\n        \"小众社区文化推崇\"常换常新\"\",\n        \"缺乏官方回收渠道\"\n      ],\n      \"循环模式机会\": [\n        \"轴体再润滑翻新服务\",\n        \"外壳阳极氧化层修复\",\n        \"键帽材质回收再造（PBT→再生PBT颗粒）\"\n      ]\n    },\n    \"绿色改进方案\": {\n      \"材料创新\": [\n        \"推广生物基塑料键帽（如蓖麻油基PBT）\",\n        \"试用竹纤维复合材料外壳\",\n        \"采用水性涂料替代油性喷涂\"\n      ],\n      \"生产工艺\": [\n        \"集群化CNC加工降低单位能耗\",\n        \"推广无铅低温焊接工艺\",\n        \"实施太阳能供电的阳极氧化产线\"\n      ],\n      \"商业模式\": [\n        \"建立\"轴体图书馆\"租赁系统\",\n        \"推出核心模块以旧换新计划\",\n        \"提供终身保修+付费升级服务\"\n      ],\n      \"用户引导\": [\n        \"制定键盘生命周期延长指南\",\n        \"建立社区二手交易认证体系\",\n        \"开发碳足迹追踪小程序\"\n      ],\n      \"包装优化\": [\n        \"使用蘑菇菌丝体防震材料\",\n        \"采用可堆肥塑料袋替代泡沫\",\n        \"标准化包装尺寸降低运输空间\"\n      ]\n    }\n  },\n  \"关键建议\": [\n    \"制定客制化键盘行业绿色设计标准\",\n    \"建立区域性键盘元件回收网络\",\n    \"开发基于区块链的元件生命周期追溯系统\",\n    \"推动社区文化向\"长期使用+局部升级\"转变\"\n  ],\n  \"数据来源备注\": \"基于2023年电子制造业LCA数据库、键盘社区调研及材料科学期刊数据综合估算\"\n}"
+    },
+    "innovation_strategist": {
+      "analysis_report": {
+        "product_domain": "客制化机械键盘",
+        "analysis_date": "2023-10-15",
+        "sections": {
+          "technological_innovation_points": [
+            {
+              "category": "模块化设计",
+              "innovations": [
+                "热插拔轴体技术（支持用户免焊接更换轴体）",
+                "可替换定位板与外壳材质（金属、PC、碳纤维等）",
+                "可自定义配列（从40%到全尺寸的模块化拼接）",
+                "可拆卸式Type-C接口与分离式PCB设计"
+              ]
+            },
+            {
+              "category": "输入体验优化",
+              "innovations": [
+                "多层消音结构（硅胶垫、Poron棉、轴下垫）",
+                "Gasket mount等软弹结构设计",
+                "轴体创新（提前触底、静音、磁轴等）",
+                "PBT二色/热升华键帽与人体工学高度"
+              ]
+            },
+            {
+              "category": "智能与互联",
+              "innovations": [
+                "开源固件（QMK/VIA，支持全键自定义）",
+                "无线多模连接（蓝牙5.2/2.4G）",
+                "RGB灯光系统与音律同步技术",
+                "可编程旋钮、屏幕与宏编程功能"
+              ]
+            },
+            {
+              "category": "材料与工艺",
+              "innovations": [
+                "CNC铝合金/钛合金外壳",
+                "3D打印定制结构",
+                "电泳、阳极氧化、喷涂等表面处理工艺",
+                "环保生物基材料应用"
+              ]
+            }
+          ],
+          "future_development_directions": [
+            {
+              "direction": "智能化集成",
+              "description": "集成AI助手快捷键、语音输入切换、自动识别应用场景并切换配置"
+            },
+            {
+              "direction": "健康交互",
+              "description": "加入压力感应与使用时长监测，提供坐姿提醒与疲劳度分析"
+            },
+            {
+              "direction": "可持续设计",
+              "description": "可完全拆卸回收材料、模块化升级以减少电子垃圾"
+            },
+            {
+              "direction": "跨设备生态整合",
+              "description": "与手机、平板、VR设备无缝切换，支持云同步配置"
+            },
+            {
+              "direction": "触觉反馈创新",
+              "description": "自适应阻尼轴体、模拟机械触感的线性马达技术"
+            }
+          ],
+          "disruptive_opportunities": [
+            {
+              "opportunity": "神经交互键盘",
+              "potential_impact": "通过肌电传感器或脑机接口雏形技术，实现手势识别或思维辅助输入"
+            },
+            {
+              "opportunity": "全息投影键位",
+              "description": "无实体键帽，通过投影与触觉反馈实现可动态变化的布局"
+            },
+            {
+              "opportunity": "自学习自适应键盘",
+              "description": "基于使用习惯自动优化键位布局与触发力度，甚至预测输入内容"
+            },
+            {
+              "opportunity": "区块链确权与数字资产绑定",
+              "description": "限量版键盘与NFT结合，实现所有权认证与数字社区权益互通"
+            },
+            {
+              "opportunity": "键盘即服务平台",
+              "description": "键盘作为硬件入口，提供订阅制软件服务（如专业软件快捷键库、游戏宏库）"
+            }
+          ],
+          "innovation_recommendations": [
+            {
+              "recommendation": "开发低门槛客制化平台",
+              "action": "推出可视化在线设计工具，搭配模块化套件订阅服务，降低用户入门难度"
+            },
+            {
+              "recommendation": "与专业领域深度合作",
+              "action": "为程序员、设计师、电竞选手等开发专用布局与快捷功能套件"
+            },
+            {
+              "recommendation": "探索新材料反馈系统",
+              "action": "研发基于形状记忆合金或电活性聚合物的可变键程轴体"
+            },
+            {
+              "recommendation": "建立开放标准生态",
+              "action": "推动轴体、PCB、固件的行业通用协议，促进第三方配件生态"
+            },
+            {
+              "recommendation": "融合环境计算能力",
+              "action": "在键盘中集成环境光传感器、温湿度检测等，成为桌面物联网控制中心"
+            },
+            {
+              "recommendation": "开发无障碍版本",
+              "action": "为行动或视觉障碍用户设计盲文提示、单手操作或眼动追踪辅助版本"
+            }
+          ]
+        },
+        "conclusion": "客制化机械键盘正从小众极客玩具向大众个性化工具演进，技术创新焦点从硬件模块化转向智能交互与生态整合。未来颠覆性机会在于键盘作为输入设备的重新定义，以及与数字生活的深度融合。建议企业以开放生态降低门槛，同时探索前沿交互技术以抢占下一代输入设备入口。"
+      }
+    }
+  },
+  "productionAnalysis": {},
+  "priority": 0,
+  "isActive": true
+}

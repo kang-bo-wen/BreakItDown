@@ -960,12 +960,16 @@ function CanvasContent() {
                   breakdownMode={breakdownMode}
                   onProductionAnalysisClick={(node) => {
                     // 跳转到生产分析页面
+                    console.log('🏭 Production analysis clicked for node:', node);
+                    console.log('Current session ID:', currentSessionId);
                     const params = new URLSearchParams({
                       partName: node.name,
                       partId: node.id,
                       sessionId: currentSessionId || ''
                     });
-                    router.push(`/production-analysis?${params.toString()}`);
+                    const url = `/production-analysis?${params.toString()}`;
+                    console.log('Navigating to:', url);
+                    router.push(url);
                   }}
                   onNodeCollapse={(nodeId) => {
                     // 折叠节点

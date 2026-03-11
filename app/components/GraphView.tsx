@@ -487,11 +487,15 @@ function GraphViewInner({
                 <ul className="space-y-2 ml-6">
                   <li className="flex items-start gap-2">
                     <span className="text-cyan-400 font-mono">•</span>
-                    <span><strong className="text-white">左键点击</strong>：查看节点的详细知识卡片</span>
+                    <span><strong className="text-white">左键点击</strong>：查看节点的详细信息和操作按钮</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-cyan-400 font-mono">•</span>
-                    <span><strong className="text-white">右键点击</strong>：展开节点，查看其组成部分</span>
+                    <span><strong className="text-white">继续拆解按钮</strong>：在弹出窗口中点击"继续拆解"查看节点的组成部分</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-cyan-400 font-mono">•</span>
+                    <span><strong className="text-white">生产规划按钮</strong>：在弹出窗口中点击"生产规划"查看工艺流程</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-cyan-400 font-mono">•</span>

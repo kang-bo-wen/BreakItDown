@@ -17,7 +17,17 @@ interface IdentificationResult {
 }
 
 // 输入模式类型
-type InputMode = 'image' | 'text';
+type InputMode = 'image' | 'text' | 'template';
+
+// 模板接口
+interface Template {
+  id: string;
+  templateKey: string;
+  displayName: string;
+  category: string;
+  keywords: string[];
+  identificationResult: IdentificationResult;
+}
 
 function SetupContent() {
   const router = useRouter();
@@ -30,15 +40,39 @@ function SetupContent() {
   const tc = themeConfig;
   const [mounted, setMounted] = useState(false);
 
-  // 输入模式：图片或文字
-  const [inputMode, setInputMode] = useState<InputMode>('image');
+  // 输入模式：图片、文字或模板
+  const [inputMode, setInputMode] = useState<InputMode>('template');
 
   // 拆解模式：基础模式 或 生产模式
   const [breakdownMode, setBreakdownMode] = useState<'basic' | 'production'>('basic');
 
+  // 模板相关状态
+  const [templates, setTemplates] = useState<Record<string, Template[]>>({});
+  const [isLoadingTemplates, setIsLoadingTemplates] = useState(false);
+
   // Only render theme-specific content after mount to avoid hydration mismatch
   useEffect(() => {
     setMounted(true);
+  }, []);
+
+  // 加载模板
+  useEffect(() => {
+    const loadTemplates = async () => {
+      setIsLoadingTemplates(true);
+      try {
+        const response = await fetch('/api/templates');
+        if (response.ok) {
+          const data = await response.json();
+          setTemplates(data.templates);
+        }
+      } catch (error) {
+        console.error('加载模板失败:', error);
+      } finally {
+        setIsLoadingTemplates(false);
+      }
+    };
+
+    loadTemplates();
   }, []);
 
   // Step 1: Image upload related state
@@ -187,6 +221,28 @@ function SetupContent() {
     } catch (error) {
       console.error('识别错误:', error);
       alert('识别失败，请重试');
+    } finally {
+      setIsIdentifying(false);
+    }
+  };
+
+  // 选择模板
+  const selectTemplate = async (template: Template) => {
+    setIsIdentifying(true);
+    try {
+      // 模拟延迟，让用户感觉是在处理
+      await new Promise(resolve => setTimeout(resolve, 800));
+
+      const result = template.identificationResult as IdentificationResult;
+      setIdentificationResult(result);
+
+      // 如果有 imageUrl，设置预览图
+      if (result.imageUrl) {
+        setImagePreview(result.imageUrl);
+      }
+    } catch (error) {
+      console.error('加载模板失败:', error);
+      alert('加载模板失败，请重试');
     } finally {
       setIsIdentifying(false);
     }
@@ -447,6 +503,28 @@ function SetupContent() {
                 }`}>
                   <button
                     onClick={() => {
+                      setInputMode('template');
+                      setTextInput('');
+                      setImageFile(null);
+                      setImagePreview(null);
+                    }}
+                    className={`flex-1 px-3 py-1.5 rounded-md text-sm font-medium ${
+                      inputMode === 'template'
+                        ? isDarkTheme
+                          ? 'bg-gradient-to-r from-purple-500 via-violet-500 to-indigo-500 text-white shadow-lg shadow-purple-500/40'
+                          : 'bg-gradient-to-r from-purple-500 via-violet-500 to-indigo-500 text-white shadow-lg shadow-purple-500/40'
+                        : isDarkTheme
+                          ? 'text-slate-400 hover:text-white'
+                          : 'text-slate-500 hover:text-slate-800'
+                    }`}
+                  >
+                    <span className="flex items-center justify-center gap-1.5">
+                      <CubeIcon className="w-4 h-4" />
+                      <span>模板</span>
+                    </span>
+                  </button>
+                  <button
+                    onClick={() => {
                       setInputMode('image');
                       setTextInput('');
                     }}
@@ -571,6 +649,76 @@ function SetupContent() {
                         </button>
                       )}
                     </>
+                  )}
+
+                  {/* 模板选择模式 */}
+                  {inputMode === 'template' && (
+                    <div className="w-full max-h-[600px] overflow-y-auto pr-2">
+                      {isLoadingTemplates ? (
+                        <div className="flex items-center justify-center py-12">
+                          <BoltIcon className="w-6 h-6 animate-spin text-purple-400" />
+                          <span className={`ml-2 ${isDarkTheme ? 'text-slate-400' : 'text-slate-600'}`}>加载模板中...</span>
+                        </div>
+                      ) : Object.keys(templates).length === 0 ? (
+                        <div className={`text-center py-12 ${isDarkTheme ? 'text-slate-400' : 'text-slate-600'}`}>
+                          <div className="text-4xl mb-3">📦</div>
+                          <div>暂无可用模板</div>
+                        </div>
+                      ) : (
+                        <div className="space-y-6">
+                          {Object.entries(templates).map(([category, categoryTemplates]) => (
+                            <div key={category}>
+                              <h3 className={`text-sm font-bold mb-3 flex items-center gap-2 ${
+                                isDarkTheme ? 'text-purple-300' : 'text-purple-600'
+                              }`}>
+                                <span className="text-lg">
+                                  {category === '大国重器' && '🚀'}
+                                  {category === '极客定制' && '⚙️'}
+                                  {category === '生活黑科技' && '✨'}
+                                  {category === '绿色新消费' && '🌱'}
+                                </span>
+                                {category}
+                              </h3>
+                              <div className="grid grid-cols-2 gap-3">
+                                {categoryTemplates.map((template) => (
+                                  <button
+                                    key={template.id}
+                                    onClick={() => selectTemplate(template)}
+                                    disabled={isIdentifying}
+                                    className={`group relative p-4 rounded-xl border-2 transition-all text-left ${
+                                      isDarkTheme
+                                        ? 'bg-slate-800/50 border-slate-700 hover:border-purple-500 hover:bg-slate-800'
+                                        : 'bg-white border-slate-200 hover:border-purple-400 hover:bg-purple-50'
+                                    } ${isIdentifying ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105'}`}
+                                  >
+                                    <div className="flex flex-col gap-2">
+                                      <div className="text-3xl">{template.identificationResult.icon}</div>
+                                      <div className={`font-medium text-sm ${
+                                        isDarkTheme ? 'text-white' : 'text-slate-800'
+                                      }`}>
+                                        {template.displayName}
+                                      </div>
+                                      <div className={`text-xs ${
+                                        isDarkTheme ? 'text-slate-400' : 'text-slate-500'
+                                      }`}>
+                                        {template.identificationResult.category}
+                                      </div>
+                                    </div>
+                                    <div className={`absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity ${
+                                      isDarkTheme ? 'text-purple-400' : 'text-purple-600'
+                                    }`}>
+                                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                      </svg>
+                                    </div>
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   )}
                 </div>
               </div>
