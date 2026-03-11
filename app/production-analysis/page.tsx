@@ -703,21 +703,32 @@ function ProductionAnalysisPage() {
 
     return (
       <div className="mb-6">
-        {/* 移动端：紧凑进度条 */}
+        {/* 移动端：可滚动点击切换按钮 */}
         <div className="md:hidden mb-4">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm text-gray-400">进度</span>
-            <span className="text-sm text-cyan-400">{currentIndex + 1} / {steps.length}</span>
-          </div>
-          <div className="h-2 bg-white/10 rounded-full overflow-hidden">
-            <div
-              className="h-full bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full transition-all duration-500"
-              style={{ width: `${((currentIndex + 1) / steps.length) * 100}%` }}
-            />
+          <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
+            {steps.map((step, index) => {
+              const isCompleted = currentIndex > index;
+              const isCurrent = currentStep === step.key;
+              return (
+                <button
+                  key={step.key}
+                  onClick={() => setCurrentStep(step.key as AnalysisStep)}
+                  className={`flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-300 ${
+                    isCurrent
+                      ? 'bg-gradient-to-r from-cyan-500 to-blue-500 text-white'
+                      : isCompleted
+                        ? 'bg-cyan-500/20 text-cyan-300'
+                        : 'bg-white/5 text-gray-500'
+                  }`}
+                >
+                  {step.label}
+                </button>
+              );
+            })}
           </div>
         </div>
 
-        {/* 桌面端：紧凑步骤指示器 - 单行 */}
+        {/* 桌面端：紧凑步骤指示器 - 单行，可点击切换 */}
         <div className="hidden md:flex items-center justify-between gap-0 bg-white/5 rounded-xl p-1.5">
           {steps.map((step, index) => {
             const isCompleted = currentIndex > index;
@@ -725,17 +736,18 @@ function ProductionAnalysisPage() {
 
             return (
               <div key={step.key} className="flex-1 flex items-center">
-                <div
-                  className={`flex-1 px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-300 text-center ${
+                <button
+                  onClick={() => setCurrentStep(step.key as AnalysisStep)}
+                  className={`flex-1 px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-300 text-center cursor-pointer hover:opacity-80 ${
                     isCurrent
                       ? 'bg-gradient-to-r from-cyan-500 to-blue-500 text-white'
                       : isCompleted
                         ? 'bg-cyan-500/20 text-cyan-300'
-                        : 'text-gray-500'
+                        : 'text-gray-500 hover:text-gray-300'
                   }`}
                 >
                   {step.label}
-                </div>
+                </button>
                 {index < steps.length - 1 && (
                   <div className={`mx-1 transition-colors ${
                     isCompleted ? 'text-cyan-500' : 'text-gray-600'

@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { useTheme } from '../hooks/useTheme';
-import { BoltIcon, MagnifyingGlassIcon, FaceSmileIcon, AcademicCapIcon, CubeIcon, BuildingOffice2Icon, RocketLaunchIcon, PhotoIcon, PencilSquareIcon, DocumentTextIcon } from '@heroicons/react/24/outline';
+import { BoltIcon, MagnifyingGlassIcon, FaceSmileIcon, AcademicCapIcon, CubeIcon, BuildingOffice2Icon, RocketLaunchIcon, PhotoIcon, PencilSquareIcon, DocumentTextIcon, ArrowLeftIcon } from '@heroicons/react/24/outline';
 
 interface IdentificationResult {
   name: string;
@@ -230,15 +230,25 @@ function SetupContent() {
   const selectTemplate = async (template: Template) => {
     setIsIdentifying(true);
     try {
-      // 模拟延迟，让用户感觉是在处理
-      await new Promise(resolve => setTimeout(resolve, 800));
-
       const result = template.identificationResult as IdentificationResult;
       setIdentificationResult(result);
 
-      // 如果有 imageUrl，设置预览图
       if (result.imageUrl) {
         setImagePreview(result.imageUrl);
+      }
+
+      // 预取完整模板数据（含 treeData），存入 localStorage 供 canvas 页面直接使用
+      try {
+        const response = await fetch(`/api/templates/${template.templateKey}`);
+        if (response.ok) {
+          const data = await response.json();
+          if (data.template?.treeData) {
+            localStorage.setItem('templateTreeData', JSON.stringify(data.template.treeData));
+            localStorage.setItem('templateKey', template.templateKey);
+          }
+        }
+      } catch (e) {
+        console.error('预取模板树数据失败:', e);
       }
     } catch (error) {
       console.error('加载模板失败:', error);
@@ -668,16 +678,22 @@ function SetupContent() {
                         <div className="space-y-6">
                           {Object.entries(templates).map(([category, categoryTemplates]) => (
                             <div key={category}>
-                              <h3 className={`text-sm font-bold mb-3 flex items-center gap-2 ${
-                                isDarkTheme ? 'text-purple-300' : 'text-purple-600'
+                              <h3 className={`text-2xl font-black mb-4 flex items-center gap-3 pb-2 border-b ${
+                                isDarkTheme ? 'border-purple-500/30' : 'border-purple-300/40'
                               }`}>
-                                <span className="text-lg">
+                                <span className="text-3xl drop-shadow-lg">
                                   {category === '大国重器' && '🚀'}
                                   {category === '极客定制' && '⚙️'}
                                   {category === '生活黑科技' && '✨'}
                                   {category === '绿色新消费' && '🌱'}
                                 </span>
-                                {category}
+                                <span className={`tracking-wide ${
+                                  isDarkTheme
+                                    ? 'text-transparent bg-clip-text bg-gradient-to-r from-purple-300 via-pink-300 to-violet-300'
+                                    : 'text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-pink-600 to-violet-600'
+                                }`}>
+                                  {category}
+                                </span>
                               </h3>
                               <div className="grid grid-cols-2 gap-3">
                                 {categoryTemplates.map((template) => (
@@ -728,6 +744,22 @@ function SetupContent() {
             {identificationResult && (
               <div className={`tech-card p-4 ${tc.cardBg} ${tc.cardBorder} relative`}>
                 <span className={`iconify absolute -right-2 -bottom-2 text-7xl ${tc.decorationIcon}`} data-icon="heroicons:sparkles" />
+                <button
+                  onClick={() => {
+                    setIdentificationResult(null);
+                    setImageFile(null);
+                    setImagePreview(null);
+                    setTextInput('');
+                  }}
+                  className={`mb-3 flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-lg transition-colors ${
+                    isDarkTheme
+                      ? 'text-cyan-300/70 hover:text-cyan-200 hover:bg-cyan-500/10'
+                      : 'text-blue-500/70 hover:text-blue-700 hover:bg-blue-100'
+                  }`}
+                >
+                  <ArrowLeftIcon className="w-4 h-4" />
+                  返回
+                </button>
                 <div className={`rounded-xl p-4 border ${
                   isDarkTheme
                     ? 'bg-gradient-to-br from-cyan-950/40 to-slate-900/70 border-cyan-500/30'
@@ -977,10 +1009,20 @@ function SetupContent() {
                 {/* 开始按钮 */}
                 <button
                   onClick={navigateToCanvas}
-                  className={`tech-btn ${isDarkTheme ? 'tech-btn-primary' : 'tech-btn-primary-theme3'} w-full py-3 text-base flex items-center justify-center gap-2`}
+                  disabled={isIdentifying}
+                  className={`tech-btn ${isDarkTheme ? 'tech-btn-primary' : 'tech-btn-primary-theme3'} w-full py-3 text-base flex items-center justify-center gap-2 ${isIdentifying ? 'opacity-60 cursor-not-allowed' : ''}`}
                 >
-                  <RocketLaunchIcon className="w-5 h-5 text-emerald-400" />
-                  <span>开始拆解</span>
+                  {isIdentifying ? (
+                    <>
+                      <BoltIcon className="w-5 h-5 animate-spin text-amber-400" />
+                      <span>准备中...</span>
+                    </>
+                  ) : (
+                    <>
+                      <RocketLaunchIcon className="w-5 h-5 text-emerald-400" />
+                      <span>开始拆解</span>
+                    </>
+                  )}
                 </button>
               </>
             )}

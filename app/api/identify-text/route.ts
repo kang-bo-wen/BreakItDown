@@ -6,7 +6,6 @@ import { callTextAPI } from '@/lib/ai-client';
 import { IdentificationResponse } from '@/types/graph';
 import {
   detectTemplateMatch,
-  simulateAIDelay,
   extractIdentificationFromTemplate
 } from '@/lib/template-interceptor';
 
@@ -86,35 +85,12 @@ export async function POST(request: NextRequest) {
     if (templateMatch && templateMatch.confidence >= 0.8) {
       console.log(`🎯 Template hit: ${templateMatch.template.displayName}`);
 
-      // 模拟 AI 处理延迟（让用户感觉是真实生成）
-      await simulateAIDelay();
-
-      // 直接返回模板数据
+      // 直接返回模板数据，无需 AI 延迟或 Wikimedia 搜索
       const identificationData = extractIdentificationFromTemplate(templateMatch.template);
-
-      // 🔥 重要：和真实 AI 一样，搜索 Wikimedia 图片
-      let imageUrl: string | undefined;
-      if (identificationData.searchTerm) {
-        try {
-          const wikimediaResponse = await fetch(`${request.nextUrl.origin}/api/wikimedia-search`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ searchTerm: identificationData.searchTerm })
-          });
-
-          if (wikimediaResponse.ok) {
-            const wikimediaData = await wikimediaResponse.json();
-            imageUrl = wikimediaData.thumbnail || wikimediaData.imageUrl;
-          }
-        } catch (wikimediaError) {
-          console.error('Error searching Wikimedia:', wikimediaError);
-        }
-      }
 
       return NextResponse.json({
         ...identificationData,
-        imageUrl, // 添加图片 URL
-        _isTemplate: true, // 标记这是模板数据（调试用）
+        _isTemplate: true,
         _templateKey: templateMatch.template.templateKey
       });
     }

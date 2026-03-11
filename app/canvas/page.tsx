@@ -116,9 +116,13 @@ function CanvasContent() {
   const lastSavedDataRef = useRef<string | null>(null);
   const isCreatingSessionRef = useRef(false); // Prevent duplicate session creation
   const isInitializedRef = useRef(false); // Track if initial load is complete
+  const pendingTemplateKnowledgeFetchRef = useRef<TreeNode | null>(null); // For auto-fetching knowledge after template load
 
   // Fullscreen state
   const [isFullscreen, setIsFullscreen] = useState(false);
+
+  // Streaming text animation state for "开始拆解" button
+  const [streamingText, setStreamingText] = useState('');
 
   // Edge type state
   const [edgeType, setEdgeType] = useState<'bezier' | 'smoothstep' | 'straight'>('bezier');
@@ -170,6 +174,54 @@ function CanvasContent() {
     return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
   }, []);
 
+  // Streaming text animation when deconstructing
+  useEffect(() => {
+    if (!isDeconstructing) {
+      setStreamingText('');
+      return;
+    }
+    const messages = [
+      'AI 正在分析结构...',
+      '识别核心组件...',
+      '构建拆解树...',
+      '生成组件描述...',
+      '搜索相关图片...',
+    ];
+    let charIndex = 0;
+    let msgIndex = 0;
+    let cancelled = false;
+    const typeChar = () => {
+      if (cancelled) return;
+      const currentMsg = messages[msgIndex % messages.length];
+      if (charIndex <= currentMsg.length) {
+        setStreamingText(currentMsg.slice(0, charIndex));
+        charIndex++;
+        setTimeout(typeChar, 55);
+      } else {
+        setTimeout(() => {
+          if (cancelled) return;
+          charIndex = 0;
+          msgIndex++;
+          typeChar();
+        }, 900);
+      }
+    };
+    typeChar();
+    return () => { cancelled = true; };
+  }, [isDeconstructing]);
+
+  // Auto-fetch knowledge card after template tree is loaded
+  useEffect(() => {
+    if (deconstructionTree && pendingTemplateKnowledgeFetchRef.current) {
+      const tree = pendingTemplateKnowledgeFetchRef.current;
+      pendingTemplateKnowledgeFetchRef.current = null;
+      if (tree.children.length > 0) {
+        fetchKnowledgeCard(tree, false);
+      }
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [deconstructionTree]);
+
   // Load setup state from localStorage
   useEffect(() => {
     // Always load setup state (for breakdownMode and other settings)
@@ -219,6 +271,39 @@ function CanvasContent() {
         } catch (error) {
           console.error('恢复知识卡片缓存失败:', error);
         }
+      }
+    }
+
+    // 检查是否有预缓存的模板树数据，直接加载（无需 AI 调用）
+    const cachedTemplateTree = localStorage.getItem('templateTreeData');
+    if (cachedTemplateTree) {
+      try {
+        const rawTreeData = JSON.parse(cachedTemplateTree);
+        localStorage.removeItem('templateTreeData');
+        localStorage.removeItem('templateKey');
+
+        const transformNode = (node: any, depth: number = 0): TreeNode => {
+          const id = `tmpl-${Date.now()}-${Math.random().toString(36).slice(2)}-${node.name}`;
+          return {
+            id,
+            name: node.name,
+            description: node.description || '',
+            isRawMaterial: node.is_raw_material || false,
+            icon: node.icon,
+            imageUrl: node.imageUrl,
+            children: (node.children || []).map((c: any) => transformNode(c, depth + 1)),
+            isExpanded: depth === 0,
+          };
+        };
+
+        const rootRaw = rawTreeData.root || rawTreeData;
+        const tree = transformNode(rootRaw);
+        setDeconstructionTree(tree);
+        pendingTemplateKnowledgeFetchRef.current = tree;
+      } catch (e) {
+        console.error('解析模板树数据失败:', e);
+        localStorage.removeItem('templateTreeData');
+        localStorage.removeItem('templateKey');
       }
     }
 
@@ -622,6 +707,44 @@ function CanvasContent() {
   const startDeconstruction = async () => {
     if (!identificationResult) return;
 
+    // 检查是否有缓存的模板树数据（模板产品直接使用，无需 AI 调用）
+    const cachedTreeDataStr = localStorage.getItem('templateTreeData');
+    if (cachedTreeDataStr) {
+      try {
+        const rawTreeData = JSON.parse(cachedTreeDataStr);
+        localStorage.removeItem('templateTreeData');
+        localStorage.removeItem('templateKey');
+
+        // 将模板树结构转换为 TreeNode 格式
+        const transformNode = (node: any, depth: number = 0): TreeNode => {
+          const id = `tmpl-${Date.now()}-${Math.random().toString(36).slice(2)}-${node.name}`;
+          return {
+            id,
+            name: node.name,
+            description: node.description || '',
+            isRawMaterial: node.is_raw_material || false,
+            icon: node.icon,
+            imageUrl: node.imageUrl,
+            children: (node.children || []).map((c: any) => transformNode(c, depth + 1)),
+            isExpanded: depth === 0, // 只展开根节点
+          };
+        };
+
+        const rootRaw = rawTreeData.root || rawTreeData;
+        const tree = transformNode(rootRaw);
+        setDeconstructionTree(tree);
+
+        if (tree.children.length > 0) {
+          fetchKnowledgeCard(tree, false);
+        }
+        return;
+      } catch (e) {
+        console.error('解析模板树数据失败，回退到 AI 拆解:', e);
+        localStorage.removeItem('templateTreeData');
+        localStorage.removeItem('templateKey');
+      }
+    }
+
     setIsDeconstructing(true);
     setDeconstructionTree(null);
 
@@ -929,10 +1052,16 @@ function CanvasContent() {
               className={`px-8 py-4 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-lg font-semibold shadow-lg shadow-orange-500/30 hover:shadow-orange-500/60 hover:scale-105 transition-all duration-300 flex items-center gap-3 text-lg`}
             >
               {isDeconstructing ? (
-                <>
-                  <BoltIcon className="w-5 h-5 inline-block animate-spin text-yellow-400" />
-                  <span>AI 拆解中...</span>
-                </>
+                <div className="flex items-center gap-4">
+                  <div className="flex gap-1">
+                    {[0, 1, 2].map(i => (
+                      <div key={i} className="w-2 h-2 rounded-full bg-yellow-400 animate-bounce" style={{animationDelay: `${i * 0.15}s`}}></div>
+                    ))}
+                  </div>
+                  <span className="font-mono text-yellow-300 min-w-[220px] text-base">
+                    {streamingText}<span className="animate-pulse opacity-80">▌</span>
+                  </span>
+                </div>
               ) : (
                 <>
                   <WrenchIcon className="w-5 h-5" />
@@ -1264,6 +1393,29 @@ function CanvasContent() {
                   </div>
                 </div>
               )}
+            </div>
+          </div>
+        )}
+
+        {/* Node deconstruction waiting animation */}
+        {loadingNodeIds.size > 0 && (
+          <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 pointer-events-none">
+            <div className="bg-gradient-to-r from-slate-800/95 to-slate-900/95 backdrop-blur-md border border-cyan-500/40 rounded-2xl px-8 py-4 shadow-2xl shadow-cyan-500/20">
+              <div className="flex items-center gap-4">
+                <div className="relative w-9 h-9 flex-shrink-0">
+                  <div className="absolute inset-0 rounded-full border-2 border-cyan-500/30 border-t-cyan-400 animate-spin"></div>
+                  <div className="absolute inset-1 rounded-full border-2 border-transparent border-b-purple-400 animate-spin" style={{animationDirection:'reverse',animationDuration:'0.7s'}}></div>
+                </div>
+                <div>
+                  <div className="text-cyan-300 font-semibold text-sm tracking-wide">AI 正在深度拆解...</div>
+                  <div className="text-slate-400 text-xs mt-0.5">正在分析组件结构与材料组成</div>
+                </div>
+                <div className="flex gap-1.5 ml-2">
+                  {[0,1,2,3].map(i => (
+                    <div key={i} className="w-1.5 h-5 rounded-full bg-cyan-400/50 animate-pulse" style={{animationDelay:`${i*0.18}s`}}></div>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         )}

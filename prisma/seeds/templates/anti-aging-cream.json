@@ -1,0 +1,217 @@
+{
+  "templateKey": "anti-aging-cream",
+  "displayName": "微囊精华抗老面霜",
+  "category": "高端美妆与新能源材料",
+  "keywords": "[\"微囊面霜\",\"抗老面霜\",\"精华面霜\",\"微囊精华\",\"anti-aging cream\",\"抗衰老面霜\",\"微胶囊护肤品\",\"面霜\",\"微囊精华抗老面霜\",\"精华霜\",\"抗老精华\"]",
+  "identificationResult": {
+    "name": "微囊精华抗老面霜",
+    "category": "高端美妆与新能源材料",
+    "brief_description": "以脂质体微囊化技术为核心的高端抗老护肤品，横跨机械包装、精细化工配方与生物活性成分三大维度",
+    "icon": "🧴",
+    "searchTerm": "anti-aging face cream microencapsulation"
+  },
+  "treeData": {
+    "root": {
+      "name": "微囊精华抗老面霜",
+      "description": "高端抗老护肤品，由外部机械包装系统、内部微囊化活性配方体系与关键制造工艺三大子系统构成，净含量50ml。",
+      "icon": "🧴",
+      "searchTerm": "anti-aging face cream",
+      "children": [
+        {
+          "name": "外包装系统",
+          "description": "保护内容物、实现定量取用的机械结构总成，由玻璃瓶身、真空气泵机构和磁吸防尘盖组成。",
+          "is_raw_material": false,
+          "icon": "📦",
+          "searchTerm": "cosmetic packaging system",
+          "children": [
+            {
+              "name": "高硼硅玻璃瓶身",
+              "description": "壁厚均匀的高硼硅玻璃容器，内壁镀PTFE疏水涂层防止配方残留，外壁磨砂喷涂+UV镀膜Logo，净重68g。",
+              "is_raw_material": false,
+              "icon": "🫙",
+              "searchTerm": "borosilicate glass cosmetic bottle",
+              "children": [
+                {
+                  "name": "高硼硅玻璃",
+                  "description": "含氧化硼8-15%的特种玻璃，热膨胀系数低（3.3×10⁻⁶/K），耐化学腐蚀，透明度高。",
+                  "is_raw_material": false,
+                  "icon": "🔬",
+                  "searchTerm": "borosilicate glass material",
+                  "children": [
+                    {
+                      "name": "硅砂（SiO₂）",
+                      "description": "玻璃主体原料，纯度≥99.5%，粒径0.1-0.5mm，提供玻璃网络骨架。",
+                      "is_raw_material": true,
+                      "icon": "⛱️",
+                      "searchTerm": "silica sand glass raw material",
+                      "children": []
+                    },
+                    {
+                      "name": "硼砂（Na₂B₄O₇）",
+                      "description": "引入氧化硼的主要原料，降低玻璃熔融温度，提升化学稳定性。",
+                      "is_raw_material": true,
+                      "icon": "🪨",
+                      "searchTerm": "borax mineral",
+                      "children": []
+                    },
+                    {
+                      "name": "纯碱（Na₂CO₃）",
+                      "description": "助熔剂，降低玻璃熔点至1400-1500°C，来源于索尔维法合成或天然矿物。",
+                      "is_raw_material": true,
+                      "icon": "🧂",
+                      "searchTerm": "soda ash sodium carbonate",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "name": "PTFE疏水内壁涂层",
+                  "description": "聚四氟乙烯喷涂层，厚度5-10μm，接触角>110°，防止高粘度配方挂壁残留，延长产品使用寿命。",
+                  "is_raw_material": false,
+                  "icon": "🛡️",
+                  "searchTerm": "PTFE hydrophobic coating",
+                  "children": [
+                    {
+                      "name": "聚四氟乙烯（PTFE）",
+                      "description": "摩擦系数极低（0.04），耐化学腐蚀，使用温度-200°C至+260°C，由四氟乙烯聚合而成。",
+                      "is_raw_material": false,
+                      "icon": "⚗️",
+                      "searchTerm": "polytetrafluoroethylene PTFE",
+                      "children": [
+                        {
+                          "name": "萤石（CaF₂）",
+                          "description": "氟化工产业链源头原料，经氢氟酸→四氟乙烯路线合成PTFE单体。",
+                          "is_raw_material": true,
+                          "icon": "💎",
+                          "searchTerm": "fluorite calcium fluoride mineral",
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "真空气泵取用机构",
+              "description": "防氧化真空泵，每次定量出料0.3ml，防止配方接触空气氧化，延长活性成分稳定性，由活塞、弹簧、出料嘴三部分组成。",
+              "is_raw_material": false,
+              "icon": "🔧",
+              "searchTerm": "vacuum pump cosmetic dispenser",
+              "children": [
+                {
+                  "name": "PP活塞组件",
+                  "description": "聚丙烯活塞+硅胶密封圈，公差±0.05mm，确保每次出料量精确，耐配方中的醇类和酸类成分。",
+                  "is_raw_material": false,
+                  "icon": "⚙️",
+                  "searchTerm": "polypropylene piston pump",
+                  "children": [
+                    {
+                      "name": "聚丙烯（PP）",
+                      "description": "半结晶热塑性塑料，密度0.91g/cm³，耐化学品，注塑成型精度高，食品级PP符合FDA标准。",
+                      "is_raw_material": false,
+                      "icon": "🧪",
+                      "searchTerm": "polypropylene plastic",
+                      "children": [
+                        {
+                          "name": "原油",
+                          "description": "石化产品基础原料，经裂解→丙烯→聚合路线生产PP树脂。",
+                          "is_raw_material": true,
+                          "icon": "🛢️",
+                          "searchTerm": "crude oil petroleum",
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "304不锈钢回弹弹簧",
+                  "description": "线径0.3mm，自由长度18mm，弹力系数0.15N/mm，镀镍防腐，确保10万次按压寿命。",
+                  "is_raw_material": false,
+                  "icon": "🌀",
+                  "searchTerm": "stainless steel spring",
+                  "children": [
+                    {
+                      "name": "304不锈钢",
+                      "description": "含Cr 18%、Ni 8%的奥氏体不锈钢，耐腐蚀性强，弹性模量196GPa，适合精密弹簧制造。",
+                      "is_raw_material": false,
+                      "icon": "🔩",
+                      "searchTerm": "304 stainless steel",
+                      "children": [
+                        {
+                          "name": "铁矿石",
+                          "description": "不锈钢基体原料，主要成分Fe₂O₃，品位≥62%，来自澳大利亚、巴西等地。",
+                          "is_raw_material": true,
+                          "icon": "⛰️",
+                          "searchTerm": "iron ore",
+                          "children": []
+                        },
+                        {
+                          "name": "铬矿石（铬铁矿）",
+                          "description": "提供不锈钢耐腐蚀性的关键元素，主产地南非、哈萨克斯坦，Cr₂O₃含量≥46%。",
+                          "is_raw_material": true,
+                          "icon": "🪨",
+                          "searchTerm": "chromite ore",
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "ABS出料嘴",
+                  "description": "ABS注塑件+电镀哑金装饰环，出料口径1.2mm，表面镀铬处理，兼顾美观与耐用。",
+                  "is_raw_material": false,
+                  "icon": "🔌",
+                  "searchTerm": "ABS nozzle cosmetic pump",
+                  "children": [
+                    {
+                      "name": "ABS塑料",
+                      "description": "丙烯腈-丁二烯-苯乙烯三元共聚物，冲击强度高，表面光洁度好，易于电镀处理。",
+                      "is_raw_material": false,
+                      "icon": "🧱",
+                      "searchTerm": "ABS plastic acrylonitrile butadiene styrene",
+                      "children": [
+                        {
+                          "name": "原油",
+                          "description": "ABS三种单体（丙烯腈、丁二烯、苯乙烯）均来源于石油化工产业链。",
+                          "is_raw_material": true,
+                          "icon": "🛢️",
+                          "searchTerm": "crude oil petroleum",
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "锌合金磁吸防尘盖",
+              "description": "锌合金压铸件+植绒内衬+磁铁，重22g，电镀玫瑰金表面处理，磁吸力0.8N，开合10万次无松动。",
+              "is_raw_material": false,
+              "icon": "🔒",
+              "searchTerm": "zinc alloy magnetic cap cosmetic",
+              "children": [
+                {
+                  "name": "锌合金（Zamak）",
+                  "description": "Zn-Al-Cu-Mg合金，压铸流动性好，表面可电镀，密度6.6g/cm³，适合精密外观件。",
+                  "is_raw_material": false,
+                  "icon": "🔘",
+                  "searchTerm": "zinc alloy zamak die casting",
+                  "children": [
+                    {
+                      "name": "锌矿石（闪锌矿）",
+                      "description": "主要成分ZnS，品位30-50%，主产地中国、澳大利亚、秘鲁，经浮选→焙烧→电解精炼得到纯锌。",
+                      "is_raw_material": true,
+                      "icon": "⛏️",
+                      "searchTerm": "zinc ore sphalerite",
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
