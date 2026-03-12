@@ -36,11 +36,11 @@ export function useTheme(): UseThemeReturn {
     window.dispatchEvent(new Event('theme-change'));
   }, []);
 
-  // 切换主题（深色 <-> 特殊主题）
+  // 切换主题（深色 <-> 浅色）
   const toggleTheme = useCallback(() => {
     if (theme === 'dark') {
-      setTheme('theme3');
-    } else if (theme === 'theme3') {
+      setTheme('light');
+    } else if (theme === 'light') {
       setTheme('dark');
     } else {
       // 如果是其他主题，切换回 dark

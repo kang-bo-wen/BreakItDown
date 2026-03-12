@@ -420,12 +420,11 @@ function SetupContent() {
           <div className="space-y-6">
             {/* Image Preview */}
             {imagePreview && (
-              <div className={`tech-card p-4 ${tc.cardBg} ${tc.cardBorder} relative`}>
-                <span className={`iconify absolute -right-2 -bottom-2 text-7xl ${tc.decorationIcon}`} data-icon="heroicons:photo" />
+              <div className={`${isDarkTheme ? 'tech-card' : 'tech-card-light'} p-4 ${tc.cardBorder} relative`}>
                 <div className={`relative w-full h-72 mx-auto rounded-xl overflow-hidden border ${
                   isDarkTheme
                     ? 'bg-black/40 border-cyan-500/20'
-                    : 'bg-blue-50 border-blue-200'
+                    : 'bg-white border-slate-200'
                 }`}>
                   <Image
                     src={imagePreview}
@@ -439,11 +438,10 @@ function SetupContent() {
 
             {/* Upload Image / Text Input */}
             {!identificationResult && (
-              <div className={`tech-card p-6 ${tc.cardBg} ${tc.cardBorder} relative`}>
-                <span className={`iconify absolute -right-2 -bottom-2 text-7xl ${tc.decorationIcon}`} data-icon="heroicons:cloud-arrow-up" />
+              <div className={`${isDarkTheme ? 'tech-card' : 'tech-card-light'} p-6 ${tc.cardBorder} relative`}>
                 {/* 输入模式切换 */}
                 <div className={`flex gap-2 p-1 rounded-lg mb-3 ${
-                  isDarkTheme ? 'bg-slate-800/70' : 'bg-blue-200'
+                  isDarkTheme ? 'bg-slate-800/70' : 'bg-slate-100'
                 }`}>
                   <button
                     onClick={() => {
@@ -578,12 +576,11 @@ function SetupContent() {
 
             {/* Identification Result - left column */}
             {identificationResult && (
-              <div className={`tech-card p-4 ${tc.cardBg} ${tc.cardBorder} relative`}>
-                <span className={`iconify absolute -right-2 -bottom-2 text-7xl ${tc.decorationIcon}`} data-icon="heroicons:sparkles" />
+              <div className={`${isDarkTheme ? 'tech-card' : 'tech-card-light'} p-4 ${tc.cardBorder} relative`}>
                 <div className={`rounded-xl p-4 border ${
                   isDarkTheme
                     ? 'bg-gradient-to-br from-cyan-950/40 to-slate-900/70 border-cyan-500/30'
-                    : 'bg-gradient-to-br from-blue-100 to-white border-blue-300'
+                    : 'bg-white border-cyan-100'
                 }`}>
                   <div className="flex items-start gap-4">
                     {identificationResult.icon && (
@@ -615,16 +612,15 @@ function SetupContent() {
             {/* Parameters Panel */}
             {identificationResult && (
               <>
-                <div className={`tech-card p-6 ${tc.cardBg} ${tc.cardBorder} relative`}>
-                <span className={`iconify absolute -right-2 -bottom-2 text-7xl ${tc.decorationIcon}`} data-icon="heroicons:sliders" />
+                <div className={`${isDarkTheme ? 'tech-card' : 'tech-card-light'} p-6 ${tc.cardBorder} relative`}>
                   <div className={`rounded-xl p-6 space-y-6 ${
                     isDarkTheme
                       ? 'bg-slate-900/70 border-cyan-500/20'
-                      : 'bg-blue-100 border-blue-300'
+                      : 'bg-white border-slate-200'
                   } border`}>
                     {/* 模式切换 */}
                     <div className={`flex gap-2 p-1 rounded-lg ${
-                      isDarkTheme ? 'bg-slate-800/70' : 'bg-blue-200'
+                      isDarkTheme ? 'bg-slate-800/70' : 'bg-slate-100'
                     }`}>
                       <button
                         onClick={() => setPromptMode('simple')}
@@ -787,9 +783,8 @@ function SetupContent() {
                 </div>
 
                 {/* 拆解模式选择 */}
-                <div className={`tech-card p-4 ${tc.cardBg} ${tc.cardBorder} relative`}>
-                <span className={`iconify absolute -right-2 -bottom-2 text-7xl ${tc.decorationIcon}`} data-icon="heroicons:square-3-stack-3d" />
-                  <div className="text-sm text-slate-400 mb-3">选择拆解模式</div>
+                <div className={`${isDarkTheme ? 'tech-card' : 'tech-card-light'} p-4 ${tc.cardBorder} relative`}>
+                  <div className={`text-sm mb-3 ${isDarkTheme ? 'text-slate-400' : 'text-slate-500'}`}>选择拆解模式</div>
                   <div className="grid grid-cols-2 gap-3">
                     <button
                       onClick={() => setBreakdownMode('basic')}
@@ -839,8 +834,7 @@ function SetupContent() {
 
             {/* Placeholder when no identification result */}
             {!identificationResult && (
-              <div className={`tech-card p-12 flex items-center justify-center min-h-[500px] ${tc.cardBg} ${tc.cardBorder} relative`}>
-                <span className={`iconify absolute -right-2 -bottom-2 text-7xl ${tc.decorationIcon}`} data-icon="heroicons:arrow-right" />
+              <div className={`${isDarkTheme ? 'tech-card' : 'tech-card-light'} p-12 flex items-center justify-center min-h-[500px] ${tc.cardBorder} relative`}>
                 <div className={`text-center ${
                   isDarkTheme ? 'text-cyan-300/40' : 'text-blue-400/50'
                 }`}>

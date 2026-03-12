@@ -1,7 +1,7 @@
 // 主题配置
 // 使用方式: import { useTheme } from '@/hooks/useTheme';
 
-export type ThemeName = 'dark' | 'theme3';
+export type ThemeName = 'dark' | 'light';
 
 // 卡片颜色配置（用于不同卡片使用不同配色）
 export interface CardColor {
@@ -140,81 +140,81 @@ export const themes: Record<ThemeName, ThemeConfig> = {
       { bg: 'bg-pink-500/20', border: 'border-pink-500/40', borderAccent: 'border-pink-400', text: 'text-pink-100', glow: 'shadow-pink-500/50', gradient: 'from-pink-500/30 via-pink-400/20 to-transparent' },
     ],
   },
-  // 特殊主题 - 浅色科技风（4种不同配色）
-  theme3: {
-    name: 'theme3',
-    label: '特殊主题',
-    // 浅色基底
-    backgroundGradient: 'from-slate-50 via-white to-slate-100',
-    textPrimary: 'text-slate-800',
-    textSecondary: 'text-slate-600',
+  // 浅色主题 - 清新简洁的浅色设计
+  light: {
+    name: 'light',
+    label: '浅色主题',
+    // 浅色基底 - 白色/浅灰/淡蓝
+    backgroundGradient: 'from-slate-100 via-white to-slate-50',
+    textPrimary: 'text-slate-900',
+    textSecondary: 'text-slate-700',
     textMuted: 'text-slate-500',
     textMuted2: 'text-slate-400',
-    textBody: 'text-slate-700',
-    // 轻量纯色卡片
+    textBody: 'text-slate-800',
+    // 白色卡片 - 简洁大气
     cardBg: 'bg-white',
-    cardBorder: 'border-slate-200',
+    cardBorder: 'border-slate-100',
     cardLightBg: 'bg-slate-50',
-    // 按钮：靛蓝为主色
-    btnPrimary: 'bg-gradient-to-r from-indigo-500 to-indigo-600 shadow-md text-white',
-    btnSecondary: 'bg-white border-slate-300 text-slate-600 hover:bg-slate-50',
+    // 按钮：深青色为主色，更醒目
+    btnPrimary: 'bg-gradient-to-r from-cyan-600 to-cyan-700 shadow-md shadow-cyan-600/20 text-white',
+    btnSecondary: 'bg-white border-slate-400 text-slate-700 hover:bg-slate-100',
     // 输入框
     inputBg: 'bg-white',
-    inputBorder: 'border-slate-300',
-    inputText: 'text-slate-800',
+    inputBorder: 'border-slate-400',
+    inputText: 'text-slate-900',
     inputToggleBg: 'bg-slate-200',
     // 滑块
-    sliderTrack: 'bg-slate-200',
-    sliderThumb: 'bg-indigo-500',
-    // 主题色：靛蓝
-    primaryColor: 'indigo',
-    primaryColorLight: 'indigo-500',
-    primaryColorMuted: 'indigo-600/70',
-    primaryGradient: 'from-indigo-500 via-indigo-400 to-indigo-500',
-    borderColor: 'border-slate-200',
-    borderColorLight: 'border-indigo-500/30',
+    sliderTrack: 'bg-slate-300',
+    sliderThumb: 'bg-cyan-600',
+    // 主题色：深青色（更醒目）
+    primaryColor: 'cyan',
+    primaryColorLight: 'cyan-600',
+    primaryColorMuted: 'cyan-700/80',
+    primaryGradient: 'from-cyan-600 via-cyan-500 to-cyan-700',
+    borderColor: 'border-slate-100',
+    borderColorLight: 'border-cyan-300/40',
     // 背景装饰
-    techGridOpacity: 'opacity-5',
-    radialGradient: 'radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.05) 0%, transparent 50%)',
-    // GraphView 大容器样式 - 多彩渐变
-    containerBorderGradient: 'linear-gradient(135deg, rgba(99, 102, 241, 0.4), rgba(168, 85, 247, 0.4), rgba(34, 197, 94, 0.4), rgba(249, 115, 22, 0.4))',
-    containerBgGradient: 'linear-gradient(180deg, rgba(99, 102, 241, 0.06) 0%, rgba(168, 85, 247, 0.04) 50%, rgba(34, 197, 94, 0.03) 100%)',
+    techGridOpacity: 'opacity-10',
+    radialGradient: 'radial-gradient(circle at 50% 0%, rgba(6, 182, 212, 0.06) 0%, transparent 50%)',
+    // GraphView 大容器样式
+    containerBorderGradient: 'linear-gradient(135deg, rgba(6, 182, 212, 0.2), rgba(168, 85, 247, 0.2), rgba(34, 197, 94, 0.2), rgba(249, 115, 22, 0.2))',
+    containerBgGradient: 'linear-gradient(180deg, rgba(6, 182, 212, 0.04) 0%, rgba(168, 85, 247, 0.02) 50%, rgba(34, 197, 94, 0.02) 100%)',
     // 图片预览
     imagePreviewBg: 'bg-slate-50',
-    imagePreviewBorder: 'border-slate-200',
+    imagePreviewBorder: 'border-slate-100',
     // GraphView 控制按钮样式
-    controlBtn: 'bg-white border-slate-200',
-    controlBtnHover: 'hover:bg-slate-50 hover:border-indigo-300',
-    controlBtnBorder: 'border-slate-200',
-    controlBtnBorderHover: 'hover:border-indigo-300',
-    controlBtnText: 'text-indigo-600',
+    controlBtn: 'bg-white border-slate-100',
+    controlBtnHover: 'hover:bg-slate-50 hover:border-cyan-400',
+    controlBtnBorder: 'border-slate-100',
+    controlBtnBorderHover: 'hover:border-cyan-400',
+    controlBtnText: 'text-cyan-700',
     // 装饰图标颜色
-    decorationIcon: 'text-slate-300/30',
-    // 卡片颜色数组：4种不同配色
+    decorationIcon: 'text-slate-400/60',
+    // 卡片颜色数组：4种不同配色（浅色版 - 更淡的边框）
     cardColors: [
-      // 配色1: 靛蓝
-      { bg: 'bg-white', border: 'border-indigo-200', lightBg: 'bg-indigo-50', accent: 'indigo-500', accentLight: 'indigo-600/70', gradient: 'from-indigo-500 via-indigo-400 to-indigo-500' },
-      // 配色2: 祖母绿
-      { bg: 'bg-white', border: 'border-emerald-200', lightBg: 'bg-emerald-50', accent: 'emerald-500', accentLight: 'emerald-600/70', gradient: 'from-emerald-500 via-emerald-400 to-emerald-500' },
-      // 配色3: 暖橙
-      { bg: 'bg-white', border: 'border-orange-200', lightBg: 'bg-orange-50', accent: 'orange-500', accentLight: 'orange-600/70', gradient: 'from-orange-500 via-orange-400 to-orange-500' },
-      // 配色4: 玫瑰粉
-      { bg: 'bg-white', border: 'border-rose-200', lightBg: 'bg-rose-50', accent: 'rose-500', accentLight: 'rose-600/70', gradient: 'from-rose-500 via-rose-400 to-rose-500' },
+      // 配色1: 青色
+      { bg: 'bg-white', border: 'border-cyan-100', lightBg: 'bg-cyan-50', accent: 'cyan-600', accentLight: 'cyan-700', gradient: 'from-cyan-500 via-cyan-400 to-cyan-600' },
+      // 配色2: 蓝色
+      { bg: 'bg-white', border: 'border-blue-100', lightBg: 'bg-blue-50', accent: 'blue-600', accentLight: 'blue-700', gradient: 'from-blue-500 via-blue-400 to-blue-600' },
+      // 配色3: 绿色
+      { bg: 'bg-white', border: 'border-green-100', lightBg: 'bg-green-50', accent: 'green-600', accentLight: 'green-700', gradient: 'from-green-500 via-green-400 to-green-600' },
+      // 配色4: 橙色
+      { bg: 'bg-white', border: 'border-orange-100', lightBg: 'bg-orange-50', accent: 'orange-600', accentLight: 'orange-700', gradient: 'from-orange-500 via-orange-400 to-orange-600' },
     ],
-    // 树形结构层级颜色（浅色主题 - 多彩渐变）
+    // 树形结构层级颜色（浅色主题 - 清新淡雅）
     treeColors: [
-      // 层级1: 靛蓝渐变
-      { bg: 'bg-indigo-50', border: 'border-indigo-200', borderAccent: 'border-indigo-400', text: 'text-indigo-700', glow: 'shadow-indigo-500/30', gradient: 'from-indigo-100 via-indigo-50 to-white' },
-      // 层级2: 橙色渐变
-      { bg: 'bg-orange-50', border: 'border-orange-200', borderAccent: 'border-orange-400', text: 'text-orange-700', glow: 'shadow-orange-500/30', gradient: 'from-orange-100 via-orange-50 to-white' },
-      // 层级3: 绿色渐变
-      { bg: 'bg-green-50', border: 'border-green-200', borderAccent: 'border-green-400', text: 'text-green-700', glow: 'shadow-green-500/30', gradient: 'from-green-100 via-green-50 to-white' },
-      // 层级4: 紫色渐变
-      { bg: 'bg-violet-50', border: 'border-violet-200', borderAccent: 'border-violet-400', text: 'text-violet-700', glow: 'shadow-violet-500/30', gradient: 'from-violet-100 via-violet-50 to-white' },
-      // 层级5: 粉紫渐变
-      { bg: 'bg-fuchsia-50', border: 'border-fuchsia-200', borderAccent: 'border-fuchsia-400', text: 'text-fuchsia-700', glow: 'shadow-fuchsia-500/30', gradient: 'from-fuchsia-100 via-fuchsia-50 to-white' },
-      // 层级6: 粉色渐变
-      { bg: 'bg-pink-50', border: 'border-pink-200', borderAccent: 'border-pink-400', text: 'text-pink-700', glow: 'shadow-pink-500/30', gradient: 'from-pink-100 via-pink-50 to-white' },
+      // 层级1: 青色
+      { bg: 'bg-cyan-50', border: 'border-cyan-100', borderAccent: 'border-cyan-300', text: 'text-cyan-800', glow: 'shadow-cyan-500/20', gradient: 'from-cyan-100 via-cyan-50 to-white' },
+      // 层级2: 橙色
+      { bg: 'bg-orange-50', border: 'border-orange-100', borderAccent: 'border-orange-300', text: 'text-orange-800', glow: 'shadow-orange-500/20', gradient: 'from-orange-100 via-orange-50 to-white' },
+      // 层级3: 绿色
+      { bg: 'bg-green-50', border: 'border-green-100', borderAccent: 'border-green-300', text: 'text-green-800', glow: 'shadow-green-500/20', gradient: 'from-green-100 via-green-50 to-white' },
+      // 层级4: 紫色
+      { bg: 'bg-violet-50', border: 'border-violet-100', borderAccent: 'border-violet-300', text: 'text-violet-800', glow: 'shadow-violet-500/20', gradient: 'from-violet-100 via-violet-50 to-white' },
+      // 层级5: 蓝色
+      { bg: 'bg-blue-50', border: 'border-blue-100', borderAccent: 'border-blue-300', text: 'text-blue-800', glow: 'shadow-blue-500/20', gradient: 'from-blue-100 via-blue-50 to-white' },
+      // 层级6: 粉色
+      { bg: 'bg-pink-50', border: 'border-pink-100', borderAccent: 'border-pink-300', text: 'text-pink-800', glow: 'shadow-pink-500/20', gradient: 'from-pink-100 via-pink-50 to-white' },
     ],
   },
 };

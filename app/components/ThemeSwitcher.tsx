@@ -9,10 +9,10 @@ export default function ThemeSwitcher() {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // 主题列表 - 只保留深色主题和特殊主题
+  // 主题列表 - 深色主题和浅色主题
   const themes = [
     { name: 'dark' as ThemeName, label: '深色主题', icon: '🌙', color: 'from-cyan-500 to-cyan-700' },
-    { name: 'theme3' as ThemeName, label: '特殊主题', icon: '✨', color: 'from-indigo-500 to-indigo-600' },
+    { name: 'light' as ThemeName, label: '浅色主题', icon: '☀️', color: 'from-cyan-400 to-cyan-500' },
   ];
 
   // 点击外部关闭下拉菜单
