@@ -84,10 +84,11 @@ ${childrenList}
 要求：
 1. 生成1-5个步骤，按制造顺序排列
 2. 每个步骤的action_title要简洁（如"材料准备"、"组装焊接"、"质检封装"）
-3. description说明该步骤的具体操作，可以详细一点，但是不超过100字**必须在描述中原封不动地使用上述组成部分的名称**（如"${children[0]?.name}"等）
-4. parameters列出1-2个关键参数或材料，label必须使用"核心材料"或"主要参数"，value填写具体内容（优先使用上述组成部分的名称）
-5. ai_image_prompt用英文描述该步骤的技术图纸风格提示词
-6. 直接返回JSON，不要包含\`\`\`json标记`;
+3. **关键**：每个步骤的description必须包含至少一个组成部分的名称（${children.map((c: any) => c.name).join('、')}），用中文逗号分隔。**禁止省略任何组成部分的名称**，每个组成部分都必须在至少一个步骤的description中出现！
+4. description说明该步骤的具体操作，可以详细一点，但不超过100字，**组成部分名称后面不要加标点符号，直接用空格或文字连接**
+5. parameters列出1-2个关键参数或材料，label必须使用"核心材料"或"主要参数"，value填写具体内容（必须使用组成部分的名称）
+6. ai_image_prompt用英文描述该步骤的技术图纸风格提示词
+7. 直接返回JSON，不要包含\`\`\`json标记`;
 
     // 使用重试机制调用AI API
     const content = await retryWithBackoff(() => callTextAPI(prompt));

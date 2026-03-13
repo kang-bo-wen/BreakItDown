@@ -110,7 +110,7 @@ code {
 
 /* 全屏模式样式 */
 #graph-container:fullscreen {
-  background: linear-gradient(to bottom right, #1e1b4b, #581c87, #0f172a);
+  background: linear-gradient(to bottom right, #0f172a, #1e293b, #0f172a);
   padding: 2rem;
 }
 
@@ -134,6 +134,10 @@ code {
 
 .animate-gradient {
   animation: gradient 15s ease infinite;
+}
+
+.bg-size-200 {
+  background-size: 200% 200%;
 }
 
 /* 动态渐变位移动画 */

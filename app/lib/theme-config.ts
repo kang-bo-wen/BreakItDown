@@ -111,8 +111,8 @@ export const themes: Record<ThemeName, ThemeConfig> = {
     techGridOpacity: 'opacity-30',
     radialGradient: 'radial-gradient(circle at 50% 0%, rgba(6, 182, 212, 0.1) 0%, transparent 50%)',
     // GraphView 大容器样式 - 多彩渐变
-    containerBorderGradient: 'linear-gradient(135deg, rgba(6, 182, 212, 0.4), rgba(168, 85, 247, 0.4), rgba(34, 197, 94, 0.4), rgba(249, 115, 22, 0.4))',
-    containerBgGradient: 'linear-gradient(180deg, rgba(6, 182, 212, 0.08) 0%, rgba(168, 85, 247, 0.05) 50%, rgba(34, 197, 94, 0.03) 100%)',
+    containerBorderGradient: 'linear-gradient(135deg, rgba(6, 182, 212, 0.4), rgba(34, 197, 94, 0.4), rgba(249, 115, 22, 0.4))',
+    containerBgGradient: 'linear-gradient(180deg, rgba(6, 182, 212, 0.08) 0%, rgba(34, 197, 94, 0.03) 100%)',
     imagePreviewBg: 'bg-black/40',
     imagePreviewBorder: 'border-cyan-500/20',
     // GraphView 控制按钮样式
@@ -153,8 +153,8 @@ export const themes: Record<ThemeName, ThemeConfig> = {
     textBody: 'text-slate-800',
     // 白色卡片 - 简洁大气
     cardBg: 'bg-white',
-    cardBorder: 'border-slate-100',
-    cardLightBg: 'bg-slate-50',
+    cardBorder: 'border-slate-200',
+    cardLightBg: 'bg-white',
     // 按钮：深青色为主色，更醒目
     btnPrimary: 'bg-gradient-to-r from-cyan-600 to-cyan-700 shadow-md shadow-cyan-600/20 text-white',
     btnSecondary: 'bg-white border-slate-400 text-slate-700 hover:bg-slate-100',
@@ -177,8 +177,8 @@ export const themes: Record<ThemeName, ThemeConfig> = {
     techGridOpacity: 'opacity-10',
     radialGradient: 'radial-gradient(circle at 50% 0%, rgba(6, 182, 212, 0.06) 0%, transparent 50%)',
     // GraphView 大容器样式
-    containerBorderGradient: 'linear-gradient(135deg, rgba(6, 182, 212, 0.2), rgba(168, 85, 247, 0.2), rgba(34, 197, 94, 0.2), rgba(249, 115, 22, 0.2))',
-    containerBgGradient: 'linear-gradient(180deg, rgba(6, 182, 212, 0.04) 0%, rgba(168, 85, 247, 0.02) 50%, rgba(34, 197, 94, 0.02) 100%)',
+    containerBorderGradient: 'linear-gradient(135deg, rgba(6, 182, 212, 0.2), rgba(34, 197, 94, 0.2), rgba(249, 115, 22, 0.2))',
+    containerBgGradient: 'linear-gradient(180deg, rgba(6, 182, 212, 0.04) 0%, rgba(34, 197, 94, 0.02) 100%)',
     // 图片预览
     imagePreviewBg: 'bg-slate-50',
     imagePreviewBorder: 'border-slate-100',

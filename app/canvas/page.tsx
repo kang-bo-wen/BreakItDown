@@ -5,6 +5,7 @@ import dynamic from 'next/dynamic';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { useTheme } from '../hooks/useTheme';
+import { getDisplayIcon } from '../lib/icon-utils';
 import {
   CubeIcon,
   BoltIcon,
@@ -85,7 +86,8 @@ function CanvasContent() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { themeConfig } = useTheme();
+  const { theme, themeConfig } = useTheme();
+  const isDarkTheme = theme === 'dark';
 
   // State loaded from setup page
   const [identificationResult, setIdentificationResult] = useState<IdentificationResult | null>(null);
@@ -160,15 +162,30 @@ function CanvasContent() {
     };
   })[0];
 
-  // Monitor fullscreen changes
+  // Monitor fullscreen changes and update background color based on theme
   useEffect(() => {
+    const updateFullscreenBackground = () => {
+      const graphContainer = document.getElementById('graph-container');
+      if (graphContainer && document.fullscreenElement) {
+        if (isDarkTheme) {
+          graphContainer.style.background = 'linear-gradient(to bottom right, #0f172a, #1e293b, #0f172a)';
+        } else {
+          graphContainer.style.background = 'linear-gradient(to bottom right, #f8fafc, #e2e8f0, #f1f5f9)';
+        }
+      }
+    };
+
     const handleFullscreenChange = () => {
       setIsFullscreen(!!document.fullscreenElement);
+      updateFullscreenBackground();
     };
 
     document.addEventListener('fullscreenchange', handleFullscreenChange);
+    // Also update when theme changes while in fullscreen
+    updateFullscreenBackground();
+
     return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
-  }, []);
+  }, [isDarkTheme]);
 
   // Load setup state from localStorage
   useEffect(() => {
@@ -543,16 +560,23 @@ function CanvasContent() {
     if (!text || childrenNames.length === 0) return text;
 
     const sortedNames = [...childrenNames].sort((a, b) => b.length - a.length);
-    const pattern = sortedNames.map(name => name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
+
+    // Create regex pattern that matches the names, possibly followed by common punctuation
+    const pattern = sortedNames.map(name => {
+      const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      return `${escaped}(?![a-zA-Z0-9])`; // Negative lookahead to prevent partial matches
+    }).join('|');
     const regex = new RegExp(`(${pattern})`, 'g');
     const parts = text.split(regex);
 
     return (
       <>
         {parts.map((part, index) => {
-          if (sortedNames.includes(part)) {
+          // Check if this part matches any of the children names
+          const isMatch = sortedNames.some(name => part === name || part.startsWith(name));
+          if (isMatch) {
             return (
-              <span key={index} className="font-bold text-red-400">
+              <span key={index} className={`font-bold ${isDarkTheme ? 'text-red-400' : 'text-red-600'}`}>
                 {part}
               </span>
             );
@@ -911,7 +935,7 @@ function CanvasContent() {
         {identificationResult && (
           <div className={`${themeConfig.cardBg} backdrop-blur-md ${themeConfig.cardBorder} rounded-xl p-5 mb-6`}>
             <div className="flex items-center gap-4">
-              <div className="text-3xl">{identificationResult.icon || <CubeIcon className="w-8 h-8" />}</div>
+              <div className="text-3xl">{getDisplayIcon(identificationResult.icon)}</div>
               <div>
                 <div className={`text-xl font-bold ${themeConfig.textPrimary}`}>{identificationResult.name}</div>
                 <div className={`text-sm ${themeConfig.textMuted}`}>{identificationResult.brief_description}</div>
@@ -1008,9 +1032,25 @@ function CanvasContent() {
                     // 然后调用 handleNodeClick 重新分解
                     handleNodeClick(nodeId, nodeName, parentContext);
                   }}
-                  onNodeClick={(node) => {
-                    // 点击节点显示知识卡片
+                  onNodeClick={() => {
+                    // 点击节点不做任何操作，知识卡片通过操作面板访问
+                  }}
+                  onProcessFlowClick={(node) => {
+                    // 显示知识卡片（工艺流程）
                     fetchKnowledgeCard(node, true);
+                  }}
+                  onDeleteChildrenClick={(nodeId) => {
+                    // 删除节点的所有子节点
+                    setDeconstructionTree(prevTree => {
+                      if (!prevTree) return null;
+                      const updateNode = (node: TreeNode): TreeNode => {
+                        if (node.id === nodeId) {
+                          return { ...node, children: [] };
+                        }
+                        return { ...node, children: node.children.map(updateNode) };
+                      };
+                      return updateNode(prevTree);
+                    });
                   }}
                 />
               </div>
@@ -1034,7 +1074,7 @@ function CanvasContent() {
                     }
                   }
                 }}
-                className={`px-4 py-2 ${themeConfig.cardBg} hover:${themeConfig.cardLightBg} ${themeConfig.cardBorder} rounded-lg ${themeConfig.textSecondary} hover:${themeConfig.textPrimary} transition-all duration-300 flex items-center gap-2 text-sm`}
+                className={`px-4 py-2 ${isDarkTheme ? 'bg-slate-800/50 hover:bg-slate-700/50 border-cyan-500/30 text-cyan-300 hover:text-cyan-200' : 'bg-white hover:bg-slate-50 border-cyan-300 text-cyan-700 hover:text-cyan-800'} rounded-lg transition-all duration-300 flex items-center gap-2 text-sm border`}
               >
                 <MagnifyingGlassIcon className="w-5 h-5" />
                 <span>全屏</span>
@@ -1065,16 +1105,20 @@ function CanvasContent() {
               {/* Fullscreen knowledge card modal */}
               {knowledgeCard && isFullscreen && (
                 <div
-                  className={`absolute inset-0 ${themeConfig.cardBg}/80 backdrop-blur-sm flex items-center justify-center z-[100000] p-4`}
+                  className={`absolute inset-0 ${isDarkTheme ? 'bg-black/80' : 'bg-white/80'} backdrop-blur-sm flex items-center justify-center z-[100000] p-4`}
                   onClick={() => setKnowledgeCard(null)}
                 >
                   <div
-                    className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl p-6 max-w-2xl w-full border-2 border-yellow-500/50 shadow-2xl max-h-[80vh] overflow-y-auto"
+                    className={`rounded-xl p-6 max-w-2xl w-full border-2 shadow-2xl max-h-[80vh] overflow-y-auto ${
+                      isDarkTheme
+                        ? 'bg-gradient-to-br from-slate-800 to-slate-900 border-yellow-500/50'
+                        : 'bg-white border-yellow-400'
+                    }`}
                     onClick={(e) => e.stopPropagation()}
                   >
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-2xl font-bold flex items-center gap-2">
-                        <LightBulbIcon className="w-5 h-5" />
+                      <h3 className={`text-2xl font-bold flex items-center gap-2 ${isDarkTheme ? 'text-white' : 'text-slate-900'}`}>
+                        <LightBulbIcon className={`w-5 h-5 ${isDarkTheme ? 'text-yellow-400' : 'text-yellow-600'}`} />
                         <span>知识卡片：{knowledgeCard.node.name}</span>
                       </h3>
                       <button
@@ -1094,25 +1138,35 @@ function CanvasContent() {
                       </div>
                     ) : (
                       <div className="space-y-6">
-                        <div className="bg-gradient-to-r from-yellow-500/10 to-orange-500/10 rounded-lg p-4 border border-yellow-500/30">
-                          <div className="text-xl font-bold text-yellow-300">{knowledgeCard.data.title}</div>
+                        <div className={`rounded-lg p-4 border ${
+                          isDarkTheme
+                            ? 'bg-gradient-to-r from-yellow-500/10 to-orange-500/10 border-yellow-500/30'
+                            : 'bg-yellow-50 border-yellow-200'
+                        }`}>
+                          <div className={`text-xl font-bold ${isDarkTheme ? 'text-yellow-300' : 'text-yellow-800'}`}>{knowledgeCard.data.title}</div>
                         </div>
 
                         <div className="space-y-4">
                           {knowledgeCard.data.steps.map((step, idx) => (
                             <div key={idx} className="relative">
-                              <div className="bg-gradient-to-br from-slate-700 to-slate-800 rounded-lg p-4 border-2 border-blue-500/50 hover:border-blue-400/70 transition-all">
+                              <div className={`rounded-lg p-4 border-2 hover:transition-all ${
+                                  isDarkTheme
+                                    ? 'bg-gradient-to-br from-slate-700 to-slate-800 border-blue-500/50 hover:border-blue-400/70'
+                                    : 'bg-slate-50 border-blue-200 hover:border-blue-400'
+                                }`}>
                                 <div className="flex items-start gap-3">
-                                  <div className="flex-shrink-0 w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center font-bold text-lg">
+                                  <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg ${
+                                    isDarkTheme ? 'bg-blue-500 text-white' : 'bg-blue-600 text-white'
+                                  }`}>
                                     {step.step_number}
                                   </div>
 
                                   <div className="flex-1">
-                                    <div className="text-lg font-bold text-blue-300 mb-2">
+                                    <div className={`text-lg font-bold mb-2 ${isDarkTheme ? 'text-blue-300' : 'text-blue-700'}`}>
                                       {step.action_title}
                                     </div>
 
-                                    <div className="text-gray-300 text-sm mb-3">
+                                    <div className={`text-sm mb-3 ${isDarkTheme ? 'text-gray-300' : 'text-slate-700'}`}>
                                       {highlightChildrenNames(
                                         step.description,
                                         knowledgeCard.node.children.map(c => c.name)
@@ -1135,22 +1189,26 @@ function CanvasContent() {
 
                               {idx < knowledgeCard.data.steps.length - 1 && (
                                 <div className="flex justify-center my-2">
-                                  <div className="text-3xl text-blue-400">↓</div>
+                                  <div className={`text-3xl ${isDarkTheme ? 'text-blue-400' : 'text-blue-600'}`}>↓</div>
                                 </div>
                               )}
                             </div>
                           ))}
                         </div>
 
-                        <div className="bg-blue-500/10 rounded-lg p-4 border border-blue-500/30">
-                          <div className="text-sm text-blue-300 font-semibold mb-2">
+                        <div className={`rounded-lg p-4 border ${
+                          isDarkTheme
+                            ? 'bg-blue-500/10 border-blue-500/30'
+                            : 'bg-blue-50 border-blue-200'
+                        }`}>
+                          <div className={`text-sm font-semibold mb-2 ${isDarkTheme ? 'text-blue-300' : 'text-blue-700'}`}>
                             <CubeIcon className="w-5 h-5 mr-2" />使用的组成部分
                           </div>
                           <div className="flex flex-wrap gap-2">
                             {knowledgeCard.node.children.map((child, idx) => (
                               <div key={idx} className={`${themeConfig.cardLightBg} rounded-full px-3 py-1 text-sm ${themeConfig.cardBorder} flex items-center gap-1`}>
                                 <span className={themeConfig.textPrimary}>{child.name}</span>
-                                {child.isRawMaterial && <SparklesIcon className="w-4 h-4 text-green-400" />}
+                                {child.isRawMaterial && <SparklesIcon className={`w-4 h-4 ${isDarkTheme ? 'text-green-400' : 'text-green-600'}`} />}
                               </div>
                             ))}
                           </div>
@@ -1172,12 +1230,16 @@ function CanvasContent() {
             onClick={() => setKnowledgeCard(null)}
           >
             <div
-              className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl p-6 max-w-2xl w-full border-2 border-yellow-500/50 shadow-2xl max-h-[80vh] overflow-y-auto"
+              className={`rounded-xl p-6 max-w-2xl w-full border-2 shadow-2xl max-h-[80vh] overflow-y-auto ${
+                isDarkTheme
+                  ? 'bg-gradient-to-br from-slate-800 to-slate-900 border-yellow-500/50'
+                  : 'bg-white border-yellow-400'
+              }`}
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-2xl font-bold flex items-center gap-2">
-                  <LightBulbIcon className="w-5 h-5" />
+                <h3 className={`text-2xl font-bold flex items-center gap-2 ${isDarkTheme ? 'text-white' : 'text-slate-900'}`}>
+                  <LightBulbIcon className={`w-5 h-5 ${isDarkTheme ? 'text-yellow-400' : 'text-yellow-600'}`} />
                   <span>知识卡片：{knowledgeCard.node.name}</span>
                 </h3>
                 <button
@@ -1197,25 +1259,35 @@ function CanvasContent() {
                 </div>
               ) : (
                 <div className="space-y-6">
-                  <div className="bg-gradient-to-r from-yellow-500/10 to-orange-500/10 rounded-lg p-4 border border-yellow-500/30">
-                    <div className="text-xl font-bold text-yellow-300">{knowledgeCard.data.title}</div>
+                  <div className={`rounded-lg p-4 border ${
+                      isDarkTheme
+                        ? 'bg-gradient-to-r from-yellow-500/10 to-orange-500/10 border-yellow-500/30'
+                        : 'bg-yellow-50 border-yellow-200'
+                    }`}>
+                      <div className={`text-xl font-bold ${isDarkTheme ? 'text-yellow-300' : 'text-yellow-800'}`}>{knowledgeCard.data.title}</div>
                   </div>
 
                   <div className="space-y-4">
                     {knowledgeCard.data.steps.map((step, idx) => (
                       <div key={idx} className="relative">
-                        <div className="bg-gradient-to-br from-slate-700 to-slate-800 rounded-lg p-4 border-2 border-blue-500/50 hover:border-blue-400/70 transition-all">
+                        <div className={`rounded-lg p-4 border-2 hover:transition-all ${
+                            isDarkTheme
+                              ? 'bg-gradient-to-br from-slate-700 to-slate-800 border-blue-500/50 hover:border-blue-400/70'
+                              : 'bg-slate-50 border-blue-200 hover:border-blue-400'
+                          }`}>
                           <div className="flex items-start gap-3">
-                            <div className="flex-shrink-0 w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center font-bold text-lg">
+                            <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg ${
+                              isDarkTheme ? 'bg-blue-500 text-white' : 'bg-blue-600 text-white'
+                            }`}>
                               {step.step_number}
                             </div>
 
                             <div className="flex-1">
-                              <div className="text-lg font-bold text-blue-300 mb-2">
+                              <div className={`text-lg font-bold mb-2 ${isDarkTheme ? 'text-blue-300' : 'text-blue-700'}`}>
                                 {step.action_title}
                               </div>
 
-                              <div className="text-gray-300 text-sm mb-3">
+                              <div className={`text-sm mb-3 ${isDarkTheme ? 'text-gray-300' : 'text-slate-700'}`}>
                                 {highlightChildrenNames(
                                   step.description,
                                   knowledgeCard.node.children.map(c => c.name)
@@ -1238,15 +1310,19 @@ function CanvasContent() {
 
                         {idx < knowledgeCard.data.steps.length - 1 && (
                           <div className="flex justify-center my-2">
-                            <div className="text-3xl text-blue-400">↓</div>
+                            <div className={`text-3xl ${isDarkTheme ? 'text-blue-400' : 'text-blue-600'}`}>↓</div>
                           </div>
                         )}
                       </div>
                     ))}
                   </div>
 
-                  <div className="bg-blue-500/10 rounded-lg p-4 border border-blue-500/30">
-                    <div className="text-sm text-blue-300 font-semibold mb-2">
+                  <div className={`rounded-lg p-4 border ${
+                      isDarkTheme
+                        ? 'bg-blue-500/10 border-blue-500/30'
+                        : 'bg-blue-50 border-blue-200'
+                    }`}>
+                    <div className={`text-sm font-semibold mb-2 ${isDarkTheme ? 'text-blue-300' : 'text-blue-700'}`}>
                       <CubeIcon className="w-5 h-5 mr-2" />使用的组成部分
                     </div>
                     <div className="flex flex-wrap gap-2">

@@ -55,17 +55,28 @@ export default function TopNavBar() {
     >
       <div className="w-full px-6 lg:px-12" style={{ maxWidth: '1600px', margin: '0 auto' }}>
         <div className="flex items-center justify-between h-20">
-          {/* 左侧：Logo + 品牌名 */}
-          <Link href="/" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-yellow-400 via-orange-500 to-red-500 flex items-center justify-center shadow-lg shadow-orange-500/30 group-hover:shadow-orange-500/60 transition-all duration-300 group-hover:scale-110">
-              <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+          {/* 左侧：侧边栏按钮 + Logo */}
+          <div className="flex items-center gap-3">
+            <button
+              onClick={openSidebar}
+              className="p-2 text-white/70 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
+              aria-label="打开菜单"
+            >
+              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               </svg>
-            </div>
-            <span className="text-white font-bold text-lg tracking-widest hidden sm:block">
-              BREAK IT DOWN
-            </span>
-          </Link>
+            </button>
+            <Link href="/" className="flex items-center gap-3 group">
+              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-yellow-400 via-orange-500 to-red-500 flex items-center justify-center shadow-lg shadow-orange-500/30 group-hover:shadow-orange-500/60 transition-all duration-300 group-hover:scale-110">
+                <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                </svg>
+              </div>
+              <span className="text-white font-bold text-lg tracking-widest hidden sm:block">
+                BREAK IT DOWN
+              </span>
+            </Link>
+          </div>
 
           {/* 中间：导航链接 - 桌面端 */}
           <div className="hidden lg:flex items-center justify-center flex-1 gap-1">

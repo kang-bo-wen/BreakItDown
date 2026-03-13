@@ -55,7 +55,8 @@ function GraphViewInner({
   hoveredNodeId: externalHoveredNodeId,
 }: GraphViewProps) {
   // 使用主题
-  const { themeConfig } = useTheme();
+  const { theme, themeConfig } = useTheme();
+  const isDarkTheme = theme === 'dark';
   // 便捷访问
   const tc = themeConfig;
 
@@ -318,63 +319,71 @@ function GraphViewInner({
               document.exitFullscreen();
             }
           }}
-          className={`w-12 h-12 bg-gradient-to-br from-slate-800 to-slate-900 ${themeConfig.controlBtnHover} backdrop-blur-sm border ${themeConfig.controlBtnBorder} ${themeConfig.controlBtnBorderHover} rounded-xl flex items-center justify-center text-white text-xl transition-all shadow-lg hover:shadow-cyan-500/20 hover:scale-105`}
+          className={`w-10 h-10 backdrop-blur-md border rounded-lg flex items-center justify-center transition-all shadow-lg ${
+              isDarkTheme
+                ? 'bg-white/10 hover:bg-white/20 border-white/20 hover:border-cyan-400/50 text-white/80 hover:text-white'
+                : 'bg-slate-900/10 hover:bg-slate-900/20 border-slate-300 hover:border-cyan-500 text-slate-700 hover:text-slate-900'
+            }`}
           title="返回"
         >
-          ←
-        </button>
-
-        {/* 放大 */}
-        <button
-          onClick={() => zoomIn()}
-          className={`w-12 h-12 ${themeConfig.controlBtn} ${themeConfig.controlBtnHover} backdrop-blur-sm border ${themeConfig.controlBtnBorder} ${themeConfig.controlBtnBorderHover} rounded-xl flex items-center justify-center ${themeConfig.controlBtnText} text-2xl font-bold transition-all shadow-lg hover:shadow-cyan-500/30 hover:scale-105`}
-          title="放大"
-        >
-          +
-        </button>
-
-        {/* 缩小 */}
-        <button
-          onClick={() => zoomOut()}
-          className={`w-12 h-12 ${themeConfig.controlBtn} ${themeConfig.controlBtnHover} backdrop-blur-sm border ${themeConfig.controlBtnBorder} ${themeConfig.controlBtnBorderHover} rounded-xl flex items-center justify-center ${themeConfig.controlBtnText} text-2xl font-bold transition-all shadow-lg hover:shadow-cyan-500/30 hover:scale-105`}
-          title="缩小"
-        >
-          −
+          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
         </button>
 
         {/* 自适应观察 */}
         <button
           onClick={() => fitView({ padding: 0.2, duration: 300 })}
-          className={`w-12 h-12 ${themeConfig.controlBtn} ${themeConfig.controlBtnHover} backdrop-blur-sm border ${themeConfig.controlBtnBorder} ${themeConfig.controlBtnBorderHover} rounded-xl flex items-center justify-center ${themeConfig.controlBtnText} text-xl transition-all shadow-lg hover:shadow-cyan-500/30 hover:scale-105`}
+          className={`w-10 h-10 backdrop-blur-md border rounded-lg flex items-center justify-center transition-all shadow-lg ${
+              isDarkTheme
+                ? 'bg-white/10 hover:bg-white/20 border-white/20 hover:border-cyan-400/50 text-white/80 hover:text-white'
+                : 'bg-slate-900/10 hover:bg-slate-900/20 border-slate-300 hover:border-cyan-500 text-slate-700 hover:text-slate-900'
+            }`}
           title="自适应观察"
         >
-          ⊡
+          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+          </svg>
         </button>
 
         {/* 锁定/解锁拖拽 */}
         <button
           onClick={() => setIsDraggingLocked(!isDraggingLocked)}
-          className={`w-12 h-12 backdrop-blur-sm border rounded-xl flex items-center justify-center text-xl transition-all shadow-lg hover:scale-105 ${
+          className={`w-10 h-10 backdrop-blur-md border rounded-lg flex items-center justify-center transition-all shadow-lg ${
             isDraggingLocked
-              ? 'bg-gradient-to-br from-red-900/80 to-slate-900 hover:from-red-800 hover:to-red-900 border-red-500/30 hover:border-red-400/60'
-              : `${themeConfig.controlBtn} ${themeConfig.controlBtnHover} ${themeConfig.controlBtnBorder} ${themeConfig.controlBtnBorderHover}`
+              ? 'bg-red-500/20 border-red-500/50 text-red-400 hover:bg-red-500/30'
+              : isDarkTheme
+                ? 'bg-white/10 hover:bg-white/20 border-white/20 hover:border-cyan-400/50 text-white/80 hover:text-white'
+                : 'bg-slate-900/10 hover:bg-slate-900/20 border-slate-300 hover:border-cyan-500 text-slate-700 hover:text-slate-900'
           }`}
           title={isDraggingLocked ? '解锁拖拽' : '锁定拖拽'}
         >
-          {isDraggingLocked ? '🔒' : '🔓'}
+          {isDraggingLocked ? (
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
+          ) : (
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z" />
+            </svg>
+          )}
         </button>
 
         {/* 缩略图开关 */}
         <button
           onClick={() => setShowMiniMap(!showMiniMap)}
-          className={`w-12 h-12 backdrop-blur-sm border rounded-xl flex items-center justify-center text-lg transition-all shadow-lg hover:scale-105 ${
+          className={`w-10 h-10 backdrop-blur-md border rounded-lg flex items-center justify-center transition-all shadow-lg ${
             showMiniMap
-              ? `${themeConfig.controlBtn} ${themeConfig.controlBtnHover} ${themeConfig.controlBtnBorder} ${themeConfig.controlBtnBorderHover}`
-              : 'bg-gradient-to-br from-slate-800 to-slate-900 hover:from-slate-700 hover:to-slate-800 border-white/20 hover:border-cyan-500/40'
+              ? 'bg-cyan-500/20 border-cyan-500/50 text-cyan-400 hover:bg-cyan-500/30'
+              : isDarkTheme
+                ? 'bg-white/10 hover:bg-white/20 border-white/20 hover:border-cyan-400/50 text-white/80 hover:text-white'
+                : 'bg-slate-900/10 hover:bg-slate-900/20 border-slate-300 hover:border-cyan-500 text-slate-700 hover:text-slate-900'
           }`}
           title={showMiniMap ? '隐藏缩略图' : '显示缩略图'}
         >
-          🗺️
+          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+          </svg>
         </button>
 
         {/* 曲线类型切换 */}
@@ -385,37 +394,46 @@ function GraphViewInner({
             const nextIndex = (currentIndex + 1) % types.length;
             setEdgeType(types[nextIndex]);
           }}
-          className={`w-12 h-12 ${themeConfig.controlBtn} ${themeConfig.controlBtnHover} backdrop-blur-sm border ${themeConfig.controlBtnBorder} ${themeConfig.controlBtnBorderHover} rounded-xl flex items-center justify-center ${themeConfig.controlBtnText} text-lg transition-all shadow-lg hover:shadow-cyan-500/30 hover:scale-105`}
+          className={`w-10 h-10 backdrop-blur-md border rounded-lg flex items-center justify-center transition-all shadow-lg ${
+              isDarkTheme
+                ? 'bg-white/10 hover:bg-white/20 border-white/20 hover:border-cyan-400/50 text-white/80 hover:text-white'
+                : 'bg-slate-900/10 hover:bg-slate-900/20 border-slate-300 hover:border-cyan-500 text-slate-700 hover:text-slate-900'
+            }`}
           title={`曲线类型: ${edgeType === 'bezier' ? '贝塞尔曲线' : edgeType === 'smoothstep' ? '阶梯线' : '直线'}`}
         >
-          {edgeType === 'bezier' ? '〰' : edgeType === 'smoothstep' ? '📐' : '📏'}
-        </button>
-
-        {/* 帮助按钮 */}
-        <button
-          onClick={() => setShowHelp(true)}
-          className={`w-12 h-12 ${themeConfig.controlBtn} ${themeConfig.controlBtnHover} backdrop-blur-sm border ${themeConfig.controlBtnBorder} ${themeConfig.controlBtnBorderHover} rounded-xl flex items-center justify-center ${themeConfig.controlBtnText} text-2xl font-bold transition-all shadow-lg hover:shadow-cyan-500/30 hover:scale-105`}
-          title="操作说明"
-        >
-          ?
+          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
+          </svg>
         </button>
 
         {/* 统计面板 */}
         <button
           onClick={() => setShowStats(true)}
-          className={`w-12 h-12 ${themeConfig.controlBtn} ${themeConfig.controlBtnHover} backdrop-blur-sm border ${themeConfig.controlBtnBorder} ${themeConfig.controlBtnBorderHover} rounded-xl flex items-center justify-center ${themeConfig.controlBtnText} text-xl font-bold transition-all shadow-lg hover:shadow-cyan-500/30 hover:scale-105`}
+          className={`w-10 h-10 backdrop-blur-md border rounded-lg flex items-center justify-center transition-all shadow-lg ${
+              isDarkTheme
+                ? 'bg-white/10 hover:bg-white/20 border-white/20 hover:border-cyan-400/50 text-white/80 hover:text-white'
+                : 'bg-slate-900/10 hover:bg-slate-900/20 border-slate-300 hover:border-cyan-500 text-slate-700 hover:text-slate-900'
+            }`}
           title="统计面板"
         >
-          📊
+          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+          </svg>
         </button>
 
         {/* 搜索节点 */}
         <button
           onClick={() => setShowSearch(true)}
-          className={`w-12 h-12 ${themeConfig.controlBtn} ${themeConfig.controlBtnHover} backdrop-blur-sm border ${themeConfig.controlBtnBorder} ${themeConfig.controlBtnBorderHover} rounded-xl flex items-center justify-center ${themeConfig.controlBtnText} text-xl font-bold transition-all shadow-lg hover:shadow-cyan-500/30 hover:scale-105`}
+          className={`w-10 h-10 backdrop-blur-md border rounded-lg flex items-center justify-center transition-all shadow-lg ${
+              isDarkTheme
+                ? 'bg-white/10 hover:bg-white/20 border-white/20 hover:border-cyan-400/50 text-white/80 hover:text-white'
+                : 'bg-slate-900/10 hover:bg-slate-900/20 border-slate-300 hover:border-cyan-500 text-slate-700 hover:text-slate-900'
+            }`}
           title="搜索节点"
         >
-          🔍
+          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
         </button>
       </div>
 
@@ -437,16 +455,16 @@ function GraphViewInner({
           variant={BackgroundVariant.Dots}
           gap={20}
           size={1}
-          color="#ffffff30"
+          color={isDarkTheme ? '#ffffff30' : '#00000030'}
         />
         {showMiniMap && (
           <MiniMap
-            className="bg-white/5 backdrop-blur-sm border border-cyan-500/20"
+            className={`backdrop-blur-sm border ${isDarkTheme ? 'bg-white/5 border-cyan-500/20' : 'bg-black/5 border-cyan-300/40'}`}
             nodeColor={(node) => {
               if (node.data.isRawMaterial) return '#22c55e'; // 绿色
-              if (node.data.isLoading) return '#475569';
-              // 根据主题使用不同颜色 - 深色主题用青色，浅色主题用靛蓝
-              return tc.primaryColor === 'indigo' ? '#6366f1' : '#22d3ee';
+              if (node.data.isLoading) return isDarkTheme ? '#475569' : '#94a3b8';
+              // 根据主题使用不同颜色
+              return isDarkTheme ? '#22d3ee' : '#0891b2';
             }}
           />
         )}

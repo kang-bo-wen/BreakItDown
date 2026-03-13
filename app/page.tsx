@@ -4,6 +4,7 @@ import { useRef, useState, useCallback } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
+import { useTheme } from './hooks/useTheme';
 import {
   TrophyIcon,
   LightBulbIcon,
@@ -20,7 +21,9 @@ import {
   CubeTransparentIcon,
   DocumentTextIcon,
   ArrowPathIcon,
-  BuildingOffice2Icon
+  BuildingOffice2Icon,
+  ShieldCheckIcon,
+  CloudIcon
 } from '@heroicons/react/24/outline';
 
 // 前后对比滑块组件
@@ -89,6 +92,8 @@ function ComparisonSlider({ before, after, alt }: { before: React.ReactNode; aft
 export default function Home() {
   const router = useRouter();
   const { data: session, status } = useSession();
+  const { theme } = useTheme();
+  const isDarkTheme = theme === 'dark';
 
   // 创建一个足够高的容器来实现滚动
   const containerRef = useRef<HTMLDivElement>(null);
@@ -241,19 +246,19 @@ export default function Home() {
       <div className="h-[1000vh]" />
 
       {/* 宣传内容区域 - 滚动到这里显示 */}
-      <div className="relative z-50 bg-black text-white">
+      <div className={`relative z-50 ${isDarkTheme ? 'bg-black text-white' : 'bg-slate-50 text-slate-900'}`}>
         {/* 产品特性大标题 */}
         <section className="pt-20 pb-10">
           <div className="max-w-6xl mx-auto px-8 text-center">
             <h2 className="text-5xl md:text-6xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400">
               产品特性
             </h2>
-            <p className="text-xl text-gray-400">探索万物的本质，从复杂到简单的逆熵之旅</p>
+            <p className={`text-xl ${isDarkTheme ? 'text-gray-400' : 'text-slate-800'}`}>探索万物的本质，从复杂到简单的逆熵之旅</p>
           </div>
         </section>
 
         {/* 特性介绍 1 */}
-        <section className="min-h-screen flex items-center justify-center py-10">
+        <section className={`min-h-screen flex items-center justify-center py-10 ${isDarkTheme ? '' : 'bg-white'}`}>
           <div className="max-w-6xl mx-auto px-8 grid md:grid-cols-2 gap-12 items-center">
             <div className="order-2 md:order-1">
               {/* 前后对比滑块 */}
@@ -271,7 +276,7 @@ export default function Home() {
               <h2 className="text-4xl font-bold mb-6 bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
                 智能识别
               </h2>
-              <p className="text-xl text-gray-300 leading-relaxed">
+              <p className={`text-xl leading-relaxed ${isDarkTheme ? 'text-gray-300' : 'text-slate-800'}`}>
                 上传图片或输入文字，AI 智能识别物品类型。借助先进的计算机视觉技术，
                 快速获取物品的详细信息、分类标签和简要描述。
               </p>
@@ -280,13 +285,13 @@ export default function Home() {
         </section>
 
         {/* 特性介绍 2 */}
-        <section className="min-h-screen flex items-center justify-center py-20">
+        <section className={`min-h-screen flex items-center justify-center py-20 ${isDarkTheme ? '' : 'bg-white'}`}>
           <div className="max-w-6xl mx-auto px-8 grid md:grid-cols-2 gap-12 items-center">
             <div>
               <h2 className="text-4xl font-bold mb-6 bg-gradient-to-r from-pink-400 to-rose-400 bg-clip-text text-transparent">
                 深度拆解
               </h2>
-              <p className="text-xl text-gray-300 leading-relaxed">
+              <p className={`text-xl leading-relaxed ${isDarkTheme ? 'text-gray-300' : 'text-slate-800'}`}>
                 从多个维度拆解事物本质，了解其组成部分、材料构成、
                 制作工艺以及供应链上下游。让你对事物有更深入的理解。
               </p>
@@ -307,7 +312,7 @@ export default function Home() {
         </section>
 
         {/* 特性介绍 3 */}
-        <section className="min-h-screen flex items-center justify-center py-20">
+        <section className={`min-h-screen flex items-center justify-center py-20 ${isDarkTheme ? '' : 'bg-white'}`}>
           <div className="max-w-6xl mx-auto px-8 grid md:grid-cols-2 gap-12 items-center">
             <div className="order-2 md:order-1">
               {/* 前后对比滑块 */}
@@ -325,7 +330,7 @@ export default function Home() {
               <h2 className="text-4xl font-bold mb-6 bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent">
                 可视化展示
               </h2>
-              <p className="text-xl text-gray-300 leading-relaxed">
+              <p className={`text-xl leading-relaxed ${isDarkTheme ? 'text-gray-300' : 'text-slate-800'}`}>
                 采用精美的可视化图表展示拆解结果，
                 让你直观理解知识脉络。多主题皮肤适配，无论白天黑夜都能舒适浏览。
               </p>
@@ -334,7 +339,7 @@ export default function Home() {
         </section>
 
         {/* 应用场景 */}
-        <section className="min-h-screen flex items-center justify-center py-20">
+        <section className={`min-h-screen flex items-center justify-center py-20 ${isDarkTheme ? '' : 'bg-white'}`}>
           <div className="max-w-6xl mx-auto px-8">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
@@ -346,7 +351,7 @@ export default function Home() {
               <h2 className="text-5xl md:text-6xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-green-400 via-cyan-400 to-purple-400">
                 应用场景
               </h2>
-              <p className="text-xl text-gray-400">探索万物的本质，从复杂到简单的逆熵之旅</p>
+              <p className={`text-xl ${isDarkTheme ? 'text-gray-400' : 'text-slate-800'}`}>探索万物的本质，从复杂到简单的逆熵之旅</p>
             </motion.div>
 
             <div className="grid md:grid-cols-2 gap-8">
@@ -355,15 +360,19 @@ export default function Home() {
                 whileInView={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6, delay: 0.1 }}
                 viewport={{ once: true }}
-                className="group bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20 hover:border-green-500 hover:shadow-xl transition-all cursor-pointer"
+                className={`group backdrop-blur-lg rounded-2xl p-8 border transition-all cursor-pointer ${
+                  isDarkTheme
+                    ? 'bg-white/10 border-white/20 hover:border-green-500 hover:shadow-xl'
+                    : 'bg-white border-slate-300 hover:border-green-500 hover:shadow-lg'
+                }`}
               >
                 <div className="w-14 h-14 bg-green-500/20 rounded-2xl flex items-center justify-center text-green-400 mb-5 group-hover:scale-110 transition-transform">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-7 h-7">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5" />
                   </svg>
                 </div>
-                <h3 className="text-2xl font-bold mb-3 text-white">教育学习</h3>
-                <p className="text-gray-400 leading-relaxed">
+                <h3 className={`text-2xl font-bold mb-3 ${isDarkTheme ? 'text-white' : 'text-slate-900'}`}>教育学习</h3>
+                <p className={`leading-relaxed ${isDarkTheme ? 'text-gray-400' : 'text-slate-700'}`}>
                   帮助学生理解物品的构成，将复杂的物体拆解为简单的组成部分，让学习更加直观有趣。
                 </p>
               </motion.div>
@@ -373,15 +382,19 @@ export default function Home() {
                 whileInView={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
                 viewport={{ once: true }}
-                className="group bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20 hover:border-purple-500 hover:shadow-xl transition-all cursor-pointer"
+                className={`group backdrop-blur-lg rounded-2xl p-8 border transition-all cursor-pointer ${
+                  isDarkTheme
+                    ? 'bg-white/10 border-white/20 hover:border-purple-500 hover:shadow-xl'
+                    : 'bg-white border-slate-300 hover:border-purple-500 hover:shadow-lg'
+                }`}
               >
                 <div className="w-14 h-14 bg-purple-500/20 rounded-2xl flex items-center justify-center text-purple-400 mb-5 group-hover:scale-110 transition-transform">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-7 h-7">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M9.53 16.122a3 3 0 0 0-5.78 1.128 2.25 2.25 0 0 1-2.4 2.245 4.5 4.5 0 0 0 8.4-2.245c0-.399-.078-.78-.22-1.128Zm0 0a15.998 15.998 0 0 0 3.388-1.62m-5.043-.025a15.994 15.994 0 0 1 1.622-3.395m3.42 3.42a15.995 15.995 0 0 0 4.764-4.648l3.876-5.814a1.151 1.151 0 0 0-1.597-1.597L14.146 6.32a15.996 15.996 0 0 0-4.649 4.763m3.42 3.42a6.776 6.776 0 0 0-3.42-3.42" />
                   </svg>
                 </div>
-                <h3 className="text-2xl font-bold mb-3 text-white">产品设计</h3>
-                <p className="text-gray-400 leading-relaxed">
+                <h3 className={`text-2xl font-bold mb-3 ${isDarkTheme ? 'text-white' : 'text-slate-900'}`}>产品设计</h3>
+                <p className={`leading-relaxed ${isDarkTheme ? 'text-gray-400' : 'text-slate-700'}`}>
                   分析竞品的材料组成，了解产品的内部结构和原材料来源，为产品设计提供参考。
                 </p>
               </motion.div>
@@ -391,15 +404,19 @@ export default function Home() {
                 whileInView={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6, delay: 0.3 }}
                 viewport={{ once: true }}
-                className="group bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20 hover:border-emerald-500 hover:shadow-xl transition-all cursor-pointer"
+                className={`group backdrop-blur-lg rounded-2xl p-8 border transition-all cursor-pointer ${
+                  isDarkTheme
+                    ? 'bg-white/10 border-white/20 hover:border-emerald-500 hover:shadow-xl'
+                    : 'bg-white border-slate-300 hover:border-emerald-500 hover:shadow-lg'
+                }`}
               >
                 <div className="w-14 h-14 bg-emerald-500/20 rounded-2xl flex items-center justify-center text-emerald-400 mb-5 group-hover:scale-110 transition-transform">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-7 h-7">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 0 0 8.716-6.747M12 21a9.004 9.004 0 0 1-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 0 1 7.843 4.582M12 3a8.997 8.997 0 0 0-7.843 4.582m15.686 0A11.953 11.953 0 0 1 12 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0 1 21 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0 1 12 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 0 1 3 12c0-1.605.42-3.113 1.157-4.418" />
                   </svg>
                 </div>
-                <h3 className="text-2xl font-bold mb-3 text-white">环保意识</h3>
-                <p className="text-gray-400 leading-relaxed">
+                <h3 className={`text-2xl font-bold mb-3 ${isDarkTheme ? 'text-white' : 'text-slate-900'}`}>环保意识</h3>
+                <p className={`leading-relaxed ${isDarkTheme ? 'text-gray-400' : 'text-slate-700'}`}>
                   了解产品的原材料来源和生产过程，增强环保意识，促进可持续消费。
                 </p>
               </motion.div>
@@ -409,15 +426,19 @@ export default function Home() {
                 whileInView={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6, delay: 0.4 }}
                 viewport={{ once: true }}
-                className="group bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20 hover:border-orange-500 hover:shadow-xl transition-all cursor-pointer"
+                className={`group backdrop-blur-lg rounded-2xl p-8 border transition-all cursor-pointer ${
+                  isDarkTheme
+                    ? 'bg-white/10 border-white/20 hover:border-orange-500 hover:shadow-xl'
+                    : 'bg-white border-slate-300 hover:border-orange-500 hover:shadow-lg'
+                }`}
               >
                 <div className="w-14 h-14 bg-orange-500/20 rounded-2xl flex items-center justify-center text-orange-400 mb-5 group-hover:scale-110 transition-transform">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-7 h-7">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M15.59 14.37a6 6 0 0 1-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 0 0 6.16-12.12A14.98 14.98 0 0 0 9.631 8.41m5.96 5.96a14.926 14.926 0 0 1-5.841 2.58m-.119-8.54a6 6 0 0 0-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 0 0-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 0 1-2.448-2.448 14.9 14.9 0 0 1 .06-.312m-2.24 2.39a4.493 4.493 0 0 0-1.757 4.306 4.493 4.493 0 0 0 4.306-1.758M16.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z" />
                   </svg>
                 </div>
-                <h3 className="text-2xl font-bold mb-3 text-white">趣味探索</h3>
-                <p className="text-gray-400 leading-relaxed">
+                <h3 className={`text-2xl font-bold mb-3 ${isDarkTheme ? 'text-white' : 'text-slate-900'}`}>趣味探索</h3>
+                <p className={`leading-relaxed ${isDarkTheme ? 'text-gray-400' : 'text-slate-700'}`}>
                   探索日常物品的内在世界，满足好奇心，带来意想不到的知识收获。
                 </p>
               </motion.div>
@@ -426,7 +447,7 @@ export default function Home() {
         </section>
 
         {/* 关于我们 */}
-        <section className="min-h-screen flex items-center justify-center py-20">
+        <section className={`min-h-screen flex items-center justify-center py-20 ${isDarkTheme ? '' : 'bg-white'}`}>
           <div className="max-w-6xl mx-auto px-8">
             {/* 标题 */}
             <motion.div
@@ -439,7 +460,7 @@ export default function Home() {
               <h2 className="text-5xl md:text-6xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
                 关于我们
               </h2>
-              <p className="text-xl text-gray-400 max-w-2xl mx-auto">
+              <p className={`text-xl max-w-2xl mx-auto ${isDarkTheme ? 'text-gray-400' : 'text-slate-700'}`}>
                 探索万物的本质，从复杂到简单的逆熵之旅
               </p>
             </motion.div>
@@ -451,13 +472,13 @@ export default function Home() {
                 whileInView={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6, delay: 0.1 }}
                 viewport={{ once: true }}
-                className="bg-white/10 backdrop-blur-lg rounded-xl p-8 border border-white/20"
+                className={`backdrop-blur-lg rounded-xl p-8 border ${isDarkTheme ? 'bg-white/10 border-white/20' : 'bg-white border-slate-300 shadow-lg'}`}
               >
                 <h3 className="text-2xl font-bold mb-4 flex items-center gap-3">
                   <TrophyIcon className="w-7 h-7 text-blue-400" />
                   <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">项目简介</span>
                 </h3>
-                <p className="text-gray-300 leading-relaxed">
+                <p className={`leading-relaxed ${isDarkTheme ? 'text-gray-300' : 'text-slate-700'}`}>
                   Break It Down 是一个创新的交互式可视化项目，旨在通过 AI 技术帮助用户理解复杂物体的构成。
                   我们将任何物体逐层拆解，直至最基本的原材料，让您以全新的视角认识身边的事物。
                 </p>
@@ -469,21 +490,21 @@ export default function Home() {
                 whileInView={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
                 viewport={{ once: true }}
-                className="bg-white/10 backdrop-blur-lg rounded-xl p-8 border border-white/20"
+                className={`backdrop-blur-lg rounded-xl p-8 border ${isDarkTheme ? 'bg-white/10 border-white/20' : 'bg-white border-slate-300 shadow-lg'}`}
               >
                 <h3 className="text-2xl font-bold mb-4 flex items-center gap-3">
                   <LightBulbIcon className="w-7 h-7 text-purple-400" />
                   <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">核心理念</span>
                 </h3>
-                <div className="space-y-3 text-gray-300">
+                <div className={`space-y-3 ${isDarkTheme ? 'text-gray-300' : 'text-slate-700'}`}>
                   <p>
-                    <strong className="text-white">熵逆转</strong> —
-，熵代表                    在物理学中系统的混乱程度。我们的项目反其道而行之，
+                    <strong className={isDarkTheme ? 'text-white' : 'text-slate-900'}>熵逆转</strong> —
+                    在物理学中，熵代表系统的混乱程度。我们的项目反其道而行之，
                     将复杂的成品"逆向"拆解为简单的原材料，让混乱回归有序。
                   </p>
                   <p>
                     这不仅是一个技术展示，更是一种思维方式：
-                    <strong className="text-purple-300">从复杂到简单，从表象到本质</strong>。
+                    <strong className={isDarkTheme ? 'text-purple-300' : 'text-purple-700'}>从复杂到简单，从表象到本质</strong>。
                   </p>
                 </div>
               </motion.div>
@@ -501,94 +522,136 @@ export default function Home() {
                 <SparklesIcon className="w-7 h-7 text-cyan-400" />
                 <span className="bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">功能特性</span>
               </h3>
-              <div className="grid md:grid-cols-3 gap-6">
-                <div className="bg-black/30 rounded-lg p-6">
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className={`rounded-lg p-6 border ${isDarkTheme ? 'bg-black/30' : 'bg-white border-slate-300 shadow-sm'}`}>
                   <PhotoIcon className="w-10 h-10 text-cyan-400" />
-                  <h4 className="text-xl font-semibold mb-2 text-white">AI 图片识别</h4>
-                  <p className="text-sm text-gray-400">
-                    上传图片，AI 自动识别物体类型和名称
+                  <h4 className={`text-xl font-semibold mb-2 ${isDarkTheme ? 'text-white' : 'text-slate-900'}`}>AI 图片识别</h4>
+                  <p className={`text-sm ${isDarkTheme ? 'text-gray-400' : 'text-slate-700'}`}>
+                    上传图片，AI 自动识别物体类型和名称，快速开始拆解
                   </p>
                 </div>
-                <div className="bg-black/30 rounded-lg p-6">
+                <div className={`rounded-lg p-6 border ${isDarkTheme ? 'bg-black/30' : 'bg-white border-slate-300 shadow-sm'}`}>
                   <MagnifyingGlassIcon className="w-10 h-10 text-cyan-400" />
-                  <h4 className="text-xl font-semibold mb-2 text-white">递归拆解</h4>
-                  <p className="text-sm text-gray-400">
-                    逐层拆解物体，直至最基本的原材料
+                  <h4 className={`text-xl font-semibold mb-2 ${isDarkTheme ? 'text-white' : 'text-slate-900'}`}>递归拆解</h4>
+                  <p className={`text-sm ${isDarkTheme ? 'text-gray-400' : 'text-slate-700'}`}>
+                    逐层深入拆解物体，直至最基本的原材料，完整呈现物品构成
                   </p>
                 </div>
-                <div className="bg-black/30 rounded-lg p-6">
+                <div className={`rounded-lg p-6 border ${isDarkTheme ? 'bg-black/30' : 'bg-white border-slate-300 shadow-sm'}`}>
                   <CubeIcon className="w-10 h-10 text-cyan-400" />
-                  <h4 className="text-xl font-semibold mb-2 text-white">交互式可视化</h4>
-                  <p className="text-sm text-gray-400">
-                    树状图展示，支持拖拽、缩放、查看详情
+                  <h4 className={`text-xl font-semibold mb-2 ${isDarkTheme ? 'text-white' : 'text-slate-900'}`}>交互式可视化</h4>
+                  <p className={`text-sm ${isDarkTheme ? 'text-gray-400' : 'text-slate-700'}`}>
+                    树状图谱展示，支持拖拽节点、缩放画布、全屏查看
+                  </p>
+                </div>
+                <div className={`rounded-lg p-6 border ${isDarkTheme ? 'bg-black/30' : 'bg-white border-slate-300 shadow-sm'}`}>
+                  <LightBulbIcon className="w-10 h-10 text-yellow-400" />
+                  <h4 className={`text-xl font-semibold mb-2 ${isDarkTheme ? 'text-white' : 'text-slate-900'}`}>知识卡片</h4>
+                  <p className={`text-sm ${isDarkTheme ? 'text-gray-400' : 'text-slate-700'}`}>
+                    点击任意节点，生成详细制造工艺流程，了解物品是如何被制造的
+                  </p>
+                </div>
+                <div className={`rounded-lg p-6 border ${isDarkTheme ? 'bg-black/30' : 'bg-white border-slate-300 shadow-sm'}`}>
+                  <RocketLaunchIcon className="w-10 h-10 text-green-400" />
+                  <h4 className={`text-xl font-semibold mb-2 ${isDarkTheme ? 'text-white' : 'text-slate-900'}`}>生产成本分析</h4>
+                  <p className={`text-sm ${isDarkTheme ? 'text-gray-400' : 'text-slate-700'}`}>
+                    分析各组成部分的成本占比和来源，生成详细的物料清单和价格预算
+                  </p>
+                </div>
+                <div className={`rounded-lg p-6 border ${isDarkTheme ? 'bg-black/30' : 'bg-white border-slate-300 shadow-sm'}`}>
+                  <TrophyIcon className="w-10 h-10 text-purple-400" />
+                  <h4 className={`text-xl font-semibold mb-2 ${isDarkTheme ? 'text-white' : 'text-slate-900'}`}>历史记录</h4>
+                  <p className={`text-sm ${isDarkTheme ? 'text-gray-400' : 'text-slate-700'}`}>
+                    自动保存拆解记录，随时回顾历史作品，支持重新加载和继续拆解
                   </p>
                 </div>
               </div>
             </motion.div>
-
-            {/* 技术栈和使用场景 */}
-            <div className="grid md:grid-cols-2 gap-8">
-              {/* 技术栈 */}
-              <motion.div
-                initial={{ opacity: 0, x: -30 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6, delay: 0.4 }}
-                viewport={{ once: true }}
-                className="bg-white/10 backdrop-blur-lg rounded-xl p-8 border border-white/20"
-              >
-                <h3 className="text-2xl font-bold mb-6 flex items-center gap-3">
-                  <WrenchScrewdriverIcon className="w-7 h-7 text-orange-400" />
-                  <span className="bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent">技术栈</span>
-                </h3>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="flex items-center gap-3 bg-black/30 rounded-lg p-4">
-                    <CpuChipIcon className="w-8 h-8 text-cyan-400" />
-                    <div>
-                      <div className="font-semibold text-white">Next.js 15</div>
-                      <div className="text-xs text-gray-400">前端框架</div>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3 bg-black/30 rounded-lg p-4">
-                    <CpuChipIcon className="w-8 h-8 text-purple-400" />
-                    <div>
-                      <div className="font-semibold text-white">AI 大模型</div>
-                      <div className="text-xs text-gray-400">智能识别</div>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3 bg-black/30 rounded-lg p-4">
-                    <PaintBrushIcon className="w-8 h-8 text-pink-400" />
-                    <div>
-                      <div className="font-semibold text-white">React Flow</div>
-                      <div className="text-xs text-gray-400">图形可视化</div>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3 bg-black/30 rounded-lg p-4">
-                    <span className="text-2xl">✨</span>
-                    <div>
-                      <div className="font-semibold text-white">Framer</div>
-                      <div className="text-xs text-gray-400">动画效果</div>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-
-            </div>
           </div>
         </section>
 
-        {/* CTA 按钮区域 - 在最底部 */}
-        <section className="min-h-[50vh] flex items-center justify-center py-20">
+        {/* 技术栈 */}
+        <section className={`min-h-screen flex items-center justify-center py-20 ${isDarkTheme ? '' : 'bg-slate-50'}`}>
+              <div className="max-w-6xl mx-auto px-8 w-full">
+                <motion.div
+                  initial={{ opacity: 0, x: -30 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.6, delay: 0.4 }}
+                  viewport={{ once: true }}
+                  className={`backdrop-blur-lg rounded-xl p-8 border ${isDarkTheme ? 'bg-white/10 border-white/20' : 'bg-white border-slate-300 shadow-lg'}`}
+                >
+              <h3 className="text-2xl font-bold mb-6 flex items-center gap-3">
+                <WrenchScrewdriverIcon className="w-7 h-7 text-orange-400" />
+                <span className="bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent">技术栈</span>
+              </h3>
+              <div className="grid md:grid-cols-4 gap-4">
+                  <div className={`rounded-lg p-4 border ${isDarkTheme ? 'bg-black/30' : 'bg-white border-slate-300 shadow-sm'}`}>
+                    <CpuChipIcon className="w-8 h-8 text-cyan-400" />
+                    <h4 className={`text-base font-semibold mb-1 ${isDarkTheme ? 'text-white' : 'text-slate-900'}`}>Next.js 15</h4>
+                    <p className={`text-sm ${isDarkTheme ? 'text-gray-400' : 'text-slate-700'}`}>React 19 全栈框架</p>
+                  </div>
+
+                  <div className={`rounded-lg p-4 border ${isDarkTheme ? 'bg-black/30' : 'bg-white border-slate-300 shadow-sm'}`}>
+                    <CpuChipIcon className="w-8 h-8 text-purple-400" />
+                    <h4 className={`text-base font-semibold mb-1 ${isDarkTheme ? 'text-white' : 'text-slate-900'}`}>Claude AI API</h4>
+                    <p className={`text-sm ${isDarkTheme ? 'text-gray-400' : 'text-slate-700'}`}>智能拆解与识别</p>
+                  </div>
+
+                  <div className={`rounded-lg p-4 border ${isDarkTheme ? 'bg-black/30' : 'bg-white border-slate-300 shadow-sm'}`}>
+                    <PaintBrushIcon className="w-8 h-8 text-pink-400" />
+                    <h4 className={`text-base font-semibold mb-1 ${isDarkTheme ? 'text-white' : 'text-slate-900'}`}>React Flow</h4>
+                    <p className={`text-sm ${isDarkTheme ? 'text-gray-400' : 'text-slate-700'}`}>交互式图谱引擎</p>
+                  </div>
+
+                  <div className={`rounded-lg p-4 border ${isDarkTheme ? 'bg-black/30' : 'bg-white border-slate-300 shadow-sm'}`}>
+                    <SparklesIcon className="w-8 h-8 text-pink-400" />
+                    <h4 className={`text-base font-semibold mb-1 ${isDarkTheme ? 'text-white' : 'text-slate-900'}`}>Framer Motion</h4>
+                    <p className={`text-sm ${isDarkTheme ? 'text-gray-400' : 'text-slate-700'}`}>流畅动画效果</p>
+                  </div>
+
+                  <div className={`rounded-lg p-4 border ${isDarkTheme ? 'bg-black/30' : 'bg-white border-slate-300 shadow-sm'}`}>
+                    <CubeTransparentIcon className="w-8 h-8 text-green-400" />
+                    <h4 className={`text-base font-semibold mb-1 ${isDarkTheme ? 'text-white' : 'text-slate-900'}`}>Tailwind CSS</h4>
+                    <p className={`text-sm ${isDarkTheme ? 'text-gray-400' : 'text-slate-700'}`}>现代响应式样式</p>
+                  </div>
+
+                  <div className={`rounded-lg p-4 border ${isDarkTheme ? 'bg-black/30' : 'bg-white border-slate-300 shadow-sm'}`}>
+                    <BoltIcon className="w-8 h-8 text-yellow-400" />
+                    <h4 className={`text-base font-semibold mb-1 ${isDarkTheme ? 'text-white' : 'text-slate-900'}`}>Prisma + PostgreSQL</h4>
+                    <p className={`text-sm ${isDarkTheme ? 'text-gray-400' : 'text-slate-700'}`}>数据持久化存储</p>
+                  </div>
+
+                  <div className={`rounded-lg p-4 border ${isDarkTheme ? 'bg-black/30' : 'bg-white border-slate-300 shadow-sm'}`}>
+                    <ShieldCheckIcon className="w-8 h-8 text-green-400" />
+                    <h4 className={`text-base font-semibold mb-1 ${isDarkTheme ? 'text-white' : 'text-slate-900'}`}>NextAuth.js</h4>
+                    <p className={`text-sm ${isDarkTheme ? 'text-gray-400' : 'text-slate-700'}`}>安全用户认证</p>
+                  </div>
+
+                  <div className={`rounded-lg p-4 border ${isDarkTheme ? 'bg-black/30' : 'bg-white border-slate-300 shadow-sm'}`}>
+                    <CloudIcon className="w-8 h-8 text-blue-400" />
+                    <h4 className={`text-base font-semibold mb-1 ${isDarkTheme ? 'text-white' : 'text-slate-900'}`}>Vercel</h4>
+                    <p className={`text-sm ${isDarkTheme ? 'text-gray-400' : 'text-slate-700'}`}>云端部署托管</p>
+                  </div>
+
+              </div>
+
+            </motion.div>
+          </div>
+        </section>
+
+        {/* CTA 按钮区域 */}
+        <section className={`min-h-[50vh] flex items-center justify-center py-20 ${isDarkTheme ? '' : 'bg-white'}`}>
           <div className="text-center">
             <h2 className="text-5xl font-bold mb-8">
               准备好探索了吗？
             </h2>
-            <p className="text-xl text-gray-400 mb-12 max-w-xl mx-auto">
+            <p className={`text-xl mb-12 max-w-xl mx-auto ${isDarkTheme ? 'text-gray-400' : 'text-slate-700'}`}>
               从今天开始，用 AI 帮你拆解万物的本质
             </p>
             <div className="flex flex-col sm:flex-row gap-6 justify-center">
               {status === 'authenticated' ? (
                 <button
-                  className="px-12 py-5 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl font-bold text-xl shadow-2xl hover:shadow-purple-500/50 transition-all duration-300 hover:scale-105"
+                  className="group relative px-12 py-5 bg-gradient-to-r from-cyan-500 via-blue-500 to-cyan-500 bg-size-200 animate-gradient rounded-xl font-bold text-xl shadow-2xl hover:shadow-cyan-500/40 transition-all duration-300 hover:scale-105 overflow-hidden"
                   onClick={() => {
                     localStorage.removeItem('deconstructionTree');
                     localStorage.removeItem('identificationResult');
@@ -604,14 +667,18 @@ export default function Home() {
                     router.push('/setup');
                   }}
                 >
-                  <RocketLaunchIcon className="w-5 h-5 mr-2" />新建拆解
+                  <span className="relative z-10 flex items-center">
+                    <RocketLaunchIcon className="w-6 h-6 mr-2 group-hover:animate-bounce" />新建拆解
+                  </span>
                 </button>
               ) : (
                 <button
-                  className="px-12 py-5 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl font-bold text-xl shadow-2xl hover:shadow-purple-500/50 transition-all duration-300 hover:scale-105"
+                  className="group relative px-12 py-5 bg-gradient-to-r from-violet-500 via-purple-500 to-violet-500 bg-size-200 animate-gradient rounded-xl font-bold text-xl shadow-2xl hover:shadow-purple-500/40 transition-all duration-300 hover:scale-105 overflow-hidden"
                   onClick={() => router.push('/login')}
                 >
-                  <LockClosedIcon className="w-5 h-5 mr-2" />登录 / 注册
+                  <span className="relative z-10 flex items-center">
+                    <LockClosedIcon className="w-6 h-6 mr-2" />登录 / 注册
+                  </span>
                 </button>
               )}
             </div>

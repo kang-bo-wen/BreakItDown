@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { useTheme } from '../hooks/useTheme';
+import { getDisplayIcon } from '../lib/icon-utils';
 import { BoltIcon, MagnifyingGlassIcon, FaceSmileIcon, AcademicCapIcon, CubeIcon, BuildingOffice2Icon, RocketLaunchIcon, PhotoIcon, PencilSquareIcon, DocumentTextIcon } from '@heroicons/react/24/outline';
 
 interface IdentificationResult {
@@ -584,7 +585,7 @@ function SetupContent() {
                 }`}>
                   <div className="flex items-start gap-4">
                     {identificationResult.icon && (
-                      <div className="text-5xl">{identificationResult.icon}</div>
+                      <div className="text-5xl">{getDisplayIcon(identificationResult.icon)}</div>
                     )}
                     <div className="flex-1">
                       <div className={`text-xl font-bold mb-2 ${

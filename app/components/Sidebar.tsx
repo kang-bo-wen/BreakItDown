@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react'
 import { useSession, signOut } from 'next-auth/react'
 import { useRouter, usePathname } from 'next/navigation'
+import { useTheme } from '../hooks/useTheme'
+import { getDisplayIcon } from '../lib/icon-utils'
 import ThemeSwitcher from './ThemeSwitcher'
 
 interface SessionItem {
@@ -19,6 +21,8 @@ export default function Sidebar() {
   const { data: session, status } = useSession()
   const router = useRouter()
   const pathname = usePathname()
+  const { theme } = useTheme()
+  const isDarkTheme = theme === 'dark'
   const [isOpen, setIsOpen] = useState(false)
   const [sessions, setSessions] = useState<SessionItem[]>([])
   const [isLoadingSessions, setIsLoadingSessions] = useState(false)
@@ -89,6 +93,7 @@ export default function Sidebar() {
   useEffect(() => {
     const handleOpenSidebar = () => {
       setIsOpen(true)
+      window.dispatchEvent(new CustomEvent('sidebar-opened'))
     }
 
     window.addEventListener('open-sidebar', handleOpenSidebar)
@@ -130,57 +135,50 @@ export default function Sidebar() {
     }
   }
 
+  // 关闭侧边栏并通知
+  const closeSidebar = () => {
+    setIsOpen(false);
+    window.dispatchEvent(new CustomEvent('close-sidebar'));
+  };
+
   return (
     <>
-      {/* 汉堡菜单按钮 */}
-      <button
-        onClick={() => setIsOpen(true)}
-        className="fixed top-4 left-4 z-40 p-3 bg-gray-900/80 hover:bg-gray-900 rounded-lg backdrop-blur-sm transition-all"
-        aria-label="打开菜单"
-      >
-        <svg
-          className="w-6 h-6 text-white"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M4 6h16M4 12h16M4 18h16"
-          />
-        </svg>
-      </button>
-
       {/* 遮罩层 */}
       {isOpen && (
         <div
           className="fixed inset-0 bg-black/50 z-40 backdrop-blur-sm"
-          onClick={() => setIsOpen(false)}
+          onClick={closeSidebar}
         />
       )}
 
       {/* 侧边栏 */}
       <div
-        className={`fixed top-0 left-0 h-full w-80 bg-gray-900 text-white z-50 transform transition-transform duration-300 ease-in-out ${
+        className={`fixed top-0 left-0 h-full w-80 z-50 transform transition-transform duration-300 ease-in-out ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
+        } ${
+          isDarkTheme
+            ? 'bg-gray-900 text-white border-r border-white/10'
+            : 'bg-white text-slate-900 border-r border-slate-200'
         }`}
       >
         <div className="flex flex-col h-full">
           {/* 头部 */}
-          <div className="p-6 border-b border-gray-800">
+          <div className={`p-6 border-b ${isDarkTheme ? 'border-gray-800' : 'border-slate-200'}`}>
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+              <h2 className={`text-2xl font-bold bg-gradient-to-r bg-clip-text text-transparent ${
+                isDarkTheme ? 'from-blue-400 to-purple-400' : 'from-cyan-600 to-blue-600'
+              }`}>
                 Break It Down
               </h2>
               <button
-                onClick={() => setIsOpen(false)}
-                className="p-2 hover:bg-gray-800 rounded-lg transition-colors"
+                onClick={closeSidebar}
+                className={`p-2 rounded-lg transition-colors ${
+                  isDarkTheme ? 'hover:bg-gray-800' : 'hover:bg-slate-100'
+                }`}
                 aria-label="关闭菜单"
               >
                 <svg
-                  className="w-6 h-6"
+                  className={`w-6 h-6 ${isDarkTheme ? 'text-white' : 'text-slate-600'}`}
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -197,22 +195,24 @@ export default function Sidebar() {
 
             {/* 用户信息 */}
             {session?.user && (
-              <div className="flex items-center gap-3 p-3 bg-gray-800 rounded-lg">
-                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-lg font-bold">
+              <div className={`flex items-center gap-3 p-3 rounded-lg ${
+                isDarkTheme ? 'bg-gray-800' : 'bg-slate-100'
+              }`}>
+                <div className="w-10 h-10 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-full flex items-center justify-center text-lg font-bold text-white">
                   {session.user.email?.[0].toUpperCase()}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium truncate">
+                  <p className={`text-sm font-medium truncate ${isDarkTheme ? 'text-white' : 'text-slate-900'}`}>
                     {session.user.email}
                   </p>
-                  <p className="text-xs text-gray-400">已登录</p>
+                  <p className={`text-xs ${isDarkTheme ? 'text-gray-400' : 'text-slate-500'}`}>已登录</p>
                 </div>
               </div>
             )}
           </div>
 
           {/* 新建按钮 */}
-          <div className="p-4 border-b border-gray-800">
+          <div className={`p-4 border-b ${isDarkTheme ? 'border-gray-800' : 'border-slate-200'}`}>
             <button
               onClick={() => {
                 // 清除所有本地存储数据
@@ -227,7 +227,7 @@ export default function Sidebar() {
                 // 使用 window.location 强制刷新到新页面
                 window.location.href = '/setup';
               }}
-              className="w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors bg-blue-600 hover:bg-blue-700 text-white"
+              className="w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors bg-cyan-600 hover:bg-cyan-700 text-white"
             >
               <svg
                 className="w-5 h-5"
@@ -249,19 +249,19 @@ export default function Sidebar() {
           {/* 历史记录列表 */}
           <div className="flex-1 overflow-y-auto p-4">
             <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-semibold text-gray-400">拆解历史</h3>
+              <h3 className={`text-sm font-semibold ${isDarkTheme ? 'text-gray-400' : 'text-slate-500'}`}>拆解历史</h3>
               <button
                 onClick={() => {
                   sessionStorage.removeItem('sidebar-sessions-cache')
                   setHasFetchedSessions(false)
                   fetchSessions()
                 }}
-                className="p-1 hover:bg-gray-800 rounded transition-colors"
+                className={`p-1 rounded transition-colors ${isDarkTheme ? 'hover:bg-gray-800' : 'hover:bg-slate-100'}`}
                 title="刷新列表"
                 disabled={isLoadingSessions}
               >
                 <svg
-                  className={`w-4 h-4 text-gray-400 ${isLoadingSessions ? 'animate-spin' : ''}`}
+                  className={`w-4 h-4 ${isDarkTheme ? 'text-gray-400' : 'text-slate-500'} ${isLoadingSessions ? 'animate-spin' : ''}`}
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -277,11 +277,11 @@ export default function Sidebar() {
             </div>
             {isLoadingSessions ? (
               <div className="flex flex-col items-center justify-center py-8 gap-3">
-                <div className="w-8 h-8 border-4 border-blue-500/30 border-t-blue-500 rounded-full animate-spin"></div>
-                <span className="text-gray-400 text-sm">加载中...</span>
+                <div className="w-8 h-8 border-4 border-cyan-500/30 border-t-cyan-500 rounded-full animate-spin"></div>
+                <span className={`text-sm ${isDarkTheme ? 'text-gray-400' : 'text-slate-500'}`}>加载中...</span>
               </div>
             ) : sessions.length === 0 ? (
-              <div className="text-center py-8 text-gray-500 text-sm">
+              <div className={`text-center py-8 text-sm ${isDarkTheme ? 'text-gray-500' : 'text-slate-500'}`}>
                 暂无历史记录
               </div>
             ) : (
@@ -293,20 +293,26 @@ export default function Sidebar() {
                       setIsOpen(false); // 关闭侧边栏
                       router.push(`/canvas?sessionId=${item.id}`);
                     }}
-                    className="group relative bg-gray-800 hover:bg-gray-700 rounded-lg p-3 cursor-pointer transition-all"
+                    className={`group relative rounded-lg p-3 cursor-pointer transition-all ${
+                      isDarkTheme
+                        ? 'bg-gray-800 hover:bg-gray-700'
+                        : 'bg-slate-100 hover:bg-slate-200'
+                    }`}
                   >
                     <div className="flex items-start gap-3">
                       {/* 图标或图片 */}
-                      <div className="flex-shrink-0 w-10 h-10 bg-gray-700 rounded-lg flex items-center justify-center text-xl">
-                        {item.rootObjectIcon || '📦'}
+                      <div className={`flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center text-xl ${
+                        isDarkTheme ? 'bg-gray-700' : 'bg-slate-200'
+                      }`}>
+                        {getDisplayIcon(item.rootObjectIcon)}
                       </div>
 
                       {/* 内容 */}
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-white truncate">
+                        <p className={`text-sm font-medium truncate ${isDarkTheme ? 'text-white' : 'text-slate-900'}`}>
                           {item.title}
                         </p>
-                        <p className="text-xs text-gray-400 mt-1">
+                        <p className={`text-xs mt-1 ${isDarkTheme ? 'text-gray-400' : 'text-slate-500'}`}>
                           {new Date(item.updatedAt).toLocaleDateString('zh-CN', {
                             month: 'short',
                             day: 'numeric',
@@ -319,11 +325,13 @@ export default function Sidebar() {
                       {/* 删除按钮 */}
                       <button
                         onClick={(e) => handleDeleteSession(item.id, e)}
-                        className="opacity-0 group-hover:opacity-100 p-1 hover:bg-red-600/20 rounded transition-all"
+                        className={`opacity-0 group-hover:opacity-100 p-1 rounded transition-all ${
+                          isDarkTheme ? 'hover:bg-red-600/20' : 'hover:bg-red-100'
+                        }`}
                         title="删除"
                       >
                         <svg
-                          className="w-4 h-4 text-red-400"
+                          className={`w-4 h-4 ${isDarkTheme ? 'text-red-400' : 'text-red-500'}`}
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
@@ -344,15 +352,19 @@ export default function Sidebar() {
           </div>
 
           {/* 主题切换 */}
-          <div className="p-4 border-t border-gray-800">
+          <div className={`p-4 border-t ${isDarkTheme ? 'border-gray-800' : 'border-slate-200'}`}>
             <ThemeSwitcher />
           </div>
 
           {/* 底部 */}
-          <div className="p-4 border-t border-gray-800">
+          <div className={`p-4 border-t ${isDarkTheme ? 'border-gray-800' : 'border-slate-200'}`}>
             <button
               onClick={() => signOut({ callbackUrl: '/' })}
-              className="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-red-600/20 text-red-400 hover:text-red-300 transition-colors"
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+                isDarkTheme
+                  ? 'hover:bg-red-600/20 text-red-400 hover:text-red-300'
+                  : 'hover:bg-red-50 text-red-500 hover:text-red-600'
+              }`}
             >
               <svg
                 className="w-5 h-5"
