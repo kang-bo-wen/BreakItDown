@@ -4,11 +4,12 @@ import { prisma } from '@/lib/db';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { key: string } }
+  { params }: { params: Promise<{ key: string }> }
 ) {
   try {
+    const { key } = await params;
     const template = await prisma.templateSession.findFirst({
-      where: { templateKey: params.key, isActive: true },
+      where: { templateKey: key, isActive: true },
       select: {
         id: true,
         templateKey: true,

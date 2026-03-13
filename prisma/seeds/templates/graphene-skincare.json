@@ -1,0 +1,172 @@
+{
+  "templateKey": "graphene-skincare",
+  "displayName": "石墨烯导热面膜",
+  "category": "高端美妆与新能源材料",
+  "keywords": "[\"石墨烯面膜\",\"导热面膜\",\"石墨烯护肤\",\"graphene mask\",\"石墨烯美容\",\"热效面膜\",\"石墨烯材料护肤品\"]",
+  "dimensions": "[\"chemical\",\"mechanical\"]",
+  "identificationResult": {
+    "name": "石墨烯导热面膜",
+    "category": "高端美妆与新能源材料",
+    "brief_description": "将新能源材料石墨烯的超高导热性引入护肤领域，通过均匀热场促进活性成分渗透的高科技美容产品",
+    "icon": "🎭",
+    "searchTerm": "graphene thermal face mask skincare"
+  },
+  "treeData": {
+    "root": {
+      "name": "石墨烯导热面膜",
+      "description": "以石墨烯导热膜为基底的功能性面膜，由石墨烯基底层、活性精华液体系与外层封装三大子系统构成，单片净重25g。",
+      "icon": "🎭",
+      "searchTerm": "graphene face mask",
+      "is_raw_material": false,
+      "children": [
+        {
+          "name": "石墨烯导热基底",
+          "description": "面膜的核心功能层，利用石墨烯超高导热系数（5300 W/m·K）实现面部均匀热场，促进精华渗透。",
+          "icon": "⬡",
+          "searchTerm": "graphene thermal film substrate",
+          "is_raw_material": false,
+          "children": [
+            {
+              "name": "化学气相沉积石墨烯膜",
+              "description": "CVD法制备的单层/少层石墨烯薄膜，转移至PET基底，面电阻<100Ω/□，导热系数>3000 W/m·K。",
+              "icon": "🔬",
+              "searchTerm": "CVD graphene film transfer",
+              "is_raw_material": false,
+              "children": [
+                {
+                  "name": "高纯铜箔（CVD基底）",
+                  "description": "纯度99.99%的电解铜箔，厚度25μm，作为CVD石墨烯生长的催化基底，生长后需化学刻蚀去除。",
+                  "icon": "🔩",
+                  "searchTerm": "copper foil CVD graphene substrate",
+                  "is_raw_material": true,
+                  "children": []
+                },
+                {
+                  "name": "甲烷（CH₄，99.999%）",
+                  "description": "CVD生长石墨烯的碳源气体，在1000°C高温下裂解提供碳原子，纯度直接影响石墨烯质量。",
+                  "icon": "⚗️",
+                  "searchTerm": "methane carbon source CVD graphene",
+                  "is_raw_material": true,
+                  "children": []
+                }
+              ]
+            },
+            {
+              "name": "PET透明基底膜",
+              "description": "厚度50μm的聚对苯二甲酸乙二醇酯薄膜，作为石墨烯的支撑载体，透明度>90%，柔韧性好。",
+              "icon": "📄",
+              "searchTerm": "PET film transparent substrate",
+              "is_raw_material": true,
+              "children": []
+            }
+          ]
+        },
+        {
+          "name": "活性精华液体系",
+          "description": "负载于石墨烯基底的功能性护肤配方，在热场辅助下深层渗透至真皮层。",
+          "icon": "💧",
+          "searchTerm": "active serum skincare formulation",
+          "is_raw_material": false,
+          "children": [
+            {
+              "name": "透明质酸钠（三重分子量）",
+              "description": "大（1800kDa）、中（800kDa）、小（50kDa）三种分子量透明质酸复配，分别作用于角质层、表皮层和真皮层，补水效率提升300%。",
+              "icon": "💦",
+              "searchTerm": "hyaluronic acid triple molecular weight",
+              "is_raw_material": true,
+              "children": []
+            },
+            {
+              "name": "烟酰胺（维生素B3）",
+              "description": "浓度5%的烟酰胺，抑制黑色素转运，提亮肤色，同时增强皮肤屏障功能，是面膜的核心功效成分。",
+              "icon": "✨",
+              "searchTerm": "niacinamide vitamin B3 skincare",
+              "is_raw_material": true,
+              "children": []
+            },
+            {
+              "name": "六胜肽（Argireline）",
+              "description": "乙酰基六肽-3，浓度10ppm，模拟肉毒素机制抑制肌肉收缩，淡化动态纹，是高端抗老面膜的标志性成分。",
+              "icon": "🔬",
+              "searchTerm": "argireline hexapeptide anti-aging",
+              "is_raw_material": true,
+              "children": []
+            }
+          ]
+        },
+        {
+          "name": "外层封装系统",
+          "description": "保护精华液、实现贴合面部的物理结构，包含无纺布载体和铝箔密封包装。",
+          "icon": "📦",
+          "searchTerm": "face mask packaging nonwoven",
+          "is_raw_material": false,
+          "children": [
+            {
+              "name": "蚕丝蛋白无纺布",
+              "description": "含蚕丝蛋白18%的复合无纺布，厚度0.3mm，贴合性好，透气率高，减少精华液蒸发损失。",
+              "icon": "🧵",
+              "searchTerm": "silk protein nonwoven fabric mask",
+              "is_raw_material": false,
+              "children": [
+                {
+                  "name": "蚕丝蛋白（丝素蛋白）",
+                  "description": "从蚕茧中提取的天然蛋白质，分子量约100kDa，具有良好的生物相容性和保湿性。",
+                  "icon": "🐛",
+                  "searchTerm": "silk fibroin protein extraction",
+                  "is_raw_material": true,
+                  "children": []
+                }
+              ]
+            },
+            {
+              "name": "铝箔复合密封袋",
+              "description": "PET/AL/PE三层复合结构密封袋，阻氧率<0.1cc/m²·day，防止精华液氧化，保质期24个月。",
+              "icon": "🗂️",
+              "searchTerm": "aluminum foil composite packaging mask",
+              "is_raw_material": true,
+              "children": []
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "agentReports": {
+    "market_analysis": {
+      "title": "市场分析报告",
+      "content": "全球功能性面膜市场2023年规模约45亿美元，中国是最大单一市场（占比35%）。石墨烯美容产品作为新兴细分，2023年中国市场规模约8亿元，年增速65%。消费者对'黑科技'成分的溢价接受度高，石墨烯概念产品平均售价是普通面膜的3-5倍。",
+      "summary": "功能性面膜高速增长，石墨烯概念溢价显著"
+    },
+    "supply_chain": {
+      "title": "供应链分析",
+      "content": "CVD石墨烯薄膜国内主要供应商包括第六元素、烯碳新材等，产能快速扩张，价格从2018年的5000元/m²降至2023年的800元/m²。精华液原料透明质酸由华熙生物、焦点生物等国内企业主导，全球市场份额超70%。六胜肽等高端肽类原料仍依赖进口。",
+      "summary": "石墨烯膜国产化进展快，高端肽类原料依赖进口"
+    },
+    "cost_breakdown": {
+      "title": "成本拆解",
+      "content": "单片石墨烯导热面膜BOM成本约15-22元：石墨烯基底占30%（4.5-6.6元），精华液配方占45%（6.75-9.9元），无纺布载体占15%（2.25-3.3元），包装及其他占10%。终端零售价通常80-200元/片，毛利率75-85%。",
+      "summary": "BOM成本15-22元，终端售价80-200元/片"
+    },
+    "competitor_analysis": {
+      "title": "竞品分析",
+      "content": "国内品牌：珀莱雅、薇诺娜等已推出石墨烯概念面膜，售价50-120元/片。国际品牌：SK-II、兰蔻等尚未明确布局石墨烯赛道，主要竞争来自国内新锐品牌。差异化竞争点在于石墨烯含量的真实性验证和功效临床数据。",
+      "summary": "国内品牌主导，功效验证是差异化关键"
+    },
+    "technology_assessment": {
+      "title": "技术评估",
+      "content": "核心技术挑战：1）CVD石墨烯大面积转移良率低，面积>100cm²时缺陷率显著上升；2）石墨烯与精华液的界面结合稳定性需要特殊处理；3）石墨烯导热效果的临床验证数据不足；4）消费者对石墨烯安全性存在疑虑，需要毒理学数据支撑。",
+      "summary": "大面积转移良率和临床验证是核心技术挑战"
+    },
+    "risk_assessment": {
+      "title": "风险评估",
+      "content": "主要风险：1）市场上存在大量'伪石墨烯'产品，损害品类信誉；2）石墨烯纳米材料的皮肤安全性监管趋严；3）消费者教育成本高，石墨烯导热机制不易理解；4）CVD石墨烯成本仍高于传统面膜基底材料10倍以上。",
+      "summary": "伪劣产品泛滥和安全监管是主要风险"
+    },
+    "investment_outlook": {
+      "title": "投资展望",
+      "content": "石墨烯美容赛道处于早期爆发阶段，建议关注：1）具备CVD石墨烯自主生产能力的品牌；2）有完整临床功效数据的企业；3）能将石墨烯导热技术与其他功效成分协同的创新配方商。未来2-3年是品类教育和标准建立的关键期。",
+      "summary": "早期爆发阶段，自主生产能力和临床数据是核心壁垒"
+    }
+  },
+  "productionAnalysis": null
+}

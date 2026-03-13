@@ -4,10 +4,13 @@
       "command": "npx",
       "args": [
         "-y",
-        "@playwright/mcp@latest"
+        "@playwright/mcp@latest",
+        "--base-url",
+        "http://47.103.149.13:3000"
       ],
       "env": {
-        "PLAYWRIGHT_BROWSERS_PATH": "0"
+        "PLAYWRIGHT_BROWSERS_PATH": "0",
+        "PLAYWRIGHT_HEADLESS": "false"
       }
     }
   }

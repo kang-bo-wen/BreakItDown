@@ -1,0 +1,94 @@
+{
+  "_说明": "运营填写指南 — 以下字段全部必填（除标注可选外）。文件名建议用英文小写+连字符，如 my-product.json。以下划线开头的文件（如本文件）会被脚本自动跳过。",
+
+  "templateKey": "my-product",
+  "displayName": "我的产品名称",
+  "category": "极客定制",
+
+  "_category可选值": ["大国重器", "极客定制", "生活黑科技", "绿色新消费"],
+
+  "keywords": "[\"关键词1\",\"关键词2\",\"英文keyword\",\"别名\"]",
+
+  "_dimensions说明": "可选字段。标记该案例涉及哪些内容维度，可多选。缺省默认 mechanical。",
+  "dimensions": "[\"mechanical\",\"electronic\"]",
+  "_dimensions可选值": ["mechanical", "electronic", "chemical", "process"],
+
+  "identificationResult": {
+    "name": "产品中文名",
+    "category": "极客定制",
+    "brief_description": "一句话描述这个产品是什么",
+    "icon": "⌨️",
+    "searchTerm": "product english name for image search"
+  },
+
+  "treeData": {
+    "root": {
+      "name": "产品名称",
+      "description": "产品整体描述",
+      "icon": "⌨️",
+      "searchTerm": "product english search term",
+      "is_raw_material": false,
+      "children": [
+        {
+          "name": "一级子组件",
+          "description": "这个组件的作用",
+          "icon": "🔩",
+          "searchTerm": "component english name",
+          "is_raw_material": false,
+          "children": [
+            {
+              "name": "二级子组件或原材料",
+              "description": "描述",
+              "icon": "⚙️",
+              "searchTerm": "material english name",
+              "is_raw_material": true,
+              "children": []
+            }
+          ]
+        }
+      ]
+    }
+  },
+
+  "_agentReports说明": "必须包含恰好 7 份报告，key 名称自定义，value 是报告内容对象。",
+  "agentReports": {
+    "market_analysis": {
+      "title": "市场分析报告",
+      "content": "报告正文内容...",
+      "summary": "一句话摘要"
+    },
+    "supply_chain": {
+      "title": "供应链分析",
+      "content": "...",
+      "summary": "..."
+    },
+    "cost_breakdown": {
+      "title": "成本拆解",
+      "content": "...",
+      "summary": "..."
+    },
+    "competitor_analysis": {
+      "title": "竞品分析",
+      "content": "...",
+      "summary": "..."
+    },
+    "technology_assessment": {
+      "title": "技术评估",
+      "content": "...",
+      "summary": "..."
+    },
+    "risk_assessment": {
+      "title": "风险评估",
+      "content": "...",
+      "summary": "..."
+    },
+    "investment_outlook": {
+      "title": "投资展望",
+      "content": "...",
+      "summary": "..."
+    }
+  },
+
+  "_productionAnalysis说明": "可选字段。预设的生产分析数据，不填则留空。",
+  "productionAnalysis": null
+}

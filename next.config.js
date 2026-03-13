@@ -8,6 +8,8 @@ const nextConfig = {
     // 优化编译性能
     workerThreads: false,
     cpus: 1,
+    // 启用服务器启动钩子（用于自动入库模板）
+    instrumentationHook: true,
   },
   images: {
     remotePatterns: [

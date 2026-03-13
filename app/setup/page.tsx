@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, useRef, Suspense } from 'react';
 import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
@@ -90,6 +90,14 @@ function SetupContent() {
   const [professionalLevel, setProfessionalLevel] = useState(70);
   const [detailLevel, setDetailLevel] = useState(50);
   const [customPrompt, setCustomPrompt] = useState('');
+
+  // 视频过渡动画状态
+  const [showVideoIntro, setShowVideoIntro] = useState(false);
+  const [pendingNavigation, setPendingNavigation] = useState<(() => void) | null>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  // 选中的模板 key
+  const [selectedTemplateKey, setSelectedTemplateKey] = useState<string | null>(null);
 
   // Compress image function
   const compressImage = async (file: File, maxWidth: number = 800, maxHeight: number = 800, quality: number = 0.8): Promise<File> => {
@@ -229,6 +237,7 @@ function SetupContent() {
   // 选择模板
   const selectTemplate = async (template: Template) => {
     setIsIdentifying(true);
+    setSelectedTemplateKey(template.templateKey);
     try {
       const result = template.identificationResult as IdentificationResult;
       setIdentificationResult(result);
@@ -260,6 +269,7 @@ function SetupContent() {
 
   // Save state to localStorage and navigate to canvas
   const navigateToCanvas = async () => {
+    const doNavigate = async () => {
     const existingSetupData = localStorage.getItem('setupState');
     let existingSessionId = null;
     if (existingSetupData) {
@@ -322,6 +332,16 @@ function SetupContent() {
     localStorage.setItem('fromSetup', 'true');
     sessionStorage.removeItem('sidebar-sessions-cache');
     router.push('/canvas');
+    };
+
+    // 机器狗模板：先播放视频动画
+    const templateKey = selectedTemplateKey || localStorage.getItem('templateKey');
+    if (templateKey === 'robot-dog') {
+      setPendingNavigation(() => doNavigate);
+      setShowVideoIntro(true);
+    } else {
+      doNavigate();
+    }
   };
 
   // Load from localStorage on mount
@@ -1042,6 +1062,34 @@ function SetupContent() {
           </div>
         </div>
       </div>
+
+      {/* 机器狗视频过渡动画遮罩 */}
+      {showVideoIntro && (
+        <div className="fixed inset-0 z-50 bg-black flex items-center justify-center">
+          <video
+            ref={videoRef}
+            src="/videos/robot-dog-intro.mp4"
+            autoPlay
+            muted
+            playsInline
+            className="w-full h-full object-cover"
+            onEnded={() => {
+              setShowVideoIntro(false);
+              if (pendingNavigation) pendingNavigation();
+            }}
+          />
+          {/* 跳过按钮 */}
+          <button
+            onClick={() => {
+              setShowVideoIntro(false);
+              if (pendingNavigation) pendingNavigation();
+            }}
+            className="absolute bottom-8 right-8 px-4 py-2 bg-white/10 hover:bg-white/20 text-white text-sm rounded-full backdrop-blur-sm border border-white/20 transition-all"
+          >
+            跳过 →
+          </button>
+        </div>
+      )}
     </div>
   );
 }

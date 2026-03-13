@@ -116,6 +116,10 @@ model TemplateSession {
   category          String              // 分类：大国重器、极客定制、生活黑科技、绿色新消费
   keywords          String              // 关键词列表（JSON数组），用于匹配用户输入
 
+  // 内容维度标记（JSON数组），如 ["mechanical","electronic"]
+  // 可选值: mechanical | electronic | chemical | process
+  dimensions        String   @default("[\"mechanical\"]")
+
   // 识别结果
   identificationResult Json             // IdentificationResponse 格式
 
@@ -137,4 +141,5 @@ model TemplateSession {
 
   @@index([templateKey])
   @@index([category])
+  @@index([dimensions])
 }

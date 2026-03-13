@@ -1,0 +1,182 @@
+{
+  "templateKey": "perovskite-solar-cell",
+  "displayName": "钙钛矿太阳能电池",
+  "category": "高端美妆与新能源材料",
+  "keywords": "[\"钙钛矿电池\",\"钙钛矿太阳能\",\"perovskite solar cell\",\"钙钛矿光伏\",\"新型太阳能电池\",\"第三代太阳能\",\"钙钛矿组件\"]",
+  "dimensions": "[\"chemical\",\"electronic\",\"process\"]",
+  "identificationResult": {
+    "name": "钙钛矿太阳能电池",
+    "category": "高端美妆与新能源材料",
+    "brief_description": "以ABX₃型钙钛矿结构为光吸收层的新一代薄膜太阳能电池，光电转换效率突破26%，制造成本仅为硅基电池的1/3",
+    "icon": "☀️",
+    "searchTerm": "perovskite solar cell photovoltaic"
+  },
+  "treeData": {
+    "root": {
+      "name": "钙钛矿太阳能电池",
+      "description": "以有机-无机杂化钙钛矿为光吸收层的薄膜光伏器件，由透明导电电极、电子传输层、钙钛矿吸收层、空穴传输层与金属背电极五层结构构成，典型尺寸10×10cm²。",
+      "icon": "☀️",
+      "searchTerm": "perovskite solar cell",
+      "is_raw_material": false,
+      "children": [
+        {
+          "name": "透明导电电极（FTO）",
+          "description": "氟掺杂氧化锡导电玻璃，作为光入射侧电极，方块电阻7-15Ω/□，透光率>80%。",
+          "icon": "🪟",
+          "searchTerm": "FTO fluorine doped tin oxide glass",
+          "is_raw_material": false,
+          "children": [
+            {
+              "name": "FTO导电玻璃",
+              "description": "在钠钙玻璃表面磁控溅射SnO₂:F薄膜，厚度400-600nm，兼顾导电性与透光性，是钙钛矿电池的标准基底。",
+              "icon": "🔬",
+              "searchTerm": "FTO conductive glass substrate",
+              "is_raw_material": false,
+              "children": [
+                {
+                  "name": "钠钙玻璃基底",
+                  "description": "厚度2.2mm的标准钠钙玻璃，热膨胀系数9×10⁻⁶/K，是FTO镀膜的载体基底。",
+                  "icon": "🪟",
+                  "searchTerm": "soda lime glass substrate",
+                  "is_raw_material": true,
+                  "children": []
+                },
+                {
+                  "name": "氟化锡靶材（SnO₂:F）",
+                  "description": "磁控溅射用氟掺杂氧化锡靶材，纯度≥99.9%，氟含量5-10at%，决定FTO薄膜的导电性。",
+                  "icon": "⚗️",
+                  "searchTerm": "fluorine doped tin oxide sputtering target",
+                  "is_raw_material": true,
+                  "children": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "钙钛矿光吸收层",
+          "description": "电池的核心功能层，ABX₃型晶体结构（A=甲胺/甲脒，B=铅，X=碘/溴），带隙可调（1.2-2.3eV），光吸收系数极高。",
+          "icon": "💎",
+          "searchTerm": "perovskite absorber layer",
+          "is_raw_material": false,
+          "children": [
+            {
+              "name": "碘化铅甲脒（FAPbI₃）",
+              "description": "甲脒铅碘钙钛矿，带隙1.48eV，热稳定性优于甲胺铅碘，是目前效率最高的单结钙钛矿组分。",
+              "icon": "🔬",
+              "searchTerm": "formamidinium lead iodide perovskite",
+              "is_raw_material": false,
+              "children": [
+                {
+                  "name": "碘化铅（PbI₂）",
+                  "description": "高纯度碘化铅，纯度≥99.99%，是钙钛矿前驱体的核心原料，铅的使用是钙钛矿商业化的主要环保争议点。",
+                  "icon": "⚗️",
+                  "searchTerm": "lead iodide PbI2 perovskite precursor",
+                  "is_raw_material": true,
+                  "children": []
+                },
+                {
+                  "name": "甲脒碘（FAI）",
+                  "description": "甲脒氢碘酸盐，纯度≥99.5%，提供A位有机阳离子，与PbI₂反应形成钙钛矿晶体。",
+                  "icon": "🧪",
+                  "searchTerm": "formamidinium iodide FAI perovskite",
+                  "is_raw_material": true,
+                  "children": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "电子传输层（SnO₂）",
+          "description": "提取光生电子、阻挡空穴的n型半导体层，氧化锡纳米颗粒低温制备，与钙钛矿能级匹配好。",
+          "icon": "⚡",
+          "searchTerm": "tin oxide electron transport layer",
+          "is_raw_material": false,
+          "children": [
+            {
+              "name": "SnO₂纳米颗粒分散液",
+              "description": "粒径3-5nm的氧化锡纳米颗粒水分散液，固含量2.67%，旋涂后150°C退火形成致密电子传输层。",
+              "icon": "🔬",
+              "searchTerm": "tin oxide nanoparticles electron transport",
+              "is_raw_material": true,
+              "children": []
+            }
+          ]
+        },
+        {
+          "name": "空穴传输层（Spiro-OMeTAD）",
+          "description": "提取光生空穴的有机半导体层，是钙钛矿电池成本最高的单一材料，约占总成本的20%。",
+          "icon": "🔌",
+          "searchTerm": "spiro-OMeTAD hole transport layer",
+          "is_raw_material": false,
+          "children": [
+            {
+              "name": "Spiro-OMeTAD",
+              "description": "2,2',7,7'-四[N,N-二(4-甲氧基苯基)氨基]-9,9'-螺二芴，纯度≥99.5%，价格约5000元/g，是钙钛矿电池最昂贵的材料。",
+              "icon": "💊",
+              "searchTerm": "spiro-OMeTAD hole transport material",
+              "is_raw_material": true,
+              "children": []
+            }
+          ]
+        },
+        {
+          "name": "金属背电极（Au）",
+          "description": "热蒸镀金薄膜背电极，厚度80nm，功函数5.1eV，与空穴传输层形成欧姆接触，收集空穴电流。",
+          "icon": "🥇",
+          "searchTerm": "gold back electrode perovskite",
+          "is_raw_material": false,
+          "children": [
+            {
+              "name": "金靶材（99.99%）",
+              "description": "热蒸镀用高纯金靶，纯度≥99.99%，是钙钛矿电池背电极的标准材料，成本高但稳定性最佳。",
+              "icon": "🥇",
+              "searchTerm": "gold target thermal evaporation",
+              "is_raw_material": true,
+              "children": []
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "agentReports": {
+    "market_analysis": {
+      "title": "市场分析报告",
+      "content": "全球钙钛矿太阳能电池市场2023年规模约3亿美元，预计2030年达到68亿美元，CAGR超过55%。中国企业在钙钛矿领域全球领先，协鑫光电、纤纳光电等已实现GW级产能规划。全球光伏市场2023年新增装机380GW，钙钛矿有望在2027年开始规模化替代部分硅基市场。",
+      "summary": "2030年市场68亿美元，中国企业全球领先"
+    },
+    "supply_chain": {
+      "title": "供应链分析",
+      "content": "核心原料碘化铅国内供应充足，但铅的使用面临欧盟RoHS法规压力。Spiro-OMeTAD目前主要由德国Merck垄断，价格高达5000元/g，国内替代品研发是降本关键。FTO导电玻璃国内供应商包括耀皮玻璃、南玻集团，产能充足。",
+      "summary": "Spiro-OMeTAD国产化是降本关键，铅使用面临法规压力"
+    },
+    "cost_breakdown": {
+      "title": "成本拆解",
+      "content": "当前钙钛矿组件成本约0.8-1.2元/W，目标2025年降至0.5元/W（与PERC硅基电池持平）。成本构成：Spiro-OMeTAD等有机材料占35%，FTO玻璃占25%，钙钛矿前驱体占20%，设备折旧占15%，其他占5%。",
+      "summary": "当前成本0.8-1.2元/W，2025年目标降至0.5元/W"
+    },
+    "competitor_analysis": {
+      "title": "竞品分析",
+      "content": "国内领先企业：协鑫光电（效率24.2%，面积1m²）、纤纳光电（效率23.6%）、极电光能（效率24.5%）。国际竞争：牛津光伏（英国，叠层效率29.52%）、Saule Technologies（波兰）。中国企业在大面积组件效率和量产化方面全球领先。",
+      "summary": "中国企业大面积组件效率全球领先"
+    },
+    "technology_assessment": {
+      "title": "技术评估",
+      "content": "核心技术挑战：1）稳定性问题，钙钛矿在湿热环境下降解，T80寿命需达到25年；2）铅毒性问题，无铅钙钛矿（锡基）效率仍低；3）大面积均匀性，从1cm²到1m²效率损失超过3个百分点；4）封装技术，防水汽渗透是长期稳定性关键。",
+      "summary": "稳定性和大面积均匀性是量产化核心挑战"
+    },
+    "risk_assessment": {
+      "title": "风险评估",
+      "content": "主要风险：1）铅毒性监管，欧盟可能将钙钛矿纳入RoHS限制；2）稳定性数据不足，25年质保承诺缺乏长期验证；3）硅基电池持续降本，压缩钙钛矿的成本优势窗口；4）叠层电池专利被牛津光伏等国际企业大量布局。",
+      "summary": "铅毒性监管和稳定性验证是主要风险"
+    },
+    "investment_outlook": {
+      "title": "投资展望",
+      "content": "钙钛矿是光伏领域最重要的技术革命方向，建议重点关注：1）已实现GW级产能规划的企业；2）掌握无铅钙钛矿技术的企业；3）钙钛矿/硅叠层电池企业（效率天花板>33%）；4）Spiro-OMeTAD国产替代材料企业。2025-2027年是关键量产验证期。",
+      "summary": "光伏最重要技术革命，叠层电池是效率突破方向"
+    }
+  },
+  "productionAnalysis": null
+}

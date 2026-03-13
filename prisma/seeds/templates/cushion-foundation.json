@@ -1,0 +1,53 @@
+{
+  "templateKey": "cushion-foundation",
+  "displayName": "多色气垫粉底液盒",
+  "category": "高端美妆与新能源材料",
+  "keywords": "[\"气垫粉底\",\"气垫BB\",\"cushion foundation\",\"气垫\",\"粉底液\",\"气垫粉底液\",\"气垫盒\",\"多色气垫\",\"底妆\",\"遮瑕\"]",
+  "identificationResult": {
+    "name": "多色气垫粉底液盒",
+    "category": "高端美妆与新能源材料",
+    "brief_description": "以聚氨酯气垫海绵为载体的高端液态粉底产品，融合精密铝合金包装、功能性配方化学与精细化工三大维度",
+    "icon": "💄",
+    "searchTerm": "cushion foundation compact makeup"
+  },
+  "treeData": {
+    "root": {
+      "name": "多色气垫粉底液盒",
+      "description": "高端气垫粉底产品，由铝合金外壳包装系统、聚氨酯气垫海绵系统与粉底液配方体系三大子系统构成，净含量15g。",
+      "icon": "💄",
+      "searchTerm": "cushion foundation compact",
+      "children": [
+        {
+          "name": "铝合金外壳系统",
+          "description": "保护内容物并提供奢华质感的金属包装结构，由铝合金盒体、镜面盖板和磁吸扣件组成。",
+          "is_raw_material": false,
+          "icon": "📦",
+          "searchTerm": "aluminum cosmetic compact case",
+          "children": [
+            {
+              "name": "6061铝合金盒体",
+
+              "description": "6061铝合金CNC精密加工，壁厚1.2mm，阳极氧化+UV镀膜表面处理，重量28g，防摔耐磨。",
+              "is_raw_material": false,
+              "icon": "🔲",
+              "searchTerm": "aluminum alloy cosmetic case CNC",
+              "children": [
+                {
+                  "name": "6061铝合金",
+                  "description": "含Mg 0.8-1.2%、Si 0.4-0.8%的铝合金，抗拉强度≥260MPa，可阳极氧化，适合精密外观件。",
+                  "is_raw_material": false,
+                  "icon": "🔩",
+                  "searchTerm": "6061 aluminum alloy",
+                  "children": [
+                    {
+                      "name": "铝土矿（Al₂O₃·2H₂O）",
+                      "description": "铝的主要矿石原料，Al₂O₃含量40-60%，经拜耳法提取氧化铝，再电解得到金属铝，主产地澳大利亚、几内亚。",
+                      "is_raw_material": true,
+                      "icon": "⛏️",
+                      "searchTerm": "bauxite aluminum ore",
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            },

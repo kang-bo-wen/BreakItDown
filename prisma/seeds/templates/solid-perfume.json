@@ -1,0 +1,180 @@
+{
+  "templateKey": "solid-perfume",
+  "displayName": "固态香水胶囊",
+  "category": "高端美妆与新能源材料",
+  "keywords": "[\"固态香水\",\"香水胶囊\",\"固体香水\",\"solid perfume\",\"香氛胶囊\",\"便携香水\",\"无酒精香水\"]",
+  "dimensions": "[\"chemical\",\"mechanical\"]",
+  "identificationResult": {
+    "name": "固态香水胶囊",
+    "category": "高端美妆与新能源材料",
+    "brief_description": "以蜡基载体封装天然香精的无酒精固态香氛产品，融合精细化工配方与微型机械包装工艺",
+    "icon": "💊",
+    "searchTerm": "solid perfume capsule luxury"
+  },
+  "treeData": {
+    "root": {
+      "name": "固态香水胶囊",
+      "description": "无酒精固态香氛产品，由蜡基香氛配方体系、微型胶囊外壳与香精原料三大子系统构成，净含量5g。",
+      "icon": "💊",
+      "searchTerm": "solid perfume capsule",
+      "is_raw_material": false,
+      "children": [
+        {
+          "name": "蜡基载体配方",
+          "description": "承载并缓释香精分子的固态基质体系，决定香气持久度与肤感。",
+          "icon": "🕯️",
+          "searchTerm": "wax base perfume carrier",
+          "is_raw_material": false,
+          "children": [
+            {
+              "name": "小烛树蜡",
+              "description": "来自墨西哥小烛树叶片的天然植物蜡，熔点68-72°C，硬度高，赋予胶囊结构支撑。",
+              "icon": "🌿",
+              "searchTerm": "candelilla wax",
+              "is_raw_material": true,
+              "children": []
+            },
+            {
+              "name": "荷荷巴油",
+              "description": "液态蜡酯，与皮脂结构相似，作为软化剂调节固态配方延展性，同时作为香精溶剂。",
+              "icon": "🫒",
+              "searchTerm": "jojoba oil cosmetic",
+              "is_raw_material": true,
+              "children": []
+            },
+            {
+              "name": "维生素E（生育酚）",
+              "description": "天然抗氧化剂，防止蜡基和香精氧化变质，延长产品保质期至24个月。",
+              "icon": "🔬",
+              "searchTerm": "tocopherol vitamin E cosmetic",
+              "is_raw_material": true,
+              "children": []
+            }
+          ]
+        },
+        {
+          "name": "香精复合体系",
+          "description": "由前调、中调、后调三层香气分子构成的完整香氛金字塔，决定香水的嗅觉叙事。",
+          "icon": "🌸",
+          "searchTerm": "fragrance accord perfume pyramid",
+          "is_raw_material": false,
+          "children": [
+            {
+              "name": "前调精油（柑橘族）",
+              "description": "佛手柑、柠檬精油混合物，挥发速度快（30分钟内），提供清新开场气息。",
+              "icon": "🍋",
+              "searchTerm": "bergamot lemon essential oil top note",
+              "is_raw_material": true,
+              "children": []
+            },
+            {
+              "name": "中调合成香料（花香族）",
+              "description": "玫瑰醇、苯乙醇等合成花香分子，持续2-4小时，构成香水主体个性。",
+              "icon": "🌹",
+              "searchTerm": "rose alcohol phenylethanol middle note",
+              "is_raw_material": true,
+              "children": []
+            },
+            {
+              "name": "后调定香剂（麝香族）",
+              "description": "合成麝香（Galaxolide）与广藿香精油，挥发极慢，留香6小时以上，固定整体香气。",
+              "icon": "🪵",
+              "searchTerm": "musk galaxolide patchouli base note",
+              "is_raw_material": true,
+              "children": []
+            }
+          ]
+        },
+        {
+          "name": "胶囊外壳系统",
+          "description": "保护固态香氛、实现便携与定量取用的微型机械包装结构。",
+          "icon": "📦",
+          "searchTerm": "cosmetic capsule packaging",
+          "is_raw_material": false,
+          "children": [
+            {
+              "name": "旋转锌合金外壳",
+              "description": "压铸锌合金（Zamak 3）外壳，表面电镀哑光金，直径22mm，旋转推出机构精度±0.1mm。",
+              "icon": "⚙️",
+              "searchTerm": "zinc alloy cosmetic case die casting",
+              "is_raw_material": false,
+              "children": [
+                {
+                  "name": "锌铝合金（Zamak）",
+                  "description": "含铝4%、铜1%的锌基合金，流动性好，适合精密压铸，成本低于黄铜。",
+                  "icon": "🔩",
+                  "searchTerm": "zamak zinc alloy die casting",
+                  "is_raw_material": true,
+                  "children": []
+                }
+              ]
+            },
+            {
+              "name": "磁吸防尘盖",
+              "description": "内嵌N35钕铁硼磁铁的ABS盖体，开合力0.3N，防止异物污染固态香氛表面。",
+              "icon": "🧲",
+              "searchTerm": "magnetic cap cosmetic packaging",
+              "is_raw_material": false,
+              "children": [
+                {
+                  "name": "ABS工程塑料",
+                  "description": "丙烯腈-丁二烯-苯乙烯共聚物，注塑成型，表面可UV镀膜，耐冲击性好。",
+                  "icon": "🧱",
+                  "searchTerm": "ABS plastic injection molding",
+                  "is_raw_material": true,
+                  "children": []
+                },
+                {
+                  "name": "钕铁硼磁铁（N35）",
+                  "description": "烧结钕铁硼永磁体，直径4mm×厚2mm，表面镀镍防腐，磁能积≥33MGOe。",
+                  "icon": "🧲",
+                  "searchTerm": "neodymium magnet N35 small",
+                  "is_raw_material": true,
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "agentReports": {
+    "market_analysis": {
+      "title": "市场分析报告",
+      "content": "全球固态香水市场2023年规模约12亿美元，年增速18%，远超传统液态香水的5%。Z世代消费者对便携、无酒精、环保包装的偏好推动品类爆发。中国市场2023年固态香水销售额同比增长240%，小红书相关话题曝光超10亿次。",
+      "summary": "高增速细分赛道，Z世代驱动，中国市场爆发期"
+    },
+    "supply_chain": {
+      "title": "供应链分析",
+      "content": "核心原料小烛树蜡主产于墨西哥，全球年产量约2000吨，供应集中度高。香精原料由奇华顿、IFF等国际香精巨头垄断，国内供应商议价能力弱。锌合金外壳压铸集中于广东东莞，产能充足。",
+      "summary": "香精原料依赖国际巨头，包装供应链成熟"
+    },
+    "cost_breakdown": {
+      "title": "成本拆解",
+      "content": "5g固态香水胶囊BOM成本约18-25元：香精复合体系占40%（7-10元），蜡基载体占15%（2.7-3.75元），锌合金外壳占35%（6.3-8.75元），其他辅料及包装占10%。终端零售价通常为BOM成本的8-15倍，毛利率极高。",
+      "summary": "BOM成本18-25元，终端售价150-300元，毛利率85%+"
+    },
+    "competitor_analysis": {
+      "title": "竞品分析",
+      "content": "国际品牌：Diptyque固态香水售价约380元/5g，Byredo约420元/5g，主打天然成分与艺术包装。国内新锐：观夏、闻献等品牌固态香水售价180-280元，性价比更高。竞争核心在于香精配方独特性与品牌故事。",
+      "summary": "国际品牌溢价明显，国内新锐以性价比突围"
+    },
+    "technology_assessment": {
+      "title": "技术评估",
+      "content": "核心技术壁垒在于香精微囊化工艺与蜡基配方调香。微囊化技术可将香精包裹在聚合物壳中，实现控释效果，延长留香时间至12小时以上。国内企业在调香师培养和香精数据库积累上与国际巨头差距明显。",
+      "summary": "调香配方是核心壁垒，微囊化技术提升留香性能"
+    },
+    "risk_assessment": {
+      "title": "风险评估",
+      "content": "主要风险：1）香精原料价格波动，天然精油受气候影响大；2）IFRA（国际香精协会）法规收紧，部分香精成分面临禁用；3）消费者对合成香料的接受度存在分歧；4）品牌同质化严重，缺乏差异化壁垒。",
+      "summary": "原料价格波动与法规风险是主要挑战"
+    },
+    "investment_outlook": {
+      "title": "投资展望",
+      "content": "固态香水赛道处于高速成长期，建议关注具备自主调香能力和独特品牌故事的企业。国内市场渗透率仍低，未来3年有望保持30%+年增速。重点关注供应链整合能力强、能自建香精数据库的品牌。",
+      "summary": "高成长赛道，自主调香能力是核心投资逻辑"
+    }
+  },
+  "productionAnalysis": null
+}

@@ -1,0 +1,476 @@
+{
+  "templateKey": "titanium-flagship-phone",
+  "displayName": "某果最新款钛金属旗舰手机",
+  "category": "国民级消费电子",
+  "keywords": "[\"钛金属手机\",\"旗舰手机\",\"某果手机\",\"titanium phone\",\"flagship phone\",\"苹果手机\",\"iPhone\",\"钛合金手机\",\"钛金属旗舰\"]",
+  "dimensions": "[\"mechanical\",\"electronic\"]",
+  "identificationResult": {
+    "name": "某果最新款钛金属旗舰手机",
+    "category": "国民级消费电子",
+    "brief_description": "采用航天级4级钛合金边框、3nm旗舰SoC芯片与超视网膜XDR OLED屏幕的顶级智能手机，集精密结构件、微电子芯片与先进屏幕材料于一体",
+    "icon": "📱",
+    "searchTerm": "titanium flagship smartphone teardown"
+  },
+  "treeData": {
+    "root": {
+      "name": "某果最新款钛金属旗舰手机",
+      "description": "全球顶级消费电子旗舰，以航天级钛合金机身、3nm制程SoC、ProMotion OLED屏幕、多摄光学系统为核心，集成数百个精密零部件。",
+      "icon": "📱",
+      "searchTerm": "titanium flagship smartphone",
+      "is_raw_material": false,
+      "children": [
+        {
+          "name": "钛金属机身与精密结构系统",
+          "description": "构成手机外观骨架的所有精密结构件，包括钛合金边框、玻璃背板、内部中框及各类精密连接件。",
+          "is_raw_material": false,
+          "icon": "🔩",
+          "searchTerm": "titanium smartphone chassis structure",
+          "children": [
+            {
+              "name": "4级钛合金边框",
+              "description": "采用航天级Grade 4纯钛，经CNC精密加工成型，强度高、重量轻、耐腐蚀，是手机最具辨识度的结构件。",
+              "is_raw_material": false,
+              "icon": "🔲",
+              "searchTerm": "Grade 4 titanium frame CNC",
+              "children": [
+                {
+                  "name": "钛合金型材坯料",
+                  "description": "经熔炼、锻造、轧制成型的钛合金棒材或板材，供CNC加工使用。",
+                  "is_raw_material": false,
+                  "icon": "📦",
+                  "searchTerm": "titanium alloy billet",
+                  "children": [
+                    {
+                      "name": "钛铁矿 / 金红石",
+                      "description": "钛的主要矿石来源，钛铁矿（FeTiO₃）和金红石（TiO₂）经氯化法或硫酸法提炼出海绵钛，再熔炼成钛锭。",
+                      "is_raw_material": true,
+                      "icon": "⛏️",
+                      "searchTerm": "ilmenite rutile titanium ore",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "name": "CNC精密加工件（边框成型）",
+                  "description": "对钛合金坯料进行五轴CNC铣削、钻孔、攻丝，形成精确的边框轮廓、按键槽位和天线缝隙。",
+                  "is_raw_material": false,
+                  "icon": "⚙️",
+                  "searchTerm": "CNC machined titanium frame",
+                  "children": [
+                    {
+                      "name": "钛合金型材坯料",
+                      "description": "同上，CNC加工的原料输入。",
+                      "is_raw_material": true,
+                      "icon": "⛏️",
+                      "searchTerm": "titanium alloy billet",
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "陶瓷盾玻璃背板",
+              "description": "由铝硅酸盐玻璃基板经离子交换强化，并在玻璃基体中植入纳米陶瓷晶体，抗跌落性能提升4倍。",
+              "is_raw_material": false,
+              "icon": "🪟",
+              "searchTerm": "Ceramic Shield glass back panel",
+              "children": [
+                {
+                  "name": "铝硅酸盐玻璃基板",
+                  "description": "以石英砂、长石、氧化铝为主要原料熔融成型的高强度玻璃基板，具有优异的光学透明度。",
+                  "is_raw_material": false,
+                  "icon": "🔬",
+                  "searchTerm": "aluminosilicate glass substrate",
+                  "children": [
+                    {
+                      "name": "高纯石英砂（SiO₂）",
+                      "description": "玻璃的主要成分，提供硅氧骨架结构，纯度要求>99.9%。",
+                      "is_raw_material": true,
+                      "icon": "🏖️",
+                      "searchTerm": "high purity silica sand",
+                      "children": []
+                    },
+                    {
+                      "name": "氧化铝（Al₂O₃）",
+                      "description": "提升玻璃强度和化学稳定性的关键添加剂，来源于铝土矿提炼。",
+                      "is_raw_material": true,
+                      "icon": "🪨",
+                      "searchTerm": "aluminum oxide alumina",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "name": "离子交换强化层（K⁺置换Na⁺）",
+                  "description": "将玻璃浸入熔融硝酸钾溶液，大离子K⁺置换小离子Na⁺，在表面形成压应力层，大幅提升抗弯强度。",
+                  "is_raw_material": false,
+                  "icon": "⚗️",
+                  "searchTerm": "ion exchange glass strengthening",
+                  "children": [
+                    {
+                      "name": "硝酸钾（KNO₃）",
+                      "description": "离子交换工艺的核心化学品，提供K⁺离子源，来源于钾矿石加工。",
+                      "is_raw_material": true,
+                      "icon": "🧪",
+                      "searchTerm": "potassium nitrate KNO3",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "name": "纳米陶瓷晶体（氧化铝纳米颗粒）",
+                  "description": "在玻璃熔融阶段植入的纳米级氧化铝晶体，阻断裂纹扩展路径，赋予玻璃陶瓷复合特性。",
+                  "is_raw_material": false,
+                  "icon": "💎",
+                  "searchTerm": "nano ceramic crystal alumina",
+                  "children": [
+                    {
+                      "name": "铝土矿（三水铝石/一水铝石）",
+                      "description": "提炼氧化铝的主要矿石，经拜耳法精炼得到高纯Al₂O₃。",
+                      "is_raw_material": true,
+                      "icon": "⛏️",
+                      "searchTerm": "bauxite aluminum ore",
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "不锈钢内部中框",
+              "description": "位于机身内部的精密冲压+CNC加工不锈钢骨架，承载主板、电池、摄像头等核心部件，提供结构刚性。",
+              "is_raw_material": false,
+              "icon": "🏗️",
+              "searchTerm": "stainless steel internal frame",
+              "children": [
+                {
+                  "name": "不锈钢板材（316L医疗级）",
+                  "description": "低碳奥氏体不锈钢，耐腐蚀性强，经冲压成型后CNC精加工，公差控制在±0.02mm以内。",
+                  "is_raw_material": false,
+                  "icon": "🔧",
+                  "searchTerm": "316L stainless steel sheet",
+                  "children": [
+                    {
+                      "name": "铁矿石",
+                      "description": "冶炼钢铁的主要原料，经高炉炼铁后转炉炼钢。",
+                      "is_raw_material": true,
+                      "icon": "🪨",
+                      "searchTerm": "iron ore",
+                      "children": []
+                    },
+                    {
+                      "name": "铬铁矿",
+                      "description": "提供铬元素（含量16-18%），赋予不锈钢抗腐蚀性的关键合金元素来源。",
+                      "is_raw_material": true,
+                      "icon": "⛏️",
+                      "searchTerm": "chromite ore",
+                      "children": []
+                    },
+                    {
+                      "name": "镍矿石",
+                      "description": "提供镍元素（含量10-14%），稳定奥氏体相，提升韧性和耐腐蚀性。",
+                      "is_raw_material": true,
+                      "icon": "🪨",
+                      "searchTerm": "nickel ore",
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "超视网膜XDR OLED屏幕系统",
+          "description": "采用低温多晶氧化物（LTPO）背板的柔性OLED显示面板，支持1-120Hz ProMotion自适应刷新率，峰值亮度2000nit，覆盖P3广色域。",
+          "is_raw_material": false,
+          "icon": "🖥️",
+          "searchTerm": "Super Retina XDR OLED display ProMotion",
+          "children": [
+            {
+              "name": "LTPO OLED显示面板",
+              "description": "低温多晶氧化物TFT背板驱动的有机发光二极管面板，由三星Display独家供应，支持动态刷新率调节。",
+              "is_raw_material": false,
+              "icon": "✨",
+              "searchTerm": "LTPO OLED panel Samsung Display",
+              "children": [
+                {
+                  "name": "有机发光层（OLED蒸镀材料）",
+                  "description": "由空穴传输层（HTL）、发光层（EML）、电子传输层（ETL）等多层有机小分子材料构成，通过真空蒸镀工艺沉积在TFT背板上。",
+                  "is_raw_material": false,
+                  "icon": "🌈",
+                  "searchTerm": "OLED organic emitting layer evaporation",
+                  "children": [
+                    {
+                      "name": "有机小分子发光材料（磷光/TADF）",
+                      "description": "包括红绿蓝三色磷光或热活化延迟荧光（TADF）有机化合物，由出光兴产、德山等日韩企业供应，是OLED面板的核心耗材。",
+                      "is_raw_material": true,
+                      "icon": "🧪",
+                      "searchTerm": "OLED organic light emitting material phosphorescent",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "name": "LTPO TFT背板（低温多晶氧化物）",
+                  "description": "结合低温多晶硅（LTPS）和氧化物（IGZO）两种TFT技术的混合背板，实现1-120Hz动态刷新率，降低低刷新率下的功耗。",
+                  "is_raw_material": false,
+                  "icon": "🔲",
+                  "searchTerm": "LTPO TFT backplane IGZO LTPS",
+                  "children": [
+                    {
+                      "name": "铟镓锌氧化物（IGZO）靶材",
+                      "description": "溅射沉积IGZO半导体层的靶材，铟（In）、镓（Ga）、锌（Zn）的氧化物混合物，铟来自稀散金属矿。",
+                      "is_raw_material": true,
+                      "icon": "🧪",
+                      "searchTerm": "IGZO indium gallium zinc oxide target",
+                      "children": []
+                    },
+                    {
+                      "name": "柔性聚酰亚胺（PI）基板",
+                      "description": "替代玻璃基板的柔性高分子薄膜，耐高温（>400°C），是柔性OLED面板实现弯折的基础材料。",
+                      "is_raw_material": false,
+                      "icon": "📄",
+                      "searchTerm": "polyimide flexible substrate OLED",
+                      "children": [
+                        {
+                          "name": "原油（石化衍生物）",
+                          "description": "聚酰亚胺由均苯四甲酸二酐（PMDA）和二氨基二苯醚（ODA）缩聚而成，两者均为石化衍生物。",
+                          "is_raw_material": true,
+                          "icon": "🛢️",
+                          "searchTerm": "crude oil polyimide precursor",
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "薄膜封装层（TFE）",
+                  "description": "保护OLED有机层免受水氧侵蚀的多层无机/有机交替薄膜封装结构，水汽透过率（WVTR）要求<10⁻⁶ g/m²/day。",
+                  "is_raw_material": false,
+                  "icon": "🛡️",
+                  "searchTerm": "thin film encapsulation TFE OLED",
+                  "children": [
+                    {
+                      "name": "氮化硅（Si₃N₄）/ 氧化铝（Al₂O₃）",
+                      "description": "TFE无机阻隔层的主要材料，通过ALD（原子层沉积）工艺沉积，提供极致的水氧阻隔性能。",
+                      "is_raw_material": true,
+                      "icon": "🧪",
+                      "searchTerm": "silicon nitride aluminum oxide ALD barrier",
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "In-Cell触控层",
+              "description": "将触控传感器集成在OLED面板内部的技术，消除独立触控层，减薄屏幕厚度，提升触控精度。",
+              "is_raw_material": false,
+              "icon": "👆",
+              "searchTerm": "in-cell touch sensor OLED",
+              "children": [
+                {
+                  "name": "ITO（氧化铟锡）导电层",
+                  "description": "触控电极的主要导电材料，透明导电氧化物，通过溅射工艺沉积在基板上形成触控网格。",
+                  "is_raw_material": false,
+                  "icon": "🌐",
+                  "searchTerm": "ITO indium tin oxide touch electrode",
+                  "children": [
+                    {
+                      "name": "铟（In）金属",
+                      "description": "ITO的主要成分（约90%），属于稀散金属，主要作为锌矿冶炼的副产品回收，全球供应高度集中。",
+                      "is_raw_material": true,
+                      "icon": "🧪",
+                      "searchTerm": "indium metal rare scattered",
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "陶瓷盾盖板玻璃（前屏）",
+              "description": "覆盖屏幕正面的超强化玻璃，采用与背板相同的陶瓷盾技术，抗跌落性能业界领先。",
+              "is_raw_material": false,
+              "icon": "🪟",
+              "searchTerm": "Ceramic Shield front glass cover",
+              "children": [
+                {
+                  "name": "铝硅酸盐玻璃（康宁定制）",
+                  "description": "由康宁公司为苹果定制的高铝含量硅酸盐玻璃，经两步离子交换强化处理。",
+                  "is_raw_material": false,
+                  "icon": "🔬",
+                  "searchTerm": "Corning aluminosilicate glass custom",
+                  "children": [
+                    {
+                      "name": "高纯石英砂（SiO₂）",
+                      "description": "玻璃主体成分，纯度>99.9%。",
+                      "is_raw_material": true,
+                      "icon": "🏖️",
+                      "searchTerm": "high purity silica sand glass",
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "主芯片与微电子系统（3nm SoC）",
+          "description": "手机的计算与智能核心，包含3nm制程应用处理器、LPDDR5X内存、NVMe闪存及各类专用芯片，代表当代半导体制造的最高水平。",
+          "is_raw_material": false,
+          "icon": "💻",
+          "searchTerm": "3nm SoC chip microelectronics system",
+          "children": [
+            {
+              "name": "A系列3nm旗舰SoC（应用处理器）",
+              "description": "采用台积电N3E工艺制造，集成CPU、GPU、NPU、ISP、安全隔区等功能模块，晶体管数量超190亿个，是手机的核心大脑。",
+              "is_raw_material": false,
+              "icon": "🟣",
+              "searchTerm": "A17 Pro 3nm SoC chip",
+              "children": [
+                {
+                  "name": "3nm EUV硅晶圆（N3E工艺）",
+                  "description": "采用极紫外光刻（EUV）技术在300mm硅晶圆上制造，最小线宽3nm，需经历数百道光刻、蚀刻、沉积工序。",
+                  "is_raw_material": false,
+                  "icon": "💿",
+                  "searchTerm": "3nm EUV silicon wafer TSMC",
+                  "children": [
+                    {
+                      "name": "半导体级高纯硅（11N纯度）",
+                      "description": "纯度达99.999999999%的电子级硅，由冶金级硅经西门子法提纯，再经直拉法（CZ法）生长成单晶硅棒后切片。",
+                      "is_raw_material": false,
+                      "icon": "🔬",
+                      "searchTerm": "semiconductor grade silicon wafer",
+                      "children": [
+                        {
+                          "name": "硅砂（石英砂）",
+                          "description": "高纯度SiO₂矿石，经电弧炉还原得到冶金级硅（MG-Si），是半导体硅的最终原料来源。",
+                          "is_raw_material": true,
+                          "icon": "🏖️",
+                          "searchTerm": "silica sand quartz",
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "先进封装基板（CoWoS / SoIC集成）",
+                  "description": "采用台积电CoWoS或SoIC技术将SoC与HBM/LPDDR进行2.5D/3D堆叠封装，封装基板由ABF树脂多层压合而成。",
+                  "is_raw_material": false,
+                  "icon": "📦",
+                  "searchTerm": "CoWoS advanced packaging substrate",
+                  "children": [
+                    {
+                      "name": "ABF（Ajinomoto Build-up Film）树脂",
+                      "description": "用于IC封装基板层间绝缘的关键材料，由味之素公司独家供应，是先进封装的核心原材料。",
+                      "is_raw_material": true,
+                      "icon": "🧪",
+                      "searchTerm": "ABF resin Ajinomoto build-up film",
+                      "children": []
+                    },
+                    {
+                      "name": "铜（电镀互连层）",
+                      "description": "封装基板内部各层之间的导电互连材料，通过电镀工艺形成精细线路，线宽可达2μm以下。",
+                      "is_raw_material": true,
+                      "icon": "🥉",
+                      "searchTerm": "copper electroplating interconnect",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "name": "钨/钴金属互连层（后段制程BEOL）",
+                  "description": "芯片内部连接各晶体管的金属导线层，先进节点采用钴（Co）替代钨（W）填充接触孔，降低电阻。",
+                  "is_raw_material": false,
+                  "icon": "🌐",
+                  "searchTerm": "tungsten cobalt metal interconnect BEOL",
+                  "children": [
+                    {
+                      "name": "钴矿石",
+                      "description": "提炼钴金属的矿石，主要产自刚果（金），是先进制程芯片互连层的关键战略材料。",
+                      "is_raw_material": true,
+                      "icon": "⛏️",
+                      "searchTerm": "cobalt ore DRC",
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "LPDDR5X高速内存",
+              "description": "低功耗双倍数据率5X内存，带宽达68GB/s，与SoC封装在同一基板上（PoP封装），延迟极低。",
+              "is_raw_material": false,
+              "icon": "🧠",
+              "searchTerm": "LPDDR5X mobile DRAM memory",
+              "children": [
+                {
+                  "name": "DRAM存储芯片（10nm级工艺）",
+                  "description": "采用三星/SK海力士10nm级工艺制造的动态随机存取存储器芯片，存储单元由电容和晶体管构成。",
+                  "is_raw_material": false,
+                  "icon": "💾",
+                  "searchTerm": "DRAM chip 10nm process",
+                  "children": [
+                    {
+                      "name": "半导体级硅晶圆",
+                      "description": "DRAM芯片的制造基底，与SoC同源，均来自高纯硅砂提炼。",
+                      "is_raw_material": true,
+                      "icon": "🏖️",
+                      "searchTerm": "silicon wafer semiconductor",
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "NVMe闪存（256GB/512GB/1TB）",
+              "description": "采用3D NAND堆叠技术的高速闪存，读取速度超3GB/s，由苹果自研控制器与NAND颗粒组合而成。",
+              "is_raw_material": false,
+              "icon": "💽",
+              "searchTerm": "NVMe 3D NAND flash storage",
+              "children": [
+                {
+                  "name": "3D NAND Flash芯片（176层+堆叠）",
+                  "description": "将存储单元垂直堆叠超176层的三维闪存芯片，大幅提升存储密度，由铠侠/西数/三星供应。",
+                  "is_raw_material": false,
+                  "icon": "📚",
+                  "searchTerm": "3D NAND flash 176 layer",
+                  "children": [
+                    {
+                      "name": "半导体级硅晶圆",
+                      "description": "NAND Flash芯片的制造基底。",
+                      "is_raw_material": true,
+                      "icon": "🏖️",
+                      "searchTerm": "silicon wafer NAND",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "name": "苹果自研NVMe存储控制器",
+                  "description": "负责管理NAND颗粒读写、磨损均衡、加密的专用芯片，与A系列SoC协同优化I/O性能。",
+                  "is_raw_material": false,
+                  "icon": "🎛️",
+                  "searchTerm": "Apple NVMe storage controller chip",
+                  "children": [
+                    {
+                      "name": "半导体级硅晶圆",
+                      "description": "控制器芯片的制造基底。",
+                      "is_raw_material": true,
+                      "icon": "🏖️",
+                      "searchTerm": "silicon wafer controller",
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },

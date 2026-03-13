@@ -1,0 +1,199 @@
+{
+  "templateKey": "solid-state-battery",
+  "displayName": "固态锂电池",
+  "category": "高端美妆与新能源材料",
+  "keywords": "[\"固态电池\",\"固态锂电池\",\"solid state battery\",\"全固态电池\",\"固态电解质\",\"新能源电池\",\"下一代电池\"]",
+  "dimensions": "[\"chemical\",\"electronic\",\"mechanical\"]",
+  "identificationResult": {
+    "name": "固态锂电池",
+    "category": "高端美妆与新能源材料",
+    "brief_description": "以固态电解质取代液态电解液的下一代锂电池，能量密度提升50%以上，彻底消除热失控风险",
+    "icon": "🔋",
+    "searchTerm": "solid state lithium battery technology"
+  },
+  "treeData": {
+    "root": {
+      "name": "固态锂电池",
+      "description": "采用固态电解质的新一代锂离子电池，由正极材料体系、固态电解质层、负极材料体系与封装结构四大子系统构成，典型容量100Ah。",
+      "icon": "🔋",
+      "searchTerm": "solid state battery",
+      "is_raw_material": false,
+      "children": [
+        {
+          "name": "正极材料体系",
+          "description": "提供锂离子来源的氧化物正极，决定电池能量密度上限与循环寿命。",
+          "icon": "⚡",
+          "searchTerm": "cathode material solid state battery",
+          "is_raw_material": false,
+          "children": [
+            {
+              "name": "高镍三元正极（NCM90）",
+              "description": "镍含量90%的LiNi₀.₉Co₀.₀₅Mn₀.₀₅O₂，比容量220mAh/g，是目前能量密度最高的商业化正极材料。",
+              "icon": "🔬",
+              "searchTerm": "NCM90 high nickel cathode material",
+              "is_raw_material": false,
+              "children": [
+                {
+                  "name": "硫酸镍",
+                  "description": "高纯度NiSO₄·6H₂O，镍含量≥22%，是三元前驱体合成的核心原料，主产于印尼、菲律宾。",
+                  "icon": "⚗️",
+                  "searchTerm": "nickel sulfate battery grade",
+                  "is_raw_material": true,
+                  "children": []
+                },
+                {
+                  "name": "碳酸锂",
+                  "description": "电池级Li₂CO₃，纯度≥99.5%，是正极材料锂化的核心原料，主产于南美锂三角。",
+                  "icon": "🧪",
+                  "searchTerm": "lithium carbonate battery grade",
+                  "is_raw_material": true,
+                  "children": []
+                }
+              ]
+            },
+            {
+              "name": "正极包覆层（LiNbO₃）",
+              "description": "铌酸锂纳米涂层，厚度5-10nm，降低正极与固态电解质界面阻抗，提升倍率性能。",
+              "icon": "🔩",
+              "searchTerm": "lithium niobate coating cathode",
+              "is_raw_material": true,
+              "children": []
+            }
+          ]
+        },
+        {
+          "name": "固态电解质层",
+          "description": "取代液态电解液的离子导体，是固态电池的核心创新，决定离子传导效率与安全性。",
+          "icon": "🧱",
+          "searchTerm": "solid electrolyte layer",
+          "is_raw_material": false,
+          "children": [
+            {
+              "name": "硫化物固态电解质（Li₆PS₅Cl）",
+              "description": "Argyrodite型硫化物电解质，离子电导率10mS/cm，接近液态电解液，是目前综合性能最优的固态电解质路线。",
+              "icon": "💎",
+              "searchTerm": "argyrodite sulfide solid electrolyte",
+              "is_raw_material": false,
+              "children": [
+                {
+                  "name": "硫化锂（Li₂S）",
+                  "description": "高纯度硫化锂，纯度≥99.9%，是硫化物电解质合成的核心原料，价格昂贵（约3000元/kg）。",
+                  "icon": "⚗️",
+                  "searchTerm": "lithium sulfide Li2S high purity",
+                  "is_raw_material": true,
+                  "children": []
+                },
+                {
+                  "name": "五硫化二磷（P₂S₅）",
+                  "description": "与Li₂S反应生成Li₃PS₄基础骨架，纯度≥99%，需在惰性气氛下处理。",
+                  "icon": "🧪",
+                  "searchTerm": "phosphorus pentasulfide P2S5",
+                  "is_raw_material": true,
+                  "children": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "负极材料体系",
+          "description": "储存锂离子的负极，固态电池可使用金属锂负极，能量密度大幅提升。",
+          "icon": "🔌",
+          "searchTerm": "anode material solid state battery",
+          "is_raw_material": false,
+          "children": [
+            {
+              "name": "金属锂负极箔",
+              "description": "厚度50μm的金属锂箔，理论比容量3860mAh/g（石墨的10倍），是固态电池能量密度突破的关键。",
+              "icon": "🥈",
+              "searchTerm": "lithium metal anode foil",
+              "is_raw_material": false,
+              "children": [
+                {
+                  "name": "金属锂（99.9%）",
+                  "description": "电池级金属锂，纯度≥99.9%，密度0.534g/cm³，是最轻的金属，主产于中国、智利。",
+                  "icon": "⚗️",
+                  "searchTerm": "lithium metal battery grade",
+                  "is_raw_material": true,
+                  "children": []
+                }
+              ]
+            },
+            {
+              "name": "锂铟合金界面层",
+              "description": "In含量10-20%的锂铟合金，作为负极保护层，抑制锂枝晶生长，提升循环稳定性至1000次以上。",
+              "icon": "🔬",
+              "searchTerm": "lithium indium alloy anode interface",
+              "is_raw_material": true,
+              "children": []
+            }
+          ]
+        },
+        {
+          "name": "封装与集流体系统",
+          "description": "保护电芯、传导电流的机械与电气结构，适应固态电池高压制造工艺。",
+          "icon": "📦",
+          "searchTerm": "battery packaging current collector",
+          "is_raw_material": false,
+          "children": [
+            {
+              "name": "铝塑复合膜（软包）",
+              "description": "ONY/Al/CPP三层复合结构，厚度113μm，耐电解质腐蚀，适合叠片式固态电池封装。",
+              "icon": "🗂️",
+              "searchTerm": "aluminum plastic film pouch battery",
+              "is_raw_material": false,
+              "children": [
+                {
+                  "name": "铝箔（8μm）",
+                  "description": "电池级铝箔，纯度≥99.3%，作为阻隔层防止水汽和氧气渗入，是铝塑膜核心功能层。",
+                  "icon": "🔩",
+                  "searchTerm": "aluminum foil battery packaging",
+                  "is_raw_material": true,
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "agentReports": {
+    "market_analysis": {
+      "title": "市场分析报告",
+      "content": "全球固态电池市场2023年规模约8亿美元，预计2030年达到620亿美元，CAGR超过80%。丰田、宁德时代、三星SDI等巨头均已宣布2027-2030年量产计划。中国政府将固态电池列为新能源汽车核心技术攻关方向，累计投入超百亿元研发资金。",
+      "summary": "超高速成长赛道，2030年市场规模620亿美元"
+    },
+    "supply_chain": {
+      "title": "供应链分析",
+      "content": "核心原料硫化锂目前全球产能极度稀缺，主要供应商为日本三菱化学和美国Albemarle，价格高达3000元/kg。碳酸锂主产于南美锂三角（智利、阿根廷、玻利维亚），中国企业已通过海外并购掌握约30%资源。金属锂箔制备技术被日本住友金属矿山等少数企业垄断。",
+      "summary": "硫化锂和金属锂箔是供应链瓶颈，国产化率低"
+    },
+    "cost_breakdown": {
+      "title": "成本拆解",
+      "content": "当前固态电池成本约800-1200元/kWh，是液态锂电池（500元/kWh）的2-3倍。成本构成：固态电解质占35%（280-420元/kWh），正极材料占30%，金属锂负极占20%，封装及其他占15%。预计2030年规模化后成本可降至400元/kWh以下。",
+      "summary": "当前成本800-1200元/kWh，2030年目标降至400元/kWh"
+    },
+    "competitor_analysis": {
+      "title": "竞品分析",
+      "content": "技术路线分三派：氧化物路线（固态能源、清陶能源）、硫化物路线（宁德时代、三星SDI、丰田）、聚合物路线（Bolloré）。丰田专利数量全球第一（超1000件），宁德时代在硫化物路线投入最大，国内固态能源已实现小批量交付。",
+      "summary": "丰田专利领先，宁德时代硫化物路线最具量产潜力"
+    },
+    "technology_assessment": {
+      "title": "技术评估",
+      "content": "核心技术挑战：1）固-固界面阻抗高，需要纳米级包覆工艺；2）金属锂负极枝晶问题，需要合金化或人工SEI膜；3）大面积固态电解质薄膜制备良率低；4）高压制造工艺（100MPa）对设备要求极高。中国企业在氧化物路线已接近国际水平，硫化物路线仍有差距。",
+      "summary": "界面阻抗和枝晶是核心技术挑战，氧化物路线国产化程度较高"
+    },
+    "risk_assessment": {
+      "title": "风险评估",
+      "content": "主要风险：1）量产时间表不确定，多家企业已多次推迟；2）硫化物电解质遇水产生H₂S有毒气体，生产安全要求极高；3）液态锂电池持续降本，压缩固态电池的成本优势窗口；4）关键原料硫化锂供应链脆弱。",
+      "summary": "量产时间不确定性高，硫化物路线安全生产要求严苛"
+    },
+    "investment_outlook": {
+      "title": "投资展望",
+      "content": "固态电池是新能源领域最重要的技术革命方向，建议重点关注：1）掌握硫化物电解质量产工艺的企业；2）金属锂箔国产化企业；3）固态电池专用设备商。2025-2027年是关键验证期，率先实现GWh级量产的企业将获得巨大先发优势。",
+      "summary": "新能源最重要技术革命，2025-2027年关键验证期"
+    }
+  },
+  "productionAnalysis": null
+}

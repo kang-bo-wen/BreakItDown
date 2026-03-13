@@ -1,0 +1,1187 @@
+{
+  "templateKey": "deep-space-rover",
+  "displayName": "深空探测巡视器",
+  "category": "航天军工",
+  "keywords": "[\"深空探测器\",\"deep space rover\",\"巡视器\",\"月球车\",\"火星车\",\"planetary rover\"]",
+  "identificationResult": {
+    "name": "深空探测巡视器",
+    "category": "航天军工",
+    "brief_description": "深空探测巡视器的详细拆解分析",
+    "icon": "🚀",
+    "searchTerm": "深空探测器"
+  },
+  "treeData": {
+    "root": {
+      "name": "深空探测巡视器",
+      "description": "用于在月球、火星等天体表面进行移动探测的自主机器人系统。",
+      "icon": "🤖",
+      "searchTerm": "deep space exploration rover",
+      "children": [
+        {
+          "name": "移动系统",
+          "description": "巡视器的行走机构，负责在复杂地形中提供稳定支撑和机动能力。",
+          "is_raw_material": false,
+          "icon": "🚗",
+          "searchTerm": "rover mobility system",
+          "children": [
+            {
+              "name": "摇臂转向架",
+              "description": "由多个关节和连杆组成的悬挂系统，使车轮能适应崎岖地形。",
+              "is_raw_material": false,
+              "icon": "🔩",
+              "searchTerm": "rocker bogie suspension",
+              "children": [
+                {
+                  "name": "高强度钛合金构件",
+                  "description": "用于制造摇臂、转向架连杆等核心承力结构件。",
+                  "is_raw_material": false,
+                  "icon": "⚙️",
+                  "searchTerm": "titanium alloy structural component",
+                  "children": [
+                    {
+                      "name": "钛合金",
+                      "description": "由钛、铝、钒等元素组成的轻质高强度合金。",
+                      "is_raw_material": false,
+                      "icon": "🧱",
+                      "searchTerm": "titanium alloy",
+                      "children": [
+                        {
+                          "name": "钛铁矿",
+                          "description": "提取金属钛的主要矿石。",
+                          "is_raw_material": true,
+                          "icon": "⛏️",
+                          "searchTerm": "ilmenite ore"
+                        },
+                        {
+                          "name": "铝土矿",
+                          "description": "提取金属铝的主要矿石。",
+                          "is_raw_material": true,
+                          "icon": "⛏️",
+                          "searchTerm": "bauxite ore"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "谐波减速电机",
+                  "description": "为关节提供高精度、大扭矩驱动的特种电机。",
+                  "is_raw_material": false,
+                  "icon": "⚡",
+                  "searchTerm": "harmonic drive actuator",
+                  "children": [
+                    {
+                      "name": "稀土永磁体",
+                      "description": "电机中提供强磁场的核心磁性材料。",
+                      "is_raw_material": false,
+                      "icon": "🧲",
+                      "searchTerm": "rare earth permanent magnet",
+                      "children": [
+                        {
+                          "name": "钕铁硼磁体",
+                          "description": "由钕、铁、硼等元素烧结而成的强力永磁体。",
+                          "is_raw_material": false,
+                          "icon": "🧲",
+                          "searchTerm": "neodymium magnet",
+                          "children": [
+                            {
+                              "name": "稀土矿石",
+                              "description": "如氟碳铈矿，含有钕、镨等稀土元素。",
+                              "is_raw_material": true,
+                              "icon": "⛏️",
+                              "searchTerm": "rare earth ore"
+                            },
+                            {
+                              "name": "铁矿石",
+                              "description": "用于生产钢铁的主要矿石。",
+                              "is_raw_material": true,
+                              "icon": "⛏️",
+                              "searchTerm": "iron ore"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "能源与热控系统",
+          "description": "为巡视器提供电力并维持设备在极端温度下的正常工作环境。",
+          "is_raw_material": false,
+          "icon": "🔋",
+          "searchTerm": "rover power and thermal control system",
+          "children": [
+            {
+              "name": "多结砷化镓太阳能电池阵",
+              "description": "将太阳能高效转化为电能的发电装置。",
+              "is_raw_material": false,
+              "icon": "☀️",
+              "searchTerm": "multi junction GaAs solar array",
+              "children": [
+                {
+                  "name": "砷化镓外延片",
+                  "description": "太阳能电池的核心半导体材料层。",
+                  "is_raw_material": false,
+                  "icon": "💎",
+                  "searchTerm": "GaAs epitaxial wafer",
+                  "children": [
+                    {
+                      "name": "高纯砷",
+                      "description": "用于合成砷化镓的半导体级元素。",
+                      "is_raw_material": false,
+                      "icon": "🧪",
+                      "searchTerm": "high purity arsenic",
+                      "children": [
+                        {
+                          "name": "砷矿石",
+                          "description": "如毒砂，是提取砷的主要来源。",
+                          "is_raw_material": true,
+                          "icon": "⛏️",
+                          "searchTerm": "arsenic ore"
+                        }
+                      ]
+                    },
+                    {
+                      "name": "高纯镓",
+                      "description": "用于合成砷化镓的稀有金属元素。",
+                      "is_raw_material": false,
+                      "icon": "🧪",
+                      "searchTerm": "high purity gallium",
+                      "children": [
+                        {
+                          "name": "铝土矿/闪锌矿",
+                          "description": "镓是铝和锌冶炼过程中的副产品。",
+                          "is_raw_material": true,
+                          "icon": "⛏️",
+                          "searchTerm": "gallium source ore"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "放射性同位素热电源",
+              "description": "利用放射性衰变热发电，用于长期任务和极夜环境。",
+              "is_raw_material": false,
+              "icon": "☢️",
+              "searchTerm": "radioisotope thermoelectric generator",
+              "children": [
+                {
+                  "name": "钚-238二氧化物燃料芯块",
+                  "description": "产生衰变热的放射性燃料。",
+                  "is_raw_material": false,
+                  "icon": "⚠️",
+                  "searchTerm": "plutonium-238 dioxide pellet",
+                  "children": [
+                    {
+                      "name": "钚-238",
+                      "description": "人工合成的放射性同位素。",
+                      "is_raw_material": false,
+                      "icon": "⚛️",
+                      "searchTerm": "plutonium-238",
+                      "children": [
+                        {
+                          "name": "铀矿石/核反应堆产物",
+                          "description": "通过中子辐照镎-237等核反应过程制备。",
+                          "is_raw_material": true,
+                          "icon": "⛏️",
+                          "searchTerm": "uranium ore nuclear product"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "科学载荷系统",
+          "description": "搭载的各种科学仪器，用于对天体表面和次表层进行原位分析。",
+          "is_raw_material": false,
+          "icon": "🔬",
+          "searchTerm": "rover scientific payload",
+          "children": [
+            {
+              "name": "激光诱导击穿光谱仪",
+              "description": "用激光烧蚀岩石并分析其发射光谱，以确定元素成分。",
+              "is_raw_material": false,
+              "icon": "💥",
+              "searchTerm": "laser induced breakdown spectrometer",
+              "children": [
+                {
+                  "name": "高功率脉冲激光器",
+                  "description": "产生用于烧蚀样品的高能激光脉冲。",
+                  "is_raw_material": false,
+                  "icon": "📡",
+                  "searchTerm": "high power pulsed laser",
+                  "children": [
+                    {
+                      "name": "掺钕钇铝石榴石晶体",
+                      "description": "激光器的核心增益介质。",
+                      "is_raw_material": false,
+                      "icon": "💎",
+                      "searchTerm": "Nd:YAG crystal",
+                      "children": [
+                        {
+                          "name": "氧化钇/氧化铝/稀土",
+                          "description": "合成YAG晶体的高纯原料。",
+                          "is_raw_material": false,
+                          "icon": "🧪",
+                          "searchTerm": "yttrium aluminum garnet raw material",
+                          "children": [
+                            {
+                              "name": "硅砂/稀土矿石/铝土矿",
+                              "description": "提取相关元素的基础矿物资源。",
+                              "is_raw_material": true,
+                              "icon": "⛏️",
+                              "searchTerm": "silica sand rare earth ore bauxite"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "全景相机桅杆",
+              "description": "搭载多台相机的高耸结构，用于获取巡视器周围的高分辨率立体图像。",
+              "is_raw_material": false,
+              "icon": "📸",
+              "searchTerm": "panoramic camera mast",
+              "children": [
+                {
+                  "name": "科学级CCD/CMOS图像传感器",
+                  "description": "将光信号转换为电信号的核心成像芯片。",
+                  "is_raw_material": false,
+                  "icon": "📷",
+                  "searchTerm": "scientific grade image sensor",
+                  "children": [
+                    {
+                      "name": "单晶硅晶圆",
+                      "description": "制造半导体芯片的基底材料。",
+                      "is_raw_material": false,
+                      "icon": "💿",
+                      "searchTerm": "monocrystalline silicon wafer",
+                      "children": [
+                        {
+                          "name": "高纯多晶硅",
+                          "description": "通过化学提纯得到的高纯度硅材料。",
+                          "is_raw_material": false,
+                          "icon": "🔬",
+                          "searchTerm": "high purity polysilicon",
+                          "children": [
+                            {
+                              "name": "硅砂",
+                              "description": "主要成分为二氧化硅，是提炼硅的原料。",
+                              "is_raw_material": true,
+                              "icon": "⛏️",
+                              "searchTerm": "silica sand"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "结构与热防护",
+          "description": "巡视器的承力主结构和保护内部设备免受极端环境影响的防护层。",
+          "is_raw_material": false,
+          "icon": "🛡️",
+          "searchTerm": "rover structure and thermal protection",
+          "children": [
+            {
+              "name": "蜂窝夹层结构板",
+              "description": "由面板和蜂窝芯组成，具有高比强度和高刚度的轻质结构材料。",
+              "is_raw_material": false,
+              "icon": "🍯",
+              "searchTerm": "honeycomb sandwich panel",
+              "children": [
+                {
+                  "name": "碳纤维复合材料面板",
+                  "description": "由碳纤维和树脂制成的轻质高强度外面板。",
+                  "is_raw_material": false,
+                  "icon": "🧵",
+                  "searchTerm": "carbon fiber composite face sheet",
+                  "children": [
+                    {
+                      "name": "聚丙烯腈基碳纤维",
+                      "description": "由聚丙烯腈原丝经过高温碳化制得的高性能纤维。",
+                      "is_raw_material": false,
+                      "icon": "🧵",
+                      "searchTerm": "PAN based carbon fiber",
+                      "children": [
+                        {
+                          "name": "原油/丙烯",
+                          "description": "生产聚丙烯腈单体的石油化工原料。",
+                          "is_raw_material": true,
+                          "icon": "🛢️",
+                          "searchTerm": "crude oil propylene"
+                        }
+                      ]
+                    },
+                    {
+                      "name": "环氧树脂",
+                      "description": "用于浸润和固化碳纤维的基体材料。",
+                      "is_raw_material": false,
+                      "icon": "🧪",
+                      "searchTerm": "epoxy resin",
+                      "children": [
+                        {
+                          "name": "原油/双酚A",
+                          "description": "生产环氧树脂的主要石化原料。",
+                          "is_raw_material": true,
+                          "icon": "🛢️",
+                          "searchTerm": "crude oil bisphenol A"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "多层隔热组件",
+              "description": "由多层反射膜和间隔物叠合而成，用于阻隔辐射热交换。",
+              "is_raw_material": false,
+              "icon": "🧤",
+              "searchTerm": "multi layer insulation",
+              "children": [
+                {
+                  "name": "镀铝聚酰亚胺薄膜",
+                  "description": "具有高反射率的柔性隔热层材料。",
+                  "is_raw_material": false,
+                  "icon": "📜",
+                  "searchTerm": "aluminized polyimide film",
+                  "children": [
+                    {
+                      "name": "聚酰亚胺",
+                      "description": "耐极端温度的高性能聚合物薄膜基材。",
+                      "is_raw_material": false,
+                      "icon": "🧪",
+                      "searchTerm": "polyimide",
+                      "children": [
+                        {
+                          "name": "原油/芳香族二酐/二胺",
+                          "description": "合成聚酰亚胺单体的石化原料。",
+                          "is_raw_material": true,
+                          "icon": "🛢️",
+                          "searchTerm": "crude oil aromatic dianhydride diamine"
+                        }
+                      ]
+                    },
+                    {
+                      "name": "高纯铝",
+                      "description": "通过真空蒸镀在薄膜上形成反射层。",
+                      "is_raw_material": false,
+                      "icon": "✨",
+                      "searchTerm": "high purity aluminum",
+                      "children": [
+                        {
+                          "name": "铝土矿",
+                          "description": "电解法生产金属铝的主要矿石。",
+                          "is_raw_material": true,
+                          "icon": "⛏️",
+                          "searchTerm": "bauxite ore"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "电子与通信系统",
+          "description": "巡视器的大脑和神经，负责数据处理、自主导航、指令执行以及与地球的通信。",
+          "is_raw_material": false,
+          "icon": "📟",
+          "searchTerm": "rover avionics and communication system",
+          "children": [
+            {
+              "name": "抗辐射中央处理器",
+              "description": "能在空间辐射环境下可靠工作的核心计算单元。",
+              "is_raw_material": false,
+              "icon": "🧠",
+              "searchTerm": "radiation hardened central processing unit",
+              "children": [
+                {
+                  "name": "绝缘体上硅晶圆",
+                  "description": "制造抗辐射芯片的特殊半导体衬底材料。",
+                  "is_raw_material": false,
+                  "icon": "💿",
+                  "searchTerm": "silicon on insulator wafer",
+                  "children": [
+                    {
+                      "name": "高纯硅/二氧化硅/氧离子",
+                      "description": "制造SOI晶圆所需的高纯材料。",
+                      "is_raw_material": false,
+                      "icon": "🔬",
+                      "searchTerm": "SOI wafer material",
+                      "children": [
+                        {
+                          "name": "硅砂",
+                          "description": "提炼硅和制造二氧化硅的基础原料。",
+                          "is_raw_material": true,
+                          "icon": "⛏️",
+                          "searchTerm": "silica sand"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "X波段深空应答机",
+              "description": "用于与深空网络进行远距离高速数据传输的无线电设备。",
+              "is_raw_material": false,
+              "icon": "📡",
+              "searchTerm": "X band deep space transponder",
+              "children": [
+                {
+                  "name": "砷化镓单片微波集成电路",
+                  "description": "用于射频前端的低噪声放大器和功率放大器芯片。",
+                  "is_raw_material": false,
+                  "icon": "📻",
+                  "searchTerm": "GaAs MMIC",
+                  "children": [
+                    {
+                      "name": "半绝缘砷化镓衬底",
+                      "description": "制造高频微波芯片的半导体基板。",
+                      "is_raw_material": false,
+                      "icon": "💎",
+                      "searchTerm": "semi insulating GaAs substrate",
+                      "children": [
+                        {
+                          "name": "高纯砷/高纯镓",
+                          "description": "合成砷化镓晶体的高纯元素原料。",
+                          "is_raw_material": false,
+                          "icon": "🧪",
+                          "searchTerm": "high purity arsenic gallium",
+                          "children": [
+                            {
+                              "name": "砷矿石/铝土矿",
+                              "description": "提取砷和镓的基础矿物资源。",
+                              "is_raw_material": true,
+                              "icon": "⛏️",
+                              "searchTerm": "arsenic ore bauxite"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "nodePositions": {},
+  "agentReports": {
+    "market_analyst": {
+      "market_analysis": {
+        "product": "深空探测巡视器",
+        "market_positioning": {
+          "core_value_proposition": "面向深空天体（月球、火星、小行星等）的自主移动科学探测平台，具备高环境适应性、自主导航与长期作业能力",
+          "技术定位": "尖端航天工程与机器人技术的集成系统，强调极端环境下的可靠性与科学载荷适配性",
+          "应用场景": [
+            "行星表面地质勘测",
+            "资源分布调查",
+            "天体物理与化学实验",
+            "未来载人任务前期支持"
+          ]
+        },
+        "target_users": {
+          "primary_customers": [
+            {
+              "category": "国家航天机构",
+              "examples": [
+                "中国国家航天局（CNSA）",
+                "美国国家航空航天局（NASA）",
+                "欧洲空间局（ESA）"
+              ],
+              "需求特征": "战略科学任务、技术验证、国际竞争与合作"
+            },
+            {
+              "category": "科研机构与高校",
+              "examples": [
+                "中国科学院",
+                "行星科学研究所",
+                "顶尖大学航天实验室"
+              ],
+              "需求特征": "定制化科学载荷搭载、专项研究数据获取"
+            }
+          ],
+          "potential_customers": [
+            {
+              "category": "商业航天公司",
+              "examples": [
+                "SpaceX",
+                "蓝色起源"
+              ],
+              "需求特征": "未来商业化资源勘探、技术储备"
+            },
+            {
+              "category": "国际合作联合体",
+              "examples": [
+                "月球科研站计划",
+                "火星采样返回任务"
+              ],
+              "需求特征": "模块化任务组件、标准化接口"
+            }
+          ]
+        },
+        "competitive_landscape": {
+          "direct_competitors": [
+            {
+              "competitor": "NASA火星巡视器（如毅力号、好奇号）",
+              "优势": "长期技术积累、高公众影响力、成熟科学团队",
+              "挑战": "高成本、任务周期长"
+            },
+            {
+              "competitor": "中国月球/火星巡视器（玉兔号、祝融号）",
+              "优势": "快速迭代能力、成本控制、系统集成效率",
+              "挑战": "深空任务经验相对较少"
+            }
+          ],
+          "indirect_competitors": [
+            {
+              "category": "轨道探测器",
+              "影响": "提供全球遥感数据，可能减少部分表面巡视需求"
+            },
+            {
+              "category": "固定式着陆器",
+              "影响": "成本更低，但移动性与探测范围有限"
+            }
+          ],
+          "竞争关键因素": [
+            "极端环境适应性（温度、辐射、地形）",
+            "自主导航与决策能力",
+            "科学载荷承载与能源管理",
+            "任务成本与可靠性平衡"
+          ]
+        },
+        "market_trends": {
+          "technology_trends": [
+            "人工智能与自主系统深度集成",
+            "轻量化与模块化设计",
+            "核动力/长效能源系统应用",
+            "多机器人协同探测模式"
+          ],
+          "market_demand_trends": [
+            "从单一科学目标转向综合资源勘查",
+            "商业化前景驱动（如月球水资源探测）",
+            "标准化接口促进国际合作",
+            "样本返回任务带动巡视器需求"
+          ],
+          "policy_environment": [
+            "各国深空探测战略加速（如美国Artemis计划、中国国际月球科研站）",
+            "商业航天政策逐步开放",
+            "国际空间资源开发规则逐步形成"
+          ],
+          "growth_forecast": "未来十年全球预计发射20-30台深空巡视器，市场由政府主导逐步向公私合作过渡，技术出口管制仍是主要贸易壁垒"
+        }
+      }
+    },
+    "supply_chain_expert": {
+      "analysis_report": {
+        "product_name": "深空探测巡视器",
+        "analysis_date": "2023-10-15",
+        "overview": "深空探测巡视器（如月球车、火星车等）是高度复杂的航天系统，其供应链具有技术密集、周期长、可靠性要求极高等特点，涉及航天级元器件、特种材料、精密制造和地面支持系统等多个领域。",
+        "supply_chain_structure": {
+          "tier_1": "系统总装集成商（如国家航天机构或核心航天集团）",
+          "tier_2": [
+            "分系统供应商：结构与机构分系统、热控分系统、能源分系统、测控通信分系统、移动与导航分系统、科学载荷分系统",
+            "关键单机供应商：高性能计算机、特种相机、光谱仪、机械臂、同位素热电源等"
+          ],
+          "tier_3": [
+            "专用元器件供应商：抗辐射芯片、高可靠性传感器、特种电机、航天级连接器",
+            "特种材料供应商：碳纤维复合材料、钛合金、隔热材料、特种润滑剂",
+            "软件与测试服务商：飞行控制软件、仿真测试系统、环境试验服务"
+          ],
+          "tier_4": "基础原材料与通用部件供应商：高纯金属、陶瓷基板、标准电子元件"
+        },
+        "key_suppliers": [
+          {
+            "category": "结构与机构",
+            "examples": "航天复合材料研究所、精密机械制造厂",
+            "criticality": "高"
+          },
+          {
+            "category": "能源系统",
+            "examples": "同位素电池研制单位、高效太阳能电池板供应商",
+            "criticality": "极高"
+          },
+          {
+            "category": "电子元器件",
+            "examples": "抗辐射芯片设计公司、航天级FPGA供应商",
+            "criticality": "极高"
+          },
+          {
+            "category": "科学载荷",
+            "examples": "高分辨率相机研究所、激光诱导击穿光谱仪研制机构",
+            "criticality": "高"
+          },
+          {
+            "category": "地面支持",
+            "examples": "深空测控站、仿真测试中心",
+            "criticality": "高"
+          }
+        ],
+        "logistics_paths": [
+          {
+            "phase": "研发与制造阶段",
+            "path": "特种材料供应商 → 元器件/单机供应商 → 分系统集成商 → 总装集成基地",
+            "characteristics": "多批次小批量运输，依赖特种包装和恒温恒湿物流，部分涉及危险品（如同位素材料）运输"
+          },
+          {
+            "phase": "发射前准备",
+            "path": "总装集成基地 → 地面测试中心 → 发射场",
+            "characteristics": "超精密防震运输，全程环境监控，需协调铁路/公路特殊通行许可"
+          },
+          {
+            "phase": "在轨运行阶段",
+            "path": "地面测控站 → 深空通信网络 → 巡视器",
+            "characteristics": "数据流与指令流传输，依赖深空测控网（如DSN、中国深空网）"
+          }
+        ],
+        "risk_points": [
+          {
+            "risk_category": "技术风险",
+            "items": [
+              "单一来源供应商依赖（特别是抗辐射芯片、同位素电源）",
+              "元器件航天级可靠性验证周期长",
+              "极端环境适应性验证不充分"
+            ],
+            "mitigation": "推动关键部件国产化替代，建立备份供应商体系，加强地面模拟测试"
+          },
+          {
+            "risk_category": "供应风险",
+            "items": [
+              "国际技术封锁导致进口受限",
+              "长周期物料（如特种复合材料）供应中断",
+              "小批量生产导致供应商产能不足"
+            ],
+            "mitigation": "建立战略物资储备，发展国内替代供应链，签订长期供应协议"
+          },
+          {
+            "risk_category": "物流风险",
+            "items": [
+              "危险品运输管制（如放射性同位素）",
+              "精密部件运输过程中的振动与温湿度变化",
+              "发射场运输路线突发中断"
+            ],
+            "mitigation": "制定多套运输方案，采用专用运输设备，提前进行路线勘察与应急预案"
+          },
+          {
+            "risk_category": "政策与合规风险",
+            "items": [
+              "国际武器贸易条例（ITAR）等出口管制",
+              "航天产品质量标准变更",
+              "跨境技术合作政策波动"
+            ],
+            "mitigation": "建立合规审查机制，参与标准制定，加强国际合作渠道多元化"
+          },
+          {
+            "risk_category": "计划风险",
+            "items": [
+              "研制周期延误导致发射窗口错过",
+              "多项目并行导致资源冲突",
+              "在轨故障无法现场维修"
+            ],
+            "mitigation": "关键路径管理，模块化冗余设计，建立远程诊断与软件修复能力"
+          }
+        ],
+        "conclusion": "深空探测巡视器供应链具有高度定制化、技术门槛高、地缘政治敏感等特点，需构建自主可控、多源备份的供应体系，强化全生命周期风险管理，并通过数字化工具提升供应链韧性。"
+      }
+    },
+    "manufacturing_engineer": {
+      "项目概述": {
+        "产品名称": "深空探测巡视器",
+        "产品特点": "高可靠性、极端环境适应性、轻量化设计、自主作业能力",
+        "应用场景": "月球、火星等行星表面探测"
+      },
+      "生产工艺分析": {
+        "结构制造工艺": [
+          {
+            "工艺名称": "钛合金精密铸造",
+            "应用部位": "底盘框架、机械臂关节",
+            "技术特点": "拓扑优化设计、残余应力控制、X射线探伤"
+          },
+          {
+            "工艺名称": "碳纤维复合材料铺层",
+            "应用部位": "太阳能板支架、仪器保护罩",
+            "技术特点": "自动铺丝技术、热压罐固化、无损检测"
+          },
+          {
+            "工艺名称": "铝合金数控加工",
+            "应用部位": "仪器安装接口、传动部件",
+            "技术特点": "五轴联动加工、微米级精度控制"
+          }
+        ],
+        "电子系统工艺": [
+          {
+            "工艺名称": "高密度多层PCB组装",
+            "技术特点": "航天级元器件筛选、真空回流焊、三防涂覆"
+          },
+          {
+            "工艺名称": "线束集成工艺",
+            "技术特点": "抗辐射屏蔽处理、冗余布线设计"
+          }
+        ],
+        "特殊工艺": [
+          {
+            "工艺名称": "热控涂层喷涂",
+            "技术特点": "梯度涂层技术、真空环境下施工"
+          },
+          {
+            "工艺名称": "防尘密封处理",
+            "应用部位": "所有运动关节",
+            "技术特点": "多层迷宫密封+磁性密封复合设计"
+          }
+        ]
+      },
+      "制造流程": {
+        "阶段一：设计与验证": [
+          "三维数字化建模与仿真",
+          "工程样机试制",
+          "环境模拟测试（高低温、真空、辐射）"
+        ],
+        "阶段二：零部件制造": [
+          "结构件精密加工与检测",
+          "电子模块组装与老化测试",
+          "传感器标定与校准"
+        ],
+        "阶段三：系统集成": [
+          "机械总装（洁净车间环境）",
+          "线缆敷设与连接",
+          "控制系统联调"
+        ],
+        "阶段四：综合测试": [
+          "功能测试（移动、采样、通信）",
+          "环境适应性测试（振动、冲击、热真空）",
+          "寿命加速试验"
+        ],
+        "阶段五：出厂准备": [
+          "最终检测与数据包归档",
+          "特殊包装（充氮保护）",
+          "发射场复测"
+        ]
+      },
+      "质量控制体系": {
+        "设计阶段控制": [
+          "DFMEA（设计失效模式分析）",
+          "公差分析与容差设计",
+          "可靠性预计与分配"
+        ],
+        "来料控制": [
+          "航天级元器件认证",
+          "材料溯源管理",
+          "批次一致性检验"
+        ],
+        "过程控制": [
+          "关键工序SPC统计过程控制",
+          "装配过程影像记录",
+          "力矩值数字化管理"
+        ],
+        "测试验证": [
+          "100%环境应力筛选",
+          "冗余系统交叉验证",
+          "故障注入测试"
+        ],
+        "文档管理": [
+          "全生命周期数据包管理",
+          "变更控制委员会审批流程",
+          "质量问题闭环系统"
+        ]
+      },
+      "生产成本分析": {
+        "成本构成": {
+          "研发成本占比": "45%",
+          "物料成本占比": "30%",
+          "制造成本占比": "15%",
+          "测试验证成本占比": "10%"
+        },
+        "主要成本驱动因素": [
+          {
+            "因素": "特殊材料",
+            "说明": "钛合金、碳纤维复合材料、抗辐射电子元器件"
+          },
+          {
+            "因素": "精密制造设备",
+            "说明": "五轴加工中心、自动铺丝机、真空热处理设备"
+          },
+          {
+            "因素": "测试设施",
+            "说明": "大型空间环境模拟器、振动试验台、辐射测试设备"
+          },
+          {
+            "因素": "人力成本",
+            "说明": "高级技工与工程师团队、超净车间维护"
+          }
+        ],
+        "降本策略": [
+          "模块化设计提高部件通用性",
+          "工艺标准化减少特殊工序",
+          "批量生产关键部件降低单件成本",
+          "数字化孪生技术减少实物试验次数"
+        ]
+      },
+      "技术挑战与对策": {
+        "挑战一": "极端温度适应性",
+        "对策": "关键部件200%安全裕度设计+在轨健康管理系统",
+        "挑战二": "粉尘防护",
+        "挑战三": "长寿命可靠性"
+      }
+    },
+    "materials_scientist": {
+      "项目背景": "深空探测巡视器需在极端太空环境中长期稳定工作，面临高真空、极端温度、宇宙辐射、微流星体撞击等多重挑战",
+      "核心材料选择分析": {
+        "结构框架材料": {
+          "当前主流选择": "钛合金（如Ti-6Al-4V）",
+          "关键特性": [
+            "高比强度（强度/重量比）",
+            "优异的热稳定性（-200°C至500°C）",
+            "低热膨胀系数",
+            "良好抗辐射性能"
+          ],
+          "替代方案": [
+            {
+              "材料名称": "碳纤维增强复合材料",
+              "优势": "更轻量化，可设计性强",
+              "局限": "长期辐射下可能降解，成本较高"
+            },
+            {
+              "材料名称": "镁锂合金",
+              "优势": "超轻质（密度1.3-1.6 g/cm³）",
+              "局限": "抗辐射能力需进一步验证"
+            }
+          ]
+        },
+        "热控材料": {
+          "多层隔热组件": "聚酰亚胺镀铝薄膜（Kapton）",
+          "相变材料": "石蜡/金属盐复合材料（用于峰值热管理）",
+          "辐射涂层": "氧化锌/二氧化硅基白色涂料（α_s<0.2，ε>0.8）"
+        },
+        "防护材料": {
+          "微流星体防护层": "Nextel陶瓷纤维布+铝蜂窝夹层",
+          "辐射屏蔽": "聚乙烯基复合材料（含氢量高，有效减缓中子）",
+          "替代方案": "水合材料/月壤原位利用（未来深空基地）"
+        },
+        "移动系统材料": {
+          "轮毂材料": "7075铝合金（表面阳极氧化处理）",
+          "轮胎材料": "钢丝网增强硅橡胶（火星车）",
+          "未来方向": "形状记忆合金轮毂（自适应地形）"
+        }
+      },
+      "环保性评估": {
+        "发射阶段影响": "采用轻量化材料减少发射燃料消耗（每减重1kg节省约$10,000燃料成本）",
+        "在轨安全性": "所有材料通过NASA ASTM E595出气测试（TML<1%，CVCM<0.1%）",
+        "寿命终止处理": {
+          "现状": "成为太空遗产（无主动回收机制）",
+          "改进方向": [
+            "可降解电子电路（淀粉基基底）",
+            "模块化设计便于未来太空回收"
+          ]
+        },
+        "地面制造环保措施": [
+          "钛合金采用粉末冶金近净成形（减少切削废料）",
+          "溶剂型涂料逐步替换为粉末喷涂",
+          "3D打印减少材料浪费"
+        ]
+      },
+      "前沿材料展望": [
+        {
+          "类别": "自修复材料",
+          "案例": "微胶囊化愈合剂聚合物复合材料",
+          "应用场景": "微裂纹自动修复"
+        },
+        {
+          "类别": "多功能复合材料",
+          "案例": "碳纳米管增强相变储能材料",
+          "功能": "结构支撑+热管理+辐射屏蔽三合一"
+        },
+        {
+          "类别": "原位资源利用",
+          "案例": "月壤烧结结构件",
+          "意义": "减少地球发射质量，支持可持续深空探索"
+        }
+      ],
+      "综合建议": [
+        "短期（5-10年）：优化现有材料体系，重点提升抗累积辐射能力",
+        "中期（10-20年）：发展梯度功能材料，实现热-力-辐射防护一体化",
+        "长期（20年以上）：建立地外材料数据库，发展基于AI的材料自适应设计"
+      ]
+    },
+    "cost_analyst": {
+      "analysis_report": {
+        "project_name": "深空探测巡视器成本分析报告",
+        "analysis_date": "2023-10-01",
+        "cost_structure": {
+          "research_and_development": {
+            "description": "包括系统设计、仿真验证、原型机制造与测试、软件算法开发等",
+            "percentage": "35%",
+            "key_components": [
+              "总体设计",
+              "自主导航系统",
+              "科学载荷集成",
+              "热控与能源系统设计"
+            ]
+          },
+          "hardware_manufacturing": {
+            "description": "巡视器本体制造、科学仪器、特殊材料与零部件",
+            "percentage": "40%",
+            "key_components": [
+              "移动系统（轮式/履带）",
+              "机械臂",
+              "光谱仪/相机",
+              "核电池/太阳能板",
+              "特种合金结构件",
+              "辐射防护层"
+            ]
+          },
+          "integration_and_testing": {
+            "description": "系统集成、环境模拟测试（热真空、振动、辐射）、可靠性验证",
+            "percentage": "15%",
+            "key_components": [
+              "系统总装",
+              "地面模拟测试",
+              "发射环境适应性测试",
+              "长期寿命测试"
+            ]
+          },
+          "launch_and_mission_operations": {
+            "description": "发射服务、深空通信、地面站运维、任务控制团队",
+            "percentage": "10%",
+            "key_components": [
+              "火箭发射费用",
+              "深空网络使用费",
+              "任务控制中心运营",
+              "数据处理与分析"
+            ]
+          }
+        },
+        "pricing_strategy": {
+          "primary_method": "成本加成定价法",
+          "pricing_factors": [
+            "研发成本分摊（通常按预计产量分摊）",
+            "制造成本（含特殊材料与定制零部件）",
+            "风险溢价（技术风险、发射失败风险）",
+            "国家战略价值溢价（非商业项目常见）",
+            "国际合作分摊机制（如多国联合任务）"
+          ],
+          "typical_pricing_scenarios": [
+            {
+              "scenario": "单一国家科研任务",
+              "characteristics": "通常不计入完整利润，以成本覆盖为主，可能包含政府补贴"
+            },
+            {
+              "scenario": "商业航天公司项目",
+              "characteristics": "成本加成15-30%，考虑技术独占性与市场稀缺性"
+            },
+            {
+              "scenario": "国际合作项目",
+              "characteristics": "按参与国投入比例分摊成本，可能包含知识共享对价"
+            }
+          ]
+        },
+        "profit_margin_analysis": {
+          "commercial_project_margin": "15-25%",
+          "government_research_project_margin": "0-10%（通常以技术积累与科学回报为主要目标）",
+          "margin_drivers": [
+            "技术成熟度（成熟技术可降低研发成本占比）",
+            "生产批量（小批量生产导致单台成本极高）",
+            "供应链稳定性（特殊零部件供应商垄断程度）",
+            "风险控制能力（测试充分性降低任务失败风险）"
+          ],
+          "break_even_considerations": "深空探测项目通常不以财务盈亏平衡为主要目标，而是追求科学成果、技术突破与国家战略价值"
+        },
+        "cost_optimization_recommendations": [
+          {
+            "area": "设计与标准化",
+            "recommendations": [
+              "采用模块化设计，提高部件通用性",
+              "建立深空探测部件标准库，减少定制化设计",
+              "在早期设计阶段加强仿真，减少实物迭代次数"
+            ],
+            "expected_impact": "降低研发成本10-15%"
+          },
+          {
+            "area": "供应链管理",
+            "recommendations": [
+              "建立战略供应商长期合作，锁定关键材料价格",
+              "推动国内特种材料产业链发展，减少进口依赖",
+              "对长周期部件实施提前采购策略"
+            ],
+            "expected_impact": "降低制造成本8-12%"
+          },
+          {
+            "area": "测试与验证",
+            "recommendations": [
+              "优化测试流程，采用数字化孪生进行前期验证",
+              "共享测试设施（如辐射舱、真空舱）降低固定成本分摊",
+              "建立故障数据库，减少重复测试"
+            ],
+            "expected_impact": "降低测试成本15-20%"
+          },
+          {
+            "area": "国际合作",
+            "recommendations": [
+              "通过国际合作分摊研发与发射成本",
+              "共享科学载荷，减少重复开发",
+              "联合建立深空通信网络"
+            ],
+            "expected_impact": "降低总项目成本20-30%"
+          },
+          {
+            "area": "技术复用",
+            "recommendations": [
+              "将成熟技术平台化，用于后续任务",
+              "开发通用软件框架，减少重复编程",
+              "建立可升级的硬件架构，支持多任务使用"
+            ],
+            "expected_impact": "后续任务成本降低25-40%"
+          }
+        ],
+        "conclusion": "深空探测巡视器具有高研发投入、小批量生产、高风险特性的成本结构。定价通常采用成本加成法，但受战略价值影响较大。利润空间在商业项目中有限，主要价值体现在技术积累与科学回报。通过模块化设计、供应链优化、测试流程改进与国际合作，可显著降低全生命周期成本。"
+      }
+    },
+    "sustainability_expert": {
+      "raw_text": "{\n  \"analysis_report\": {\n    \"project\": \"深空探测巡视器\",\n    \"analysis_dimensions\": [\n      \"环境影响\",\n      \"碳足迹\",\n      \"循环经济潜力\",\n      \"绿色改进方案\"\n    ],\n    \"detailed_analysis\": {\n      \"环境影响\": {\n        \"正面影响\": [\n          \"促进太空科学研究，间接推动地球环境监测技术进步（如遥感技术、气候模型验证）\",\n          \"激发公众对宇宙与地球保护的认知提升\"\n        ],\n        \"负面影响\": [\n          \"发射阶段：火箭燃料燃烧产生温室气体与高空排放物（如黑碳、氧化铝）可能影响平流层化学平衡\",\n          \"制造阶段：稀有金属开采（如钚-238用于核电池）涉及地球资源消耗与局部生态扰动\",\n          \"任务终止后：巡视器成为太空碎片（虽在火星等天体表面，但需考虑行星保护原则）\"\n        ]\n      },\n      \"碳足迹\": {\n        \"主要阶段贡献\": [\n          {\n            \"阶段\": \"材料与制造\",\n            \"占比估算\": \"约15-25%\",\n            \"关键因素\": \"特种合金、辐射硬化电子元件、精密仪器生产能耗\"\n          },\n          {\n            \"阶段\": \"发射过程\",\n            \"占比估算\": \"约60-75%\",\n            \"关键因素\": \"运载火箭燃料（液氧/煤油或液氢）燃烧排放\"\n          },\n          {\n            \"阶段\": \"任务运行\",\n            \"占比估算\": \"约5-15%\",\n            \"关键因素\": \"地面控制中心能耗、数据传输网络维护\"\n          }\n        ],\n        \"总碳足迹参考值\": \"单次火星巡视任务约等效于100-300吨CO₂（根据运载火箭类型与任务复杂度差异较大）\"\n      },\n      \"循环经济潜力\": {\n        \"设计层面\": [\n          \"模块化设计便于部件维修/升级（如好奇号钻头更换设计）\",\n          \"使用可降解润滑剂与低环境毒性材料\"\n        ],\n        \"能源系统\": [\n          \"放射性同位素热电发电机（RTG）实现长期能源自循环\",\n          \"太阳能电池板采用可折叠回收结构设计\"\n        ],\n      \"任务终止方案\": [\n        \"预设休眠模式降低长期环境影响\",\n        \"行星保护协议要求微生物消杀以减少生物污染\"\n      ]\n    },\n    \"绿色改进方案\": {\n      \"短期可行方案\": [\n        \"推广绿色发射技术：采用生物甲烷或液氧/液氢等低污染推进剂\",\n        \"供应链优化：优先采购通过ISO 14001认证的零部件供应商\",\n        \"地面系统节能：数据中心使用可再生能源供电\"\n      ],\n      \"中长期创新方向\": [\n        \"开发太空原位资源利用技术（如利用火星大气制造燃料）\",\n        \"研制可生物降解的航天器防护材料\",\n        \"建立深空任务全生命周期碳积分追踪系统\"\n      ],\n      \"系统性建议\": [\n        \"将生命周期评估（LCA）纳入任务设计强制性流程\",\n        \"与国际航天机构合作制定《深空探测绿色标准》\",\n        \"探索火箭重复使用技术在深空任务中的应用\"\n      ]\n    }\n  },\n  \"conclusion\": \"深空探测巡视器在推动科学前沿的同时，需通过技术创新与制度设计平衡探索需求与地球/太空环境的可持续性。其碳足迹高度集中于发射阶段，而循环经济潜力主要体现在模块化设计与能源系统创新。未来需构建覆盖‘地球制造-太空应用-行星保护’的全链条绿色航天体系。\"\n}"
+    },
+    "innovation_strategist": {
+      "analysis_report": {
+        "technology_innovation_points": [
+          {
+            "category": "自主导航与决策",
+            "innovations": [
+              "基于AI的视觉-激光融合地形感知系统",
+              "多传感器融合的自主路径规划算法",
+              "动态障碍物识别与自适应避障技术",
+              "星上自主任务重规划能力"
+            ]
+          },
+          {
+            "category": "能源与动力系统",
+            "innovations": [
+              "高效多结太阳能电池与动态追光系统",
+              "放射性同位素热电发生器（RTG）小型化",
+              "轮-腿复合式自适应移动机构",
+              "极端温度自适应热管理技术"
+            ]
+          },
+          {
+            "category": "科学探测载荷",
+            "innovations": [
+              "微型化多光谱/激光诱导击穿光谱仪",
+              "钻取-采样-封装一体化系统",
+              "地下探测雷达与地震波联合探测技术",
+              "原位资源利用（ISRU）实验装置"
+            ]
+          },
+          {
+            "category": "通信与数据管理",
+            "innovations": [
+              "深空延迟容忍网络协议",
+              "星上数据智能压缩与优先级传输",
+              "自主故障诊断与系统重构技术",
+              "激光通信与射频通信双模系统"
+            ]
+          }
+        ],
+        "future_development_directions": [
+          {
+            "direction": "群体协同探测",
+            "description": "发展多巡视器集群协同作业，实现分布式科学探测与数据互补"
+          },
+          {
+            "direction": "人机混合智能",
+            "description": "地球远程操控与巡视器自主决策相结合，形成闭环智能探测系统"
+          },
+          {
+            "direction": "长期生存能力",
+            "description": "开发自修复材料、能源再生系统，实现数年甚至数十年的持续探测"
+          },
+          {
+            "direction": "跨天体适应性",
+            "description": "设计可适应月球、火星、小行星等多天体环境的通用化平台"
+          },
+          {
+            "direction": "商业化应用拓展",
+            "description": "发展商业月球/火星探测服务，支持科研机构与企业载荷搭载"
+          }
+        ],
+        "disruptive_opportunities": [
+          {
+            "opportunity": "全自主星际探测网络",
+            "impact": "建立无需实时人工干预的自主探测体系，大幅扩展探测范围与效率"
+          },
+          {
+            "opportunity": "地外资源原位利用",
+            "impact": "实现水冰提取、氧气制备、建筑材料打印等技术，支撑永久基地建设"
+          },
+          {
+            "opportunity": "人工智能科学家",
+            "impact": "巡视器具备自主提出科学假设、设计实验、验证结论的能力"
+          },
+          {
+            "opportunity": "星际互联网节点",
+            "impact": "巡视器作为深空通信中继站，构建太阳系尺度的信息传输网络"
+          },
+          {
+            "opportunity": "行星防御监测平台",
+            "impact": "部署小行星监测巡视器，为行星防御提供实时数据支持"
+          }
+        ],
+        "innovation_recommendations": [
+          {
+            "recommendation": "发展模块化可重构平台",
+            "action": "设计标准化接口与模块，实现在轨任务重构与功能升级"
+          },
+          {
+            "recommendation": "加强生物启发技术应用",
+            "description": "借鉴昆虫复眼视觉、动物运动机理等，提升环境适应能力"
+          },
+          {
+            "recommendation": "建立开放创新生态",
+            "description": "创建开源仿真平台与数据共享机制，吸引全球科研力量参与"
+          },
+          {
+            "recommendation": "推进核动力系统研发",
+            "description": "加快小型核裂变电源实用化，突破能源瓶颈"
+          },
+          {
+            "recommendation": "探索商业运营模式",
+            "description": "发展“探测即服务”模式，降低科研机构进入深空探测的门槛"
+          },
+          {
+            "recommendation": "加强跨学科融合",
+            "description": "促进航天工程与人工智能、材料科学、地球科学等领域的深度交叉"
+          }
+        ],
+        "conclusion": "深空探测巡视器正从单任务专用平台向多任务智能系统演进。未来十年，自主化、集群化、商业化将成为主要发展趋势。建议聚焦人工智能与航天工程的深度融合，同时构建开放协同的创新生态，以加速技术突破并拓展应用边界。"
+      }
+    }
+  },
+  "productionAnalysis": {},
+  "priority": 0,
+  "isActive": true
+}

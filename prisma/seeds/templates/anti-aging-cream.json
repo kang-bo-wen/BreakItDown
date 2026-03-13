@@ -214,4 +214,77 @@
               ]
             }
           ]
+        }
+      ]
+    }
+  },
+  "agentReports": {
+    "market_analyst": {
+      "market_analysis": {
+        "product": "微囊精华抗老面霜",
+        "market_positioning": {
+          "core_value": "以脂质体微囊化技术为核心，实现活性成分精准递送的高端抗老护肤品",
+          "price_segment": "高端市场（单价300-2000元人民币）",
+          "differentiation": "微囊化技术壁垒、生物活性成分配方、临床验证功效"
         },
+        "target_users": [
+          {"user_group": "35-55岁高净值女性", "characteristics": "注重科学护肤，愿意为功效买单"},
+          {"user_group": "医美后修复人群", "characteristics": "需要温和高效的修复产品"}
+        ],
+        "market_size": "全球抗衰老护肤品市场规模约600亿美元，年增长率8%"
+      }
+    },
+    "supply_chain_expert": {
+      "supply_chain_analysis": {
+        "key_raw_materials": ["视黄醇（维A醇）", "玻尿酸", "胜肽复合物", "磷脂（微囊壁材）"],
+        "main_suppliers": ["DSM营养品", "Givaudan", "Evonik", "华熙生物"],
+        "supply_risk": "活性原料依赖进口，汇率波动影响成本"
+      }
+    },
+    "manufacturing_engineer": {
+      "manufacturing_process": {
+        "core_process": "脂质体微囊化工艺",
+        "key_steps": ["磷脂水化", "高压均质", "粒径检测", "灌装封装"],
+        "quality_control": "粒径分布D90<200nm，包封率>85%"
+      }
+    },
+    "materials_scientist": {
+      "materials_analysis": {
+        "active_ingredients": [
+          {"name": "视黄醇", "function": "促进胶原蛋白合成", "concentration": "0.1-0.3%"},
+          {"name": "烟酰胺", "function": "提亮肤色、收缩毛孔", "concentration": "2-5%"},
+          {"name": "胜肽", "function": "抗皱紧致", "concentration": "0.01-0.1%"}
+        ],
+        "encapsulation_material": "磷脂酰胆碱（PC），生物相容性好，皮肤渗透率提升3-5倍"
+      }
+    },
+    "cost_analyst": {
+      "cost_breakdown": {
+        "raw_materials": "45%",
+        "packaging": "20%",
+        "manufacturing": "15%",
+        "rd_amortization": "10%",
+        "quality_testing": "10%",
+        "gross_margin_target": "65-75%"
+      }
+    },
+    "sustainability_expert": {
+      "sustainability_assessment": {
+        "eco_packaging": "采用可回收玻璃瓶+FSC认证纸盒",
+        "cruelty_free": "通过Leaping Bunny认证，不进行动物测试",
+        "carbon_footprint": "本地化原料采购比例提升至60%，降低运输碳排放"
+      }
+    },
+    "innovation_strategist": {
+      "innovation_roadmap": {
+        "current_tech": "第二代脂质体微囊化技术",
+        "next_gen": "纳米乳液+靶向递送系统，实现真皮层精准渗透",
+        "patent_moat": "已申请微囊粒径控制工艺专利3项"
+      }
+    }
+  },
+  "nodePositions": null,
+  "productionAnalysis": null,
+  "priority": 0,
+  "isActive": true
+}

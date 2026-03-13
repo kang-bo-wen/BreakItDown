@@ -31,5 +31,5 @@ ENV PORT=7860
 ENV HOSTNAME="0.0.0.0"
 ENV NODE_ENV=production
 
-# 启动应用
-CMD ["npm", "start"]
+# 启动应用（先执行数据库迁移和模板入库，再启动服务）
+CMD ["sh", "-c", "npx prisma migrate deploy && npm run db:seed && npm start"]
