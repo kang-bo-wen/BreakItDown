@@ -135,6 +135,17 @@ function CanvasContent() {
   const isCreatingSessionRef = useRef(false); // Prevent duplicate session creation
   const isInitializedRef = useRef(false); // Track if initial load is complete
 
+  // 保存 session ID 到 localStorage，供导航栏使用
+  useEffect(() => {
+    if (currentSessionId) {
+      localStorage.setItem('currentSessionId', currentSessionId);
+      // 触发自定义事件通知其他组件更新
+      window.dispatchEvent(new CustomEvent('sessionIdUpdate'));
+    } else {
+      localStorage.removeItem('currentSessionId');
+    }
+  }, [currentSessionId]);
+
   // Fullscreen state
   const [isFullscreen, setIsFullscreen] = useState(false);
 

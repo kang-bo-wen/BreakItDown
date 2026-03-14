@@ -1,23 +1,50 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-
-const navLinks = [
-  { href: '/', label: '首页' },
-  { href: '/setup', label: '调制' },
-  { href: '/canvas', label: '画布' },
-  { href: '/production-analysis', label: '生产分析' },
-  { href: '/about', label: '关于' },
-  { href: '/history', label: '历史' },
-];
 
 export default function TopNavBar() {
   const { data: session, status } = useSession();
   const pathname = usePathname();
+  const router = useRouter();
   const [isScrolled, setIsScrolled] = useState(false);
+  const [sessionId, setSessionId] = useState<string | null>(null);
+
+  // 页面加载时从 localStorage 获取 session ID
+  useEffect(() => {
+    const storedSessionId = localStorage.getItem('currentSessionId');
+    if (storedSessionId) {
+      setSessionId(storedSessionId);
+    }
+  }, []);
+
+  // 监听 session ID 变化并保存到 localStorage
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const stored = localStorage.getItem('currentSessionId');
+      setSessionId(stored);
+    };
+    window.addEventListener('storage', handleStorageChange);
+    // 也监听自定义事件（同一页面内更新）
+    window.addEventListener('sessionIdUpdate', handleStorageChange);
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('sessionIdUpdate', handleStorageChange);
+    };
+  }, []);
+
+  // 需要保留 session ID 的页面
+  const sessionPages = ['/setup', '/canvas', '/production-analysis'];
+
+  // 生成带 session ID 的 href
+  const getNavHref = (href: string) => {
+    if (sessionPages.includes(href) && sessionId) {
+      return `${href}?sessionId=${sessionId}`;
+    }
+    return href;
+  };
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
@@ -82,12 +109,20 @@ export default function TopNavBar() {
 
           {/* 中间：导航链接 - 桌面端 */}
           <div className="hidden lg:flex items-center justify-center flex-1 gap-1">
-            {navLinks.map((link) => {
+            {[
+              { href: '/', label: '首页' },
+              { href: '/setup', label: '调制' },
+              { href: '/canvas', label: '画布' },
+              { href: '/production-analysis', label: '生产分析' },
+              { href: '/about', label: '关于' },
+              { href: '/history', label: '历史' },
+            ].map((link) => {
               const isActive = pathname === link.href;
+              const targetHref = getNavHref(link.href);
               return (
                 <Link
                   key={link.href}
-                  href={link.href}
+                  href={targetHref}
                   className={`relative px-4 py-2 text-sm font-medium tracking-wide transition-all duration-300 ${
                     isActive ? 'text-white' : 'text-white/70 hover:text-white'
                   }`}
@@ -225,10 +260,19 @@ export default function TopNavBar() {
         }`}
       >
         <div className="px-6 py-4 space-y-2">
-          {navLinks.map((link) => (
+          {[
+              { href: '/', label: '首页' },
+              { href: '/setup', label: '调制' },
+              { href: '/canvas', label: '画布' },
+              { href: '/production-analysis', label: '生产分析' },
+              { href: '/about', label: '关于' },
+              { href: '/history', label: '历史' },
+            ].map((link) => {
+              const targetHref = getNavHref(link.href);
+              return (
             <Link
               key={link.href}
-              href={link.href}
+              href={targetHref}
               onClick={() => setIsMobileMenuOpen(false)}
               className={`block px-4 py-3 text-base font-medium rounded-lg transition-colors ${
                 pathname === link.href
@@ -238,7 +282,8 @@ export default function TopNavBar() {
             >
               {link.label}
             </Link>
-          ))}
+              );
+            })}
           {status !== 'authenticated' && (
             <Link
               href="/login"
