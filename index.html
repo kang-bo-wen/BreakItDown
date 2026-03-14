@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Scroll Narrative</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div id="scroll-container">
+
+    <!-- Scene 0：产品愿景 -->
+    <div class="scene" id="scene-0">
+      <div class="scene-bg bg-0"></div>
+      <div class="scene-overlay"></div>
+      <div class="scene-content">
+        <p class="scene-label">PRODUCT VISION</p>
+        <h1 class="scene-title">BREAK<br>IT DOWN</h1>
+        <p class="scene-desc">上传一张图，拆解整个世界。AI 自动识别物体，递归生成多级 BOM，直连供应链。</p>
+        <div class="scene-tags">
+          <span class="scene-tag">AI 驱动</span>
+          <span class="scene-tag">多级 BOM</span>
+          <span class="scene-tag">供应链直连</span>
+          <span class="scene-tag">全民定制</span>
+        </div>
+        <p class="scene-quote">"在定制时代，让每个人都能定制自己的产品。"</p>
+      </div>
+    </div>
+
+    <!-- Scene 1：目标用户 -->
+    <div class="scene" id="scene-1">
+      <div class="scene-bg bg-1"></div>
+      <div class="scene-overlay"></div>
+      <div class="scene-content scene-content--wide">
+        <p class="scene-label">WHO IT'S FOR</p>
+        <h1 class="scene-title">为每一个<br>造梦者而生</h1>
+        <div class="scene-cards">
+          <div class="scene-card">
+            <p class="card-title">TikTok / 小红书卖家</p>
+            <p class="card-desc">看到爆款一键拆解，秒出 BOM 和打样成本，从"看爆款"到"造爆款"缩短到几秒</p>
+          </div>
+          <div class="scene-card">
+            <p class="card-title">独立设计师 / 创客</p>
+            <p class="card-desc">手绘草图或实物照片直接转化为可对接工厂的标准化工程数据，告别"发图干瞪眼"</p>
+          </div>
+          <div class="scene-card">
+            <p class="card-title">机械比赛 / 具身智能团队</p>
+            <p class="card-desc">快速寻源特殊零部件，获取供应商报价、工艺方案与风险评估</p>
+          </div>
+          <div class="scene-card">
+            <p class="card-title">好奇心驱动用户</p>
+            <p class="card-desc">"这个东西如果我自己做，成本到底是多少？"——满足对物理世界的掌控欲</p>
+          </div>
+          <div class="scene-card">
+            <p class="card-title">1688 供应商</p>
+            <p class="card-desc">接收标准化 BOM 数据，读表即报价，沟通成本降至冰点</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scene 2：核心功能 -->
+    <div class="scene" id="scene-2">
+      <div class="scene-bg bg-2"></div>
+      <div class="scene-overlay"></div>
+      <div class="scene-content scene-content--wide">
+        <p class="scene-label">CORE SYSTEMS</p>
+        <h1 class="scene-title">三大系统，<br>一条管道</h1>
+        <div class="scene-systems">
+          <div class="scene-system">
+            <p class="system-label">A</p>
+            <p class="system-title">用户与会话管理</p>
+            <p class="system-item">历史记录 · 节点位置持久化</p>
+            <p class="system-item">知识卡片缓存 · AI 风格设置</p>
+            <p class="system-item">邮箱注册 · 数据隔离</p>
+          </div>
+          <div class="scene-system">
+            <p class="system-label">B</p>
+            <p class="system-title">AI 拆解引擎</p>
+            <p class="system-item">多模态图片识别 · 递归 BOM</p>
+            <p class="system-item">材质平替 · 知识卡片生成</p>
+            <p class="system-item">指数退避重试 · 最深 6 层</p>
+          </div>
+          <div class="scene-system">
+            <p class="system-label">C</p>
+            <p class="system-title">智能生产分析</p>
+            <p class="system-item">8 Agent 流水线 · 供应商寻源</p>
+            <p class="system-item">成本 / 风险 / 碳排放三维评估</p>
+            <p class="system-item">供应链直连 · 断点续做</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scene 3：技术栈 -->
+    <div class="scene" id="scene-3">
+      <div class="scene-bg bg-3"></div>
+      <div class="scene-overlay"></div>
+      <div class="scene-content scene-content--wide">
+        <p class="scene-label">TECH STACK</p>
+        <h1 class="scene-title">精密<br>构建</h1>
+        <div class="scene-techcols">
+          <div class="techcol">
+            <p class="techcol-title">前端</p>
+            <p class="techcol-item">Next.js 15</p>
+            <p class="techcol-item">React 19</p>
+            <p class="techcol-item">React Flow</p>
+            <p class="techcol-item">dagre 自动布局</p>
+          </div>
+          <div class="techcol">
+            <p class="techcol-title">后端</p>
+            <p class="techcol-item">Serverless API</p>
+            <p class="techcol-item">NextAuth.js</p>
+            <p class="techcol-item">Prisma 6</p>
+            <p class="techcol-item">Vercel 部署</p>
+          </div>
+          <div class="techcol">
+            <p class="techcol-title">AI 层</p>
+            <p class="techcol-item">通义千问视觉</p>
+            <p class="techcol-item">DeepSeek</p>
+            <p class="techcol-item">双轨 AI 接口</p>
+            <p class="techcol-item">指数退避重试</p>
+          </div>
+          <div class="techcol">
+            <p class="techcol-title">数据层</p>
+            <p class="techcol-item">PostgreSQL</p>
+            <p class="techcol-item">Neon 无服务器</p>
+            <p class="techcol-item">JSON 快照存储</p>
+            <p class="techcol-item">防抖批量写入</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scene 4：技术亮点 -->
+    <div class="scene" id="scene-4">
+      <div class="scene-bg bg-4"></div>
+      <div class="scene-overlay"></div>
+      <div class="scene-content">
+        <p class="scene-label">HARD PROBLEMS SOLVED</p>
+        <h1 class="scene-title">三个硬核难题，<br>三个优雅解法</h1>
+        <div class="scene-breakthroughs">
+          <div class="breakthrough">
+            <span class="breakthrough-num">01</span>
+            <div>
+              <p class="breakthrough-title">AI JSON 鲁棒解析</p>
+              <p class="breakthrough-desc">双轨正则提取 + 二次修复解析 + 指数退避重试，彻底消灭大模型输出不稳定</p>
+            </div>
+          </div>
+          <div class="breakthrough">
+            <span class="breakthrough-num">02</span>
+            <div>
+              <p class="breakthrough-title">React Flow 大规模节点</p>
+              <p class="breakthrough-desc">dagre 自动布局 + 防抖写入 + JSON 快照单字段存储，50+ 节点丝滑无卡顿</p>
+            </div>
+          </div>
+          <div class="breakthrough">
+            <span class="breakthrough-num">03</span>
+            <div>
+              <p class="breakthrough-title">多 Agent 断点续做</p>
+              <p class="breakthrough-desc">(sessionId, partId) upsert + currentStep 恢复 + 流式输出，关页面不丢进度</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 底部进度条 -->
+  <div id="progress-bar"><div id="progress-fill"></div></div>
+
+  <script src="main.js"></script>
+</body>
+</html>
