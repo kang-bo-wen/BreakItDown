@@ -38,8 +38,32 @@ export default function TopNavBar() {
   // 需要保留 session ID 的页面
   const sessionPages = ['/setup', '/canvas', '/production-analysis'];
 
-  // 生成带 session ID 的 href
+  // 同步读取最后分析的节点信息
+  const getLastAnalysisNode = () => {
+    if (!sessionId) return null;
+    const stored = localStorage.getItem('lastAnalysisNode');
+    if (stored) {
+      try {
+        const data = JSON.parse(stored);
+        if (data.sessionId === sessionId) {
+          return { partId: data.partId, partName: data.partName };
+        }
+      } catch (e) {
+        console.error('解析最后分析节点失败:', e);
+      }
+    }
+    return null;
+  };
+
+  // 生成带 session ID 和分析节点信息的 href
   const getNavHref = (href: string) => {
+    if (href === '/production-analysis' && sessionId) {
+      const lastNode = getLastAnalysisNode();
+      if (lastNode) {
+        // 生产分析页面添加节点信息
+        return `${href}?sessionId=${sessionId}&partId=${lastNode.partId}&partName=${encodeURIComponent(lastNode.partName)}`;
+      }
+    }
     if (sessionPages.includes(href) && sessionId) {
       return `${href}?sessionId=${sessionId}`;
     }

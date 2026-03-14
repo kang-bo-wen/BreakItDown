@@ -309,6 +309,17 @@ function ProductionAnalysisPage() {
           isCompleted: completed
         })
       });
+
+      // 同时保存最后分析的节点信息到 localStorage，供导航栏进入时使用
+      if (partId && partName) {
+        const lastAnalysisNode = {
+          partId,
+          partName,
+          sessionId,
+          updatedAt: Date.now()
+        };
+        localStorage.setItem('lastAnalysisNode', JSON.stringify(lastAnalysisNode));
+      }
     } catch (err) {
       console.error('保存进度失败:', err);
     }
