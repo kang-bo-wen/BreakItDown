@@ -1,0 +1,21 @@
+{
+  "name": "breakitdown-templates",
+  "version": "1.0.0",
+  "description": "BreakItDown 附加功能模板包 - 具身智能系列",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "seed": "tsx scripts/seed.ts"
+  },
+  "files": [
+    "dist",
+    "templates"
+  ],
+  "devDependencies": {
+    "@prisma/client": "^6.0.0",
+    "dotenv": "^17.0.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.0.0"
+  }
+}
