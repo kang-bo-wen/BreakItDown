@@ -317,6 +317,125 @@ html, body {
     radial-gradient(ellipse at 20% 75%, rgba(200,120,0,0.15) 0%, transparent 40%);
 }
 
+/* ── 万物皆可拆解（Scene 5） ── */
+.scene-decompose-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1.8rem;
+  max-width: 860px;
+}
+.decompose-item {
+  flex: 1 1 180px;
+  max-width: 220px;
+  padding: 1rem 1.2rem;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  background: rgba(255,255,255,0.04);
+}
+.decompose-icon {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+.decompose-name {
+  font-size: clamp(12px, 1.05vw, 14px);
+  font-weight: 600;
+  color: rgba(255,255,255,0.9);
+  margin-bottom: 0.4rem;
+}
+.decompose-path {
+  font-size: clamp(10px, 0.85vw, 12px);
+  color: rgba(255,255,255,0.4);
+  line-height: 1.6;
+  font-weight: 300;
+}
+
+/* ── 拆解深度链（Scene 6） ── */
+.scene-depth-chain {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-top: 1.8rem;
+  max-width: 480px;
+}
+.depth-step {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.7rem 1rem;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 6px;
+  background: rgba(255,255,255,0.03);
+}
+.depth-step--highlight {
+  border-color: rgba(255,255,255,0.25);
+  background: rgba(255,255,255,0.07);
+}
+.depth-level {
+  font-size: clamp(11px, 1vw, 13px);
+  font-weight: 700;
+  color: rgba(255,255,255,0.3);
+  letter-spacing: 0.1em;
+  width: 2rem;
+  flex-shrink: 0;
+}
+.depth-step--highlight .depth-level {
+  color: rgba(255,255,255,0.7);
+}
+.depth-text {
+  font-size: clamp(12px, 1.05vw, 14px);
+  color: rgba(255,255,255,0.6);
+  font-weight: 300;
+}
+.depth-step--highlight .depth-text {
+  color: rgba(255,255,255,0.9);
+  font-weight: 500;
+}
+.depth-arrow {
+  font-size: 12px;
+  color: rgba(255,255,255,0.15);
+  padding-left: 1.2rem;
+  line-height: 1;
+}
+
+/* ── 新增背景（Scene 5-7） ── */
+.bg-5 {
+  background: linear-gradient(155deg, #001a0d 0%, #002a18 40%, #000f08 100%);
+}
+.bg-5::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 35% 60%, rgba(0,220,120,0.18) 0%, transparent 55%),
+    radial-gradient(ellipse at 75% 25%, rgba(0,160,80,0.12) 0%, transparent 45%);
+}
+
+.bg-6 {
+  background: linear-gradient(165deg, #000818 0%, #001030 40%, #000510 100%);
+}
+.bg-6::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 50% 50%, rgba(80,120,255,0.2) 0%, transparent 55%),
+    radial-gradient(ellipse at 20% 80%, rgba(40,60,200,0.15) 0%, transparent 40%);
+}
+
+.bg-7 {
+  background: linear-gradient(145deg, #080010 0%, #150025 40%, #050010 100%);
+}
+.bg-7::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 45% 55%, rgba(160,80,255,0.25) 0%, transparent 55%),
+    radial-gradient(ellipse at 75% 30%, rgba(80,0,180,0.2) 0%, transparent 45%),
+    radial-gradient(ellipse at 20% 70%, rgba(200,100,255,0.12) 0%, transparent 40%);
+}
+
 /* ── 底部进度条 ── */
 #progress-bar {
   position: fixed;
