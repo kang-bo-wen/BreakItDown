@@ -7,7 +7,9 @@ import { useSession } from 'next-auth/react';
 
 const navLinks = [
   { href: '/', label: '首页' },
-  { href: '/setup', label: '开始使用' },
+  { href: '/setup', label: '调制' },
+  { href: '/canvas', label: '画布' },
+  { href: '/production-analysis', label: '生产分析' },
   { href: '/about', label: '关于' },
   { href: '/history', label: '历史' },
 ];
