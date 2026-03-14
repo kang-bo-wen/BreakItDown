@@ -26,7 +26,7 @@ interface ProductPlan {
 // 竞品分析
 interface CompetitorAnalysis {
   marketPrice: { low: number; mid: number; high: number; currency: string };
-  competitors: { name: string; price: number; features: string[]; marketShare: string; taobaoUrl?: string; '1688Url'?: string }[];
+  competitors: { name: string; price: number; features: string[]; marketShare: string; brand?: string; taobaoUrl?: string; '1688Url'?: string }[];
   pricingAdvice: string;
   marketTrends: string;
   searchKeyword: string; // 用于1688搜索的关键字
@@ -1166,29 +1166,45 @@ function ProductionAnalysisPage() {
                   </div>
                   <div className={`text-sm mb-2 ${isDarkTheme ? 'text-gray-400' : 'text-slate-500'}`}>{comp.features.join(', ')}</div>
                   <div className={`text-xs ${isDarkTheme ? 'text-gray-500' : 'text-slate-400'}`}>{comp.marketShare}</div>
-                  {/* 1688采购链接 */}
-                  <div className="mt-3 flex gap-2">
+
+                  {/* 官网链接 - 优先显示，没有官网时显示淘宝搜索 */}
+                  <div className="mt-3">
                     <a
-                      href={comp['1688Url'] || `https://s.1688.com/youyuan/index.htm?tab=imageSearch&searchword=${encodeURIComponent(comp.name)}&beginPage=1&pageSize=60`}
+                      href={comp.brand ? `https://www.baidu.com/s?wd=${encodeURIComponent(comp.brand + ' 官网')}` : `https://s.taobao.com/search?q=${encodeURIComponent(comp.name)}&imgfile=&initiative_id=staobaoz&ie=utf8`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex-1 flex items-center justify-center gap-1 px-3 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg text-xs font-medium transition-colors"
+                      className="flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors shadow-md"
                     >
-                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+                      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
                       </svg>
-                      1688采购
+                      搜索官网
                     </a>
+                  </div>
+
+                  {/* 附加链接 - 淘宝和1688 */}
+                  <div className="mt-2 flex gap-2">
                     <a
                       href={comp.taobaoUrl || `https://s.taobao.com/search?q=${encodeURIComponent(comp.name)}&imgfile=&initiative_id=staobaoz&ie=utf8`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex-1 flex items-center justify-center gap-1 px-3 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg text-xs font-medium transition-colors"
+                      className="flex-1 flex items-center justify-center gap-1 px-2 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg text-xs font-medium transition-colors"
                     >
-                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+                      <svg className="w-3 h-3" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/>
                       </svg>
                       淘宝
+                    </a>
+                    <a
+                      href={comp['1688Url'] || `https://s.1688.com/youyuan/index.htm?tab=imageSearch&searchword=${encodeURIComponent(comp.name)}&beginPage=1&pageSize=60`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex-1 flex items-center justify-center gap-1 px-2 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg text-xs font-medium transition-colors"
+                    >
+                      <svg className="w-3 h-3" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/>
+                      </svg>
+                      1688
                     </a>
                   </div>
                 </div>

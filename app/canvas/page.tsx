@@ -1152,8 +1152,8 @@ function CanvasContent() {
             {/* 右侧图谱区域 */}
             <div className={`flex-1 ${themeConfig.cardBg} backdrop-blur-md ${themeConfig.cardBorder} rounded-xl p-6`}>
             <div className="flex items-center justify-between mb-4">
-              <h2 className={`text-2xl font-bold flex items-center gap-3 ${themeConfig.textPrimary}`}>
-                <GlobeAltIcon className="w-8 h-8 text-indigo-400" />
+              <h2 className={`text-lg font-bold flex items-center gap-2 ${themeConfig.textPrimary}`}>
+                <GlobeAltIcon className="w-5 h-5 text-indigo-400" />
                 <span>拆解图谱</span>
               </h2>
               <button
@@ -1173,11 +1173,7 @@ function CanvasContent() {
                 <span>全屏</span>
               </button>
             </div>
-            <div className={`mb-4 rounded-xl p-3 border ${themeConfig.cardBorder} ${themeConfig.cardLightBg}`}>
-              <div className={`text-sm ${themeConfig.textMuted}`}>
-                点击节点继续拆解，青色节点是原材料。使用鼠标滚轮缩放，拖拽画布移动视图。
-              </div>
-            </div>
+            
             <div id="graph-container" className="rounded-xl relative overflow-hidden">
               <GraphView
                 tree={deconstructionTree}
