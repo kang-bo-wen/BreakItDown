@@ -73,29 +73,13 @@ interface TreeNode {
 interface KnowledgeCardData {
   title: string;
   doc_number: string;
-  supply_chain?: {
-    raw_material_source: string;
-    procurement_lead_time: string;
-    estimated_material_cost: string;
-  };
   steps: {
     step_number: number;
-    stage?: string;
     action_title: string;
     description: string;
-    equipment?: string;
     parameters: { label: string; value: string }[];
     ai_image_prompt: string;
   }[];
-  quality_control?: {
-    inspection_points: string[];
-    standards: string;
-  };
-  logistics?: {
-    packaging: string;
-    shipping: string;
-    storage: string;
-  };
 }
 
 function CanvasContent() {
@@ -425,7 +409,7 @@ function CanvasContent() {
           promptMode: 'simple',
           customPrompt: ''
         },
-        breakdownMode: session.breakdownMode || 'basic',
+        breakdownMode: session.breakdownMode || 'production',
         existingSessionId: sessionId
       };
       localStorage.setItem('setupState', JSON.stringify(setupState));
@@ -753,9 +737,6 @@ function CanvasContent() {
         name: part.name,
         description: part.description,
         isRawMaterial: part.is_raw_material,
-        customizable: part.customizable,
-        isRequired: part.is_required,
-        customizationOptions: part.customization_options,
         icon: part.icon,
         imageUrl: part.imageUrl,
         children: [],
@@ -1165,36 +1146,6 @@ function CanvasContent() {
                           <div className={`text-xl font-bold ${isDarkTheme ? 'text-yellow-300' : 'text-yellow-800'}`}>{knowledgeCard.data.title}</div>
                         </div>
 
-                        {/* 供应链信息 */}
-                        {knowledgeCard.data.supply_chain && (
-                          <div className={`rounded-lg p-4 border ${
-                            isDarkTheme
-                              ? 'bg-gradient-to-r from-green-500/10 to-emerald-500/10 border-green-500/30'
-                              : 'bg-green-50 border-green-200'
-                          }`}>
-                            <div className={`text-sm font-semibold mb-3 ${isDarkTheme ? 'text-green-300' : 'text-green-700'}`}>
-                              <svg className="w-4 h-4 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                              </svg>
-                              供应链信息
-                            </div>
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                              <div className={`${isDarkTheme ? 'bg-slate-800/50' : 'bg-white'} rounded p-2 text-xs`}>
-                                <span className={themeConfig.textMuted}>原材料来源</span>
-                                <div className={`font-medium ${themeConfig.textPrimary}`}>{knowledgeCard.data.supply_chain.raw_material_source}</div>
-                              </div>
-                              <div className={`${isDarkTheme ? 'bg-slate-800/50' : 'bg-white'} rounded p-2 text-xs`}>
-                                <span className={themeConfig.textMuted}>采购周期</span>
-                                <div className={`font-medium ${themeConfig.textPrimary}`}>{knowledgeCard.data.supply_chain.procurement_lead_time}</div>
-                              </div>
-                              <div className={`${isDarkTheme ? 'bg-slate-800/50' : 'bg-white'} rounded p-2 text-xs`}>
-                                <span className={themeConfig.textMuted}>材料成本占比</span>
-                                <div className={`font-medium ${themeConfig.textPrimary}`}>{knowledgeCard.data.supply_chain.estimated_material_cost}</div>
-                              </div>
-                            </div>
-                          </div>
-                        )}
-
                         <div className="space-y-4">
                           {knowledgeCard.data.steps.map((step, idx) => (
                             <div key={idx} className="relative">
@@ -1211,11 +1162,6 @@ function CanvasContent() {
                                   </div>
 
                                   <div className="flex-1">
-                                    {step.stage && (
-                                      <div className={`text-xs font-medium mb-1 ${isDarkTheme ? 'text-purple-400' : 'text-purple-600'}`}>
-                                        {step.stage}
-                                      </div>
-                                    )}
                                     <div className={`text-lg font-bold mb-2 ${isDarkTheme ? 'text-blue-300' : 'text-blue-700'}`}>
                                       {step.action_title}
                                     </div>
@@ -1226,12 +1172,6 @@ function CanvasContent() {
                                         knowledgeCard.node.children.map(c => c.name)
                                       )}
                                     </div>
-
-                                    {step.equipment && (
-                                      <div className={`text-xs mb-2 ${isDarkTheme ? 'text-gray-400' : 'text-slate-600'}`}>
-                                        <span className="font-medium">设备：</span>{step.equipment}
-                                      </div>
-                                    )}
 
                                     {step.parameters.length > 0 && (
                                       <div className="flex flex-wrap gap-2">
@@ -1274,55 +1214,78 @@ function CanvasContent() {
                           </div>
                         </div>
 
-                        {/* 质量控制信息 */}
-                        {knowledgeCard.data.quality_control && (
-                          <div className={`rounded-lg p-4 border ${
-                            isDarkTheme
-                              ? 'bg-gradient-to-r from-red-500/10 to-orange-500/10 border-red-500/30'
-                              : 'bg-red-50 border-red-200'
-                          }`}>
-                            <div className={`text-sm font-semibold mb-3 ${isDarkTheme ? 'text-red-300' : 'text-red-700'}`}>
-                              <svg className="w-4 h-4 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                        {/* 操作按钮 */}
+                        {knowledgeCard.node.children && knowledgeCard.node.children.length > 0 && (
+                          <div className="flex flex-col gap-3 mt-6 pt-4 border-t border-gray-600">
+                            {/* 工艺流程 */}
+                            <button
+                              onClick={() => {
+                                fetchKnowledgeCard(knowledgeCard.node, true);
+                              }}
+                              className={`w-full flex items-center gap-3 p-4 rounded-lg transition-all ${
+                                isDarkTheme
+                                  ? 'bg-blue-500/20 hover:bg-blue-500/30 text-blue-400'
+                                  : 'bg-blue-50 hover:bg-blue-100 text-blue-600'
+                              }`}
+                            >
+                              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2" />
                               </svg>
-                              质量控制
-                            </div>
-                            <div className={`text-xs mb-2 ${themeConfig.textMuted}`}>
-                              质检点：{knowledgeCard.data.quality_control.inspection_points.join(' → ')}
-                            </div>
-                            <div className={`text-xs ${themeConfig.textPrimary}`}>
-                              <span className="font-medium">执行标准：</span>{knowledgeCard.data.quality_control.standards}
-                            </div>
-                          </div>
-                        )}
+                              <span className="text-base font-medium">查看工艺流程</span>
+                            </button>
 
-                        {/* 物流信息 */}
-                        {knowledgeCard.data.logistics && (
-                          <div className={`rounded-lg p-4 border ${
-                            isDarkTheme
-                              ? 'bg-gradient-to-r from-cyan-500/10 to-blue-500/10 border-cyan-500/30'
-                              : 'bg-cyan-50 border-cyan-200'
-                          }`}>
-                            <div className={`text-sm font-semibold mb-3 ${isDarkTheme ? 'text-cyan-300' : 'text-cyan-700'}`}>
-                              <svg className="w-4 h-4 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                            {/* 生产分析 */}
+                            {breakdownMode === 'production' && (
+                              <button
+                                onClick={() => {
+                                  const params = new URLSearchParams({
+                                    partName: knowledgeCard.node.name,
+                                    partId: knowledgeCard.node.id,
+                                    sessionId: currentSessionId || ''
+                                  });
+                                  router.push(`/production-analysis?${params.toString()}`);
+                                }}
+                                className={`w-full flex items-center gap-3 p-4 rounded-lg transition-all ${
+                                  isDarkTheme
+                                    ? 'bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-400'
+                                    : 'bg-cyan-50 hover:bg-cyan-100 text-cyan-600'
+                                }`}
+                              >
+                                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                                </svg>
+                                <span className="text-base font-medium">查看生产分析</span>
+                              </button>
+                            )}
+
+                            {/* 删除子节点 */}
+                            <button
+                              onClick={() => {
+                                if (confirm(`确定要删除"${knowledgeCard.node.name}"的所有子节点吗？`)) {
+                                  setDeconstructionTree(prevTree => {
+                                    if (!prevTree) return null;
+                                    const updateNode = (node: TreeNode): TreeNode => {
+                                      if (node.id === knowledgeCard.node.id) {
+                                        return { ...node, children: [] };
+                                      }
+                                      return { ...node, children: node.children.map(updateNode) };
+                                    };
+                                    return updateNode(prevTree);
+                                  });
+                                  setKnowledgeCard(null);
+                                }
+                              }}
+                              className={`w-full flex items-center gap-3 p-4 rounded-lg transition-all ${
+                                isDarkTheme
+                                  ? 'bg-red-500/20 hover:bg-red-500/30 text-red-400'
+                                  : 'bg-red-50 hover:bg-red-100 text-red-600'
+                              }`}
+                            >
+                              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                               </svg>
-                              物流与仓储
-                            </div>
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-                              <div className={`text-xs ${themeConfig.textMuted}`}>
-                                <span className="font-medium">包装：</span>
-                                <span className={themeConfig.textPrimary}>{knowledgeCard.data.logistics.packaging}</span>
-                              </div>
-                              <div className={`text-xs ${themeConfig.textMuted}`}>
-                                <span className="font-medium">运输：</span>
-                                <span className={themeConfig.textPrimary}>{knowledgeCard.data.logistics.shipping}</span>
-                              </div>
-                              <div className={`text-xs ${themeConfig.textMuted}`}>
-                                <span className="font-medium">储存：</span>
-                                <span className={themeConfig.textPrimary}>{knowledgeCard.data.logistics.storage}</span>
-                              </div>
-                            </div>
+                              <span className="text-base font-medium">删除子节点</span>
+                            </button>
                           </div>
                         )}
                       </div>
@@ -1379,36 +1342,6 @@ function CanvasContent() {
                       <div className={`text-xl font-bold ${isDarkTheme ? 'text-yellow-300' : 'text-yellow-800'}`}>{knowledgeCard.data.title}</div>
                   </div>
 
-                  {/* 供应链信息 */}
-                  {knowledgeCard.data.supply_chain && (
-                    <div className={`rounded-lg p-4 border ${
-                      isDarkTheme
-                        ? 'bg-gradient-to-r from-green-500/10 to-emerald-500/10 border-green-500/30'
-                        : 'bg-green-50 border-green-200'
-                    }`}>
-                      <div className={`text-sm font-semibold mb-3 ${isDarkTheme ? 'text-green-300' : 'text-green-700'}`}>
-                        <svg className="w-4 h-4 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                        </svg>
-                        供应链信息
-                      </div>
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                        <div className={`${isDarkTheme ? 'bg-slate-800/50' : 'bg-white'} rounded p-2 text-xs`}>
-                          <span className={themeConfig.textMuted}>原材料来源</span>
-                          <div className={`font-medium ${themeConfig.textPrimary}`}>{knowledgeCard.data.supply_chain.raw_material_source}</div>
-                        </div>
-                        <div className={`${isDarkTheme ? 'bg-slate-800/50' : 'bg-white'} rounded p-2 text-xs`}>
-                          <span className={themeConfig.textMuted}>采购周期</span>
-                          <div className={`font-medium ${themeConfig.textPrimary}`}>{knowledgeCard.data.supply_chain.procurement_lead_time}</div>
-                        </div>
-                        <div className={`${isDarkTheme ? 'bg-slate-800/50' : 'bg-white'} rounded p-2 text-xs`}>
-                          <span className={themeConfig.textMuted}>材料成本占比</span>
-                          <div className={`font-medium ${themeConfig.textPrimary}`}>{knowledgeCard.data.supply_chain.estimated_material_cost}</div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
                   <div className="space-y-4">
                     {knowledgeCard.data.steps.map((step, idx) => (
                       <div key={idx} className="relative">
@@ -1425,11 +1358,6 @@ function CanvasContent() {
                             </div>
 
                             <div className="flex-1">
-                              {step.stage && (
-                                <div className={`text-xs font-medium mb-1 ${isDarkTheme ? 'text-purple-400' : 'text-purple-600'}`}>
-                                  {step.stage}
-                                </div>
-                              )}
                               <div className={`text-lg font-bold mb-2 ${isDarkTheme ? 'text-blue-300' : 'text-blue-700'}`}>
                                 {step.action_title}
                               </div>
@@ -1440,12 +1368,6 @@ function CanvasContent() {
                                   knowledgeCard.node.children.map(c => c.name)
                                 )}
                               </div>
-
-                              {step.equipment && (
-                                <div className={`text-xs mb-2 ${isDarkTheme ? 'text-gray-400' : 'text-slate-600'}`}>
-                                  <span className="font-medium">设备：</span>{step.equipment}
-                                </div>
-                              )}
 
                               {step.parameters.length > 0 && (
                                 <div className="flex flex-wrap gap-2">
@@ -1470,58 +1392,6 @@ function CanvasContent() {
                     ))}
                   </div>
 
-                  {/* 质量控制信息 */}
-                  {knowledgeCard.data.quality_control && (
-                    <div className={`rounded-lg p-4 border ${
-                      isDarkTheme
-                        ? 'bg-gradient-to-r from-red-500/10 to-orange-500/10 border-red-500/30'
-                        : 'bg-red-50 border-red-200'
-                    }`}>
-                      <div className={`text-sm font-semibold mb-3 ${isDarkTheme ? 'text-red-300' : 'text-red-700'}`}>
-                        <svg className="w-4 h-4 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                        </svg>
-                        质量控制
-                      </div>
-                      <div className={`text-xs mb-2 ${themeConfig.textMuted}`}>
-                        质检点：{knowledgeCard.data.quality_control.inspection_points.join(' → ')}
-                      </div>
-                      <div className={`text-xs ${themeConfig.textPrimary}`}>
-                        <span className="font-medium">执行标准：</span>{knowledgeCard.data.quality_control.standards}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* 物流信息 */}
-                  {knowledgeCard.data.logistics && (
-                    <div className={`rounded-lg p-4 border ${
-                      isDarkTheme
-                        ? 'bg-gradient-to-r from-cyan-500/10 to-blue-500/10 border-cyan-500/30'
-                        : 'bg-cyan-50 border-cyan-200'
-                    }`}>
-                      <div className={`text-sm font-semibold mb-3 ${isDarkTheme ? 'text-cyan-300' : 'text-cyan-700'}`}>
-                        <svg className="w-4 h-4 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-                        </svg>
-                        物流与仓储
-                      </div>
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-                        <div className={`text-xs ${themeConfig.textMuted}`}>
-                          <span className="font-medium">包装：</span>
-                          <span className={themeConfig.textPrimary}>{knowledgeCard.data.logistics.packaging}</span>
-                        </div>
-                        <div className={`text-xs ${themeConfig.textMuted}`}>
-                          <span className="font-medium">运输：</span>
-                          <span className={themeConfig.textPrimary}>{knowledgeCard.data.logistics.shipping}</span>
-                        </div>
-                        <div className={`text-xs ${themeConfig.textMuted}`}>
-                          <span className="font-medium">储存：</span>
-                          <span className={themeConfig.textPrimary}>{knowledgeCard.data.logistics.storage}</span>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
                   <div className={`rounded-lg p-4 border ${
                       isDarkTheme
                         ? 'bg-blue-500/10 border-blue-500/30'
@@ -1539,6 +1409,81 @@ function CanvasContent() {
                       ))}
                     </div>
                   </div>
+
+                  {/* 操作按钮 */}
+                  {knowledgeCard.node.children && knowledgeCard.node.children.length > 0 && (
+                    <div className="flex flex-col gap-3 mt-6 pt-4 border-t border-gray-600">
+                      {/* 工艺流程 */}
+                      <button
+                        onClick={() => {
+                          fetchKnowledgeCard(knowledgeCard.node, true);
+                        }}
+                        className={`w-full flex items-center gap-3 p-4 rounded-lg transition-all ${
+                          isDarkTheme
+                            ? 'bg-blue-500/20 hover:bg-blue-500/30 text-blue-400'
+                            : 'bg-blue-50 hover:bg-blue-100 text-blue-600'
+                        }`}
+                      >
+                        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2" />
+                        </svg>
+                        <span className="text-base font-medium">查看工艺流程</span>
+                      </button>
+
+                      {/* 生产分析 */}
+                      {breakdownMode === 'production' && (
+                        <button
+                          onClick={() => {
+                            const params = new URLSearchParams({
+                              partName: knowledgeCard.node.name,
+                              partId: knowledgeCard.node.id,
+                              sessionId: currentSessionId || ''
+                            });
+                            router.push(`/production-analysis?${params.toString()}`);
+                          }}
+                          className={`w-full flex items-center gap-3 p-4 rounded-lg transition-all ${
+                            isDarkTheme
+                              ? 'bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-400'
+                              : 'bg-cyan-50 hover:bg-cyan-100 text-cyan-600'
+                          }`}
+                        >
+                          <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                          </svg>
+                          <span className="text-base font-medium">查看生产分析</span>
+                        </button>
+                      )}
+
+                      {/* 删除子节点 */}
+                      <button
+                        onClick={() => {
+                          if (confirm(`确定要删除"${knowledgeCard.node.name}"的所有子节点吗？`)) {
+                            setDeconstructionTree(prevTree => {
+                              if (!prevTree) return null;
+                              const updateNode = (node: TreeNode): TreeNode => {
+                                if (node.id === knowledgeCard.node.id) {
+                                  return { ...node, children: [] };
+                                }
+                                return { ...node, children: node.children.map(updateNode) };
+                              };
+                              return updateNode(prevTree);
+                            });
+                            setKnowledgeCard(null);
+                          }
+                        }}
+                        className={`w-full flex items-center gap-3 p-4 rounded-lg transition-all ${
+                          isDarkTheme
+                            ? 'bg-red-500/20 hover:bg-red-500/30 text-red-400'
+                            : 'bg-red-50 hover:bg-red-100 text-red-600'
+                        }`}
+                      >
+                        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                        <span className="text-base font-medium">删除子节点</span>
+                      </button>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
