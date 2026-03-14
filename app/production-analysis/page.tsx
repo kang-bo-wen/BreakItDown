@@ -26,9 +26,10 @@ interface ProductPlan {
 // 竞品分析
 interface CompetitorAnalysis {
   marketPrice: { low: number; mid: number; high: number; currency: string };
-  competitors: { name: string; price: number; features: string[]; marketShare: string }[];
+  competitors: { name: string; price: number; features: string[]; marketShare: string; taobaoUrl?: string; '1688Url'?: string }[];
   pricingAdvice: string;
   marketTrends: string;
+  searchKeyword: string; // 用于1688搜索的关键字
 }
 
 // 供应商
@@ -1017,6 +1018,38 @@ function ProductionAnalysisPage() {
             </div>
           </div>
 
+          {/* 1688批量采购搜索 */}
+          {competitorAnalysis.searchKeyword && (
+            <div className={`md:col-span-2 rounded-xl p-4 card-animate-fade-in ${
+              isDarkTheme ? 'bg-gradient-to-r from-orange-500/20 to-red-500/20 border border-orange-500/30' : 'bg-gradient-to-r from-orange-50 to-red-50 border border-orange-200'
+            }`}>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-orange-500 flex items-center justify-center">
+                    <svg className="w-6 h-6 text-white" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <div className={`font-medium ${isDarkTheme ? 'text-white' : 'text-slate-800'}`}>一站式采购</div>
+                    <div className={`text-sm ${isDarkTheme ? 'text-gray-400' : 'text-slate-600'}`}>搜索关键字: {competitorAnalysis.searchKeyword}</div>
+                  </div>
+                </div>
+                <a
+                  href={`https://s.1688.com/youyuan/index.htm?tab=imageSearch&searchword=${encodeURIComponent(competitorAnalysis.searchKeyword)}&beginPage=1&pageSize=60`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 px-6 py-3 bg-orange-500 hover:bg-orange-600 text-white rounded-xl font-medium transition-colors shadow-lg"
+                >
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                  1688搜索采购
+                </a>
+              </div>
+            </div>
+          )}
+
           {/* 竞品信息 - 占据整行 */}
           <div className={`md:col-span-2 rounded-xl p-5 card-animate-fade-in card-delay-1 ${
             isDarkTheme ? 'bg-white/5' : 'bg-white border border-slate-200'
@@ -1036,6 +1069,31 @@ function ProductionAnalysisPage() {
                   </div>
                   <div className={`text-sm mb-2 ${isDarkTheme ? 'text-gray-400' : 'text-slate-500'}`}>{comp.features.join(', ')}</div>
                   <div className={`text-xs ${isDarkTheme ? 'text-gray-500' : 'text-slate-400'}`}>{comp.marketShare}</div>
+                  {/* 1688采购链接 */}
+                  <div className="mt-3 flex gap-2">
+                    <a
+                      href={comp['1688Url'] || `https://s.1688.com/youyuan/index.htm?tab=imageSearch&searchword=${encodeURIComponent(comp.name)}&beginPage=1&pageSize=60`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex-1 flex items-center justify-center gap-1 px-3 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg text-xs font-medium transition-colors"
+                    >
+                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+                      </svg>
+                      1688采购
+                    </a>
+                    <a
+                      href={comp.taobaoUrl || `https://s.taobao.com/search?q=${encodeURIComponent(comp.name)}&imgfile=&initiative_id=staobaoz&ie=utf8`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex-1 flex items-center justify-center gap-1 px-3 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg text-xs font-medium transition-colors"
+                    >
+                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+                      </svg>
+                      淘宝
+                    </a>
+                  </div>
                 </div>
               ))}
             </div>

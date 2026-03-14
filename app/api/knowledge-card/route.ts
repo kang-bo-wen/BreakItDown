@@ -61,12 +61,17 @@ export async function POST(request: NextRequest) {
 
     const prompt = `Role: You are a manufacturing engineering expert specializing in production planning and supply chain management.
 
-Task: Generate a detailed manufacturing process card for "${parentName}".
+Task: Generate a detailed manufacturing process card for "${parentName}". You MUST include ALL fields specified below.
 
 Components to use:
 ${childrenList}
 
-Return JSON format (strictly follow format, no markdown code blocks):
+Return JSON format (strictly follow format, no markdown code blocks). You MUST include these fields:
+- supply_chain (required)
+- steps (required)
+- quality_control (required)
+- logistics (required)
+
 {
   "title": "${parentName}生产制造流程",
   "doc_number": "PROC-${Date.now().toString().slice(-6)}",
@@ -102,13 +107,11 @@ Return JSON format (strictly follow format, no markdown code blocks):
 }
 
 要求（中文输出）：
-1. **强调供应链流程**：每个步骤必须包含供应链相关信息（原材料采购、物流运输、仓储管理等）
-2. **生产工程视角**：从工厂实际生产角度描述，不是教学角度
-3. **包含供应链信息**：必须填写 supply_chain、quality_control、logistics 字段
-4. **实用性强**：描述要具体、可操作，符合实际生产场景
-5. description说明该步骤的具体操作和供应链要点，可以详细一点，但不超过100字
-6. ai_image_prompt用英文描述该步骤的技术图纸风格提示词
-7. 直接返回JSON，不要包含\`\`\`json标记`;
+1. **必须包含所有字段**：supply_chain、steps、quality_control、logistics 缺一不可！
+2. **强调供应链流程**：每个步骤必须包含供应链相关信息
+3. **生产工程视角**：从工厂实际生产角度描述
+4. description说明该步骤的具体操作和供应链要点
+5. 直接返回JSON，不要包含\`\`\`json标记`;
 
     // 使用重试机制调用AI API
     const content = await retryWithBackoff(() => callTextAPI(prompt));
