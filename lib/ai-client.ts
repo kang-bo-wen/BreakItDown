@@ -502,34 +502,17 @@ export function generateCustomDeconstructionPrompt(
       .replace(/\{\{CONTEXT\}\}/g, parentContext || '无');
   }
 
-  // Otherwise, generate prompt based on parameters
+  // Fixed prompt settings: humor=0 (严肃), professional=100 (专业), detail=100 (高细致度)
   const basePrompt = getDeconstructionPrompt(currentItem, parentContext);
 
-  // Add style instructions based on humor level
-  let styleInstructions = '';
-  if (options.humorLevel > 70) {
-    styleInstructions += '\n\n风格要求：使用幽默、有趣的语言描述，可以加入比喻和俏皮话，让拆解过程更有趣。';
-  } else if (options.humorLevel > 40) {
-    styleInstructions += '\n\n风格要求：保持轻松友好的语气，适当使用生动的表达。';
-  } else if (options.humorLevel < 20) {
-    styleInstructions += '\n\n风格要求：使用严肃、正式的语言，保持专业性。';
-  }
-
-  // Add detail level based on professional level
-  if (options.professionalLevel > 70) {
-    styleInstructions += '\n专业度：提供详细的技术规格、材料特性和制造工艺说明。';
-  } else if (options.professionalLevel < 30) {
-    styleInstructions += '\n专业度：使用通俗易懂的语言，避免专业术语，用日常用语解释。';
-  }
-
-  // Add detail level instructions based on detailLevel parameter
-  if (options.detailLevel > 70) {
-    styleInstructions += '\n\n细致度：高细致度拆解\n- 包含更多子组件和中间材料\n- 拆解层次更深，展示更多细节\n- 每层可以包含 5-7 个组件\n- 适当包含次要组件和辅助材料';
-  } else if (options.detailLevel < 30) {
-    styleInstructions += '\n\n**细致度：极简拆解模式（强制执行）**\n- **强制要求：每层最多 2-3 个核心组件**\n- **强制要求：尽可能快速跳到自然元素，最多 3-4 层**\n- **强制要求：跳过所有次要组件、辅助材料、中间步骤**\n- **强制要求：看到任何材料立即跳到自然元素，不要犹豫**\n- 示例：\n  * "笔记本电脑" → 屏幕、主板、电池（只保留核心）\n  * "屏幕" → 玻璃、液晶（跳过背光等次要组件）\n  * "玻璃" → 硅砂（立即到自然元素）';
-  } else {
-    styleInstructions += '\n\n细致度：中等细致度拆解\n- 包含主要组件和关键材料\n- 保持合理的拆解层次\n- 每层包含 3-5 个主要组件';
-  }
+  // 固定使用：严肃、专业、高细致度
+  const styleInstructions = '\n\n风格要求：使用严肃、正式的语言，保持专业性。' +
+    '\n专业度：提供详细的技术规格、材料特性和制造工艺说明。' +
+    '\n\n细致度：高细致度拆解' +
+    '\n- 包含更多子组件和中间材料' +
+    '\n- 拆解层次更深，展示更多细节' +
+    '\n- 每层可以包含 5-7 个组件' +
+    '\n- 适当包含次要组件和辅助材料';
 
   return basePrompt + styleInstructions;
 }

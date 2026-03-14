@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { useTheme } from '../hooks/useTheme';
 import { getDisplayIcon } from '../lib/icon-utils';
-import { BoltIcon, MagnifyingGlassIcon, FaceSmileIcon, AcademicCapIcon, CubeIcon, BuildingOffice2Icon, RocketLaunchIcon, PhotoIcon, PencilSquareIcon, DocumentTextIcon } from '@heroicons/react/24/outline';
+import { BoltIcon, MagnifyingGlassIcon, RocketLaunchIcon, PhotoIcon, PencilSquareIcon } from '@heroicons/react/24/outline';
 
 interface IdentificationResult {
   name: string;
@@ -34,9 +34,6 @@ function SetupContent() {
   // 输入模式：图片或文字
   const [inputMode, setInputMode] = useState<InputMode>('image');
 
-  // 拆解模式：基础模式 或 生产模式
-  const [breakdownMode, setBreakdownMode] = useState<'basic' | 'production'>('basic');
-
   // Only render theme-specific content after mount to avoid hydration mismatch
   useEffect(() => {
     setMounted(true);
@@ -52,11 +49,9 @@ function SetupContent() {
 
   // Step 2: Identification result and prompt settings
   const [identificationResult, setIdentificationResult] = useState<IdentificationResult | null>(null);
-  const [promptMode, setPromptMode] = useState<'simple' | 'advanced'>('simple');
-  const [humorLevel, setHumorLevel] = useState(50);
-  const [professionalLevel, setProfessionalLevel] = useState(70);
-  const [detailLevel, setDetailLevel] = useState(50);
-  const [customPrompt, setCustomPrompt] = useState('');
+  const humorLevel = 0;
+  const professionalLevel = 100;
+  const detailLevel = 100;
 
   // Compress image function
   const compressImage = async (file: File, maxWidth: number = 800, maxHeight: number = 800, quality: number = 0.8): Promise<File> => {
@@ -210,11 +205,8 @@ function SetupContent() {
       promptSettings: {
         humorLevel,
         professionalLevel,
-        detailLevel,
-        promptMode,
-        customPrompt
+        detailLevel
       },
-      breakdownMode,
       existingSessionId
     };
     localStorage.setItem('setupState', JSON.stringify(setupState));
@@ -231,11 +223,8 @@ function SetupContent() {
             promptSettings: {
               humorLevel,
               professionalLevel,
-              detailLevel,
-              promptMode,
-              customPrompt: promptMode === 'advanced' ? customPrompt : undefined
+              detailLevel
             },
-            breakdownMode,
             identificationResult
           })
         });
@@ -272,14 +261,7 @@ function SetupContent() {
           setImagePreview(parsed.imagePreview);
         }
         if (parsed.promptSettings) {
-          setHumorLevel(parsed.promptSettings.humorLevel ?? 50);
-          setProfessionalLevel(parsed.promptSettings.professionalLevel ?? 70);
-          setDetailLevel(parsed.promptSettings.detailLevel ?? 50);
-          setPromptMode(parsed.promptSettings.promptMode ?? 'simple');
-          setCustomPrompt(parsed.promptSettings.customPrompt ?? '');
-        }
-        if (parsed.breakdownMode) {
-          setBreakdownMode(parsed.breakdownMode);
+          // 提示词设置已改为固定值
         }
       } catch (error) {
         console.error('恢复设置状态失败:', error);
@@ -323,19 +305,7 @@ function SetupContent() {
       }
 
       if (session.promptSettings) {
-        setHumorLevel(session.promptSettings.humorLevel || 50);
-        setProfessionalLevel(session.promptSettings.professionalLevel || 70);
-        setDetailLevel(session.promptSettings.detailLevel || 50);
-        if (session.promptSettings.promptMode) {
-          setPromptMode(session.promptSettings.promptMode);
-        }
-        if (session.promptSettings.customPrompt) {
-          setCustomPrompt(session.promptSettings.customPrompt);
-        }
-      }
-
-      if (session.breakdownMode) {
-        setBreakdownMode(session.breakdownMode);
+        // 提示词设置已改为固定值
       }
 
       const setupState = {
@@ -348,13 +318,10 @@ function SetupContent() {
         },
         imagePreview: session.rootObjectImage,
         promptSettings: session.promptSettings || {
-          humorLevel: 50,
-          professionalLevel: 70,
-          detailLevel: 50,
-          promptMode: 'simple',
-          customPrompt: ''
+          humorLevel: 0,
+          professionalLevel: 100,
+          detailLevel: 100
         },
-        breakdownMode: session.breakdownMode || 'basic',
         existingSessionId: sessionId
       };
       localStorage.setItem('setupState', JSON.stringify(setupState));
@@ -381,18 +348,15 @@ function SetupContent() {
         promptSettings: {
           humorLevel,
           professionalLevel,
-          detailLevel,
-          promptMode,
-          customPrompt
+          detailLevel
         },
-        breakdownMode,
         existingSessionId
       };
       localStorage.setItem('setupState', JSON.stringify(setupState));
     }, 500);
 
     return () => clearTimeout(timer);
-  }, [humorLevel, professionalLevel, detailLevel, promptMode, customPrompt, identificationResult, imagePreview, breakdownMode]);
+  }, [humorLevel, professionalLevel, detailLevel, identificationResult, imagePreview]);
 
   // Render loading state during SSR/mount to prevent hydration mismatch
   if (!mounted) {
@@ -413,36 +377,34 @@ function SetupContent() {
       <div className={`absolute inset-0 tech-grid pointer-events-none ${tc.techGridOpacity}`} style={{ transition: 'opacity 0.3s' }} />
       <div className="absolute inset-0 pointer-events-none" style={{ background: tc.radialGradient }} />
 
-      <div className="max-w-6xl mx-auto relative z-10">
+      <div className="max-w-4xl mx-auto relative z-10">
 
-        {/* Two-column layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Left column: Image Preview + Upload + Identification */}
-          <div className="space-y-6">
-            {/* Image Preview */}
-            {imagePreview && (
-              <div className={`${isDarkTheme ? 'tech-card' : 'tech-card-light'} p-4 ${tc.cardBorder} relative`}>
-                <div className={`relative w-full h-72 mx-auto rounded-xl overflow-hidden border ${
-                  isDarkTheme
-                    ? 'bg-black/40 border-cyan-500/20'
-                    : 'bg-white border-slate-200'
-                }`}>
-                  <Image
-                    src={imagePreview}
-                    alt="预览"
-                    fill
-                    className="object-contain"
-                  />
-                </div>
+        {/* Single column layout */}
+        <div className="space-y-6">
+          {/* Image Preview */}
+          {imagePreview && (
+            <div className={`${isDarkTheme ? 'tech-card' : 'tech-card-light'} p-4 ${tc.cardBorder} relative`}>
+              <div className={`relative w-full h-72 mx-auto rounded-xl overflow-hidden border ${
+                isDarkTheme
+                  ? 'bg-black/40 border-cyan-500/20'
+                  : 'bg-white border-slate-200'
+              }`}>
+                <Image
+                  src={imagePreview}
+                  alt="预览"
+                  fill
+                  className="object-contain"
+                />
               </div>
-            )}
+            </div>
+          )}
 
-            {/* Upload Image / Text Input */}
-            {!identificationResult && (
-              <div className={`${isDarkTheme ? 'tech-card' : 'tech-card-light'} p-6 ${tc.cardBorder} relative`}>
-                {/* 输入模式切换 */}
-                <div className={`flex gap-2 p-1 rounded-lg mb-3 ${
-                  isDarkTheme ? 'bg-slate-800/70' : 'bg-slate-100'
+          {/* Upload Image / Text Input */}
+          {!identificationResult && (
+            <div className={`${isDarkTheme ? 'tech-card' : 'tech-card-light'} p-6 ${tc.cardBorder} relative`}>
+              {/* 输入模式切换 */}
+              <div className={`flex gap-2 p-1 rounded-lg mb-3 ${
+                isDarkTheme ? 'bg-slate-800/70' : 'bg-slate-100'
                 }`}>
                   <button
                     onClick={() => {
@@ -606,223 +568,10 @@ function SetupContent() {
                 </div>
               </div>
             )}
-          </div>
 
-          {/* Right column: Mode Toggle + Sliders + Breakdown Mode + Start Button */}
-          <div className="space-y-6">
-            {/* Parameters Panel */}
+            {/* 开始按钮 - 识别后显示 */}
             {identificationResult && (
-              <>
-                <div className={`${isDarkTheme ? 'tech-card' : 'tech-card-light'} p-6 ${tc.cardBorder} relative`}>
-                  <div className={`rounded-xl p-6 space-y-6 ${
-                    isDarkTheme
-                      ? 'bg-slate-900/70 border-cyan-500/20'
-                      : 'bg-white border-slate-200'
-                  } border`}>
-                    {/* 模式切换 */}
-                    <div className={`flex gap-2 p-1 rounded-lg ${
-                      isDarkTheme ? 'bg-slate-800/70' : 'bg-slate-100'
-                    }`}>
-                      <button
-                        onClick={() => setPromptMode('simple')}
-                        className={`flex-1 px-3 py-1.5 rounded-md text-sm font-medium ${
-                          promptMode === 'simple'
-                            ? isDarkTheme
-                              ? 'bg-gradient-to-r from-orange-500 to-amber-600 text-white shadow-lg shadow-orange-500/30'
-                              : 'bg-gradient-to-r from-orange-500 to-amber-600 text-white shadow-lg shadow-orange-500/30'
-                            : isDarkTheme
-                              ? 'text-orange-300/60 hover:text-white'
-                              : 'text-orange-600/70 hover:text-orange-800'
-                        }`}
-                      >
-                        简单模式
-                      </button>
-                      <button
-                        onClick={() => setPromptMode('advanced')}
-                        className={`flex-1 px-3 py-1.5 rounded-md text-sm font-medium ${
-                          promptMode === 'advanced'
-                            ? isDarkTheme
-                              ? 'bg-gradient-to-r from-emerald-500 to-green-600 text-white shadow-lg shadow-emerald-500/30'
-                              : 'bg-gradient-to-r from-emerald-500 to-green-600 text-white shadow-lg shadow-emerald-500/30'
-                            : isDarkTheme
-                              ? 'text-emerald-300/60 hover:text-white'
-                              : 'text-emerald-600/70 hover:text-emerald-800'
-                        }`}
-                      >
-                        高级模式
-                      </button>
-                    </div>
-
-                    {/* 简单模式：滑块 */}
-                    {promptMode === 'simple' && (
-                      <div className="space-y-6">
-                        {/* 幽默度 */}
-                        <div>
-                          <label className="block text-base font-medium mb-2 flex items-center justify-between">
-                            <span className="flex items-center gap-1.5">
-                              <FaceSmileIcon className="w-5 h-5 text-yellow-400" />
-                              <span className={isDarkTheme ? 'text-cyan-100' : 'text-slate-700'}>幽默度</span>
-                            </span>
-                            <span className={`font-mono px-2 py-0.5 rounded-full text-xs transition-colors duration-300 ${
-                              isDarkTheme
-                                ? 'text-cyan-400 bg-cyan-500/10'
-                                : 'text-blue-600 bg-blue-100'
-                            }`}>{humorLevel}%</span>
-                          </label>
-                          <input
-                            type="range"
-                            min="0"
-                            max="100"
-                            value={humorLevel}
-                            onChange={(e) => setHumorLevel(Number(e.target.value))}
-                            className={`tech-slider-humor w-full`}
-                          />
-                          <div className={`flex justify-between text-xs mt-0.5 transition-colors duration-300 ${
-                              isDarkTheme ? 'text-cyan-300/50' : 'text-blue-500/70'
-                            }`}>
-                            <span>严肃</span>
-                            <span>幽默</span>
-                          </div>
-                        </div>
-
-                        {/* 专业度 */}
-                        <div>
-                          <label className="block text-base font-medium mb-2 flex items-center justify-between">
-                            <span className="flex items-center gap-1.5">
-                              <AcademicCapIcon className="w-5 h-5 text-blue-400" />
-                              <span className={isDarkTheme ? 'text-cyan-100' : 'text-slate-700'}>专业度</span>
-                            </span>
-                            <span className={`font-mono px-2 py-0.5 rounded-full text-xs transition-colors duration-300 ${
-                              isDarkTheme
-                                ? 'text-cyan-400 bg-cyan-500/10'
-                                : 'text-blue-600 bg-blue-100'
-                            }`}>{professionalLevel}%</span>
-                          </label>
-                          <input
-                            type="range"
-                            min="0"
-                            max="100"
-                            value={professionalLevel}
-                            onChange={(e) => setProfessionalLevel(Number(e.target.value))}
-                            className={`tech-slider-professional w-full`}
-                          />
-                          <div className={`flex justify-between text-xs mt-0.5 transition-colors duration-300 ${
-                              isDarkTheme ? 'text-cyan-300/50' : 'text-blue-500/70'
-                            }`}>
-                            <span>通俗</span>
-                            <span>专业</span>
-                          </div>
-                        </div>
-
-                        {/* 细致度 */}
-                        <div>
-                          <label className="block text-base font-medium mb-2 flex items-center justify-between">
-                            <span className="flex items-center gap-1.5">
-                              <MagnifyingGlassIcon className="w-5 h-5 text-cyan-400" />
-                              <span className={isDarkTheme ? 'text-cyan-100' : 'text-slate-700'}>细致度</span>
-                            </span>
-                            <span className={`font-mono px-2 py-0.5 rounded-full text-xs transition-colors duration-300 ${
-                              isDarkTheme
-                                ? 'text-cyan-400 bg-cyan-500/10'
-                                : 'text-blue-600 bg-blue-100'
-                            }`}>{detailLevel}%</span>
-                          </label>
-                          <input
-                            type="range"
-                            min="0"
-                            max="100"
-                            value={detailLevel}
-                            onChange={(e) => setDetailLevel(Number(e.target.value))}
-                            className={`tech-slider-detail w-full`}
-                          />
-                          <div className={`flex justify-between text-xs mt-0.5 transition-colors duration-300 ${
-                              isDarkTheme ? 'text-cyan-300/50' : 'text-blue-500/70'
-                            }`}>
-                            <span>简化</span>
-                            <span>详细</span>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* 高级模式：自定义 Prompt */}
-                    {promptMode === 'advanced' && (
-                      <div>
-                        <label className={`block text-base font-medium mb-2 ${
-                          isDarkTheme ? 'text-cyan-100' : 'text-slate-700'
-                        }`}>
-                          自定义 Prompt 模板
-                        </label>
-                        <textarea
-                          value={customPrompt}
-                          onChange={(e) => setCustomPrompt(e.target.value)}
-                          placeholder={`使用 {{ITEM}} 代表物品名称`}
-                          className={`tech-input ${isDarkTheme ? '' : 'tech-input-theme3'} w-full h-40 resize-none font-mono text-sm`}
-                        />
-                        <button
-                          onClick={() => {
-                            const template = `请将 {{ITEM}} 拆解为主要组成部分。
-
-要求：
-1. 列出所有主要组件或材料
-2. 每个部分提供简短描述
-3. 标注是否为原材料`;
-                            setCustomPrompt(template);
-                          }}
-                          className={`mt-2 text-xs flex items-center gap-1.5 transition-colors duration-300 ${
-                            isDarkTheme
-                              ? 'text-cyan-400 hover:text-cyan-300'
-                              : 'text-blue-600 hover:text-blue-700'
-                          }`}
-                        >
-                          <DocumentTextIcon className="w-4 h-4" />
-                          <span>加载默认模板</span>
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* 拆解模式选择 */}
-                <div className={`${isDarkTheme ? 'tech-card' : 'tech-card-light'} p-4 ${tc.cardBorder} relative`}>
-                  <div className={`text-sm mb-3 ${isDarkTheme ? 'text-slate-400' : 'text-slate-500'}`}>选择拆解模式</div>
-                  <div className="grid grid-cols-2 gap-3">
-                    <button
-                      onClick={() => setBreakdownMode('basic')}
-                      className={`p-3 rounded-lg border ${
-                        breakdownMode === 'basic'
-                          ? isDarkTheme
-                            ? 'bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border-cyan-400 text-cyan-300'
-                            : 'bg-gradient-to-r from-cyan-100 to-blue-100 border-cyan-400 text-cyan-600'
-                          : isDarkTheme
-                            ? 'bg-slate-800/50 border-slate-700 text-slate-400 hover:bg-slate-700'
-                            : 'bg-slate-100 border-slate-200 text-slate-500 hover:bg-slate-200'
-                      }`}
-                    >
-                      <CubeIcon className="w-6 h-6 text-cyan-400" />
-                      <div className="font-medium">基础模式</div>
-                      <div className="text-xs text-slate-500">知识卡片</div>
-                    </button>
-                    <button
-                      onClick={() => setBreakdownMode('production')}
-                      className={`p-3 rounded-lg border ${
-                        breakdownMode === 'production'
-                          ? isDarkTheme
-                            ? 'bg-gradient-to-r from-violet-500/20 to-purple-500/20 border-violet-400 text-violet-300'
-                            : 'bg-gradient-to-r from-violet-100 to-purple-100 border-violet-400 text-violet-600'
-                          : isDarkTheme
-                            ? 'bg-slate-800/50 border-slate-700 text-slate-400 hover:bg-slate-700'
-                            : 'bg-slate-100 border-slate-200 text-slate-500 hover:bg-slate-200'
-                      }`}
-                    >
-                      <BuildingOffice2Icon className="w-6 h-6 text-violet-400" />
-                      <div className="font-medium">生产模式</div>
-                      <div className="text-xs text-slate-500">含供应链</div>
-                    </button>
-                  </div>
-                </div>
-
-                {/* 开始按钮 */}
+              <div className={`${isDarkTheme ? 'tech-card' : 'tech-card-light'} p-6 ${tc.cardBorder} relative`}>
                 <button
                   onClick={navigateToCanvas}
                   className={`tech-btn ${isDarkTheme ? 'tech-btn-primary' : 'tech-btn-primary-theme3'} w-full py-3 text-base flex items-center justify-center gap-2`}
@@ -830,23 +579,10 @@ function SetupContent() {
                   <RocketLaunchIcon className="w-5 h-5 text-emerald-400" />
                   <span>开始拆解</span>
                 </button>
-              </>
-            )}
-
-            {/* Placeholder when no identification result */}
-            {!identificationResult && (
-              <div className={`${isDarkTheme ? 'tech-card' : 'tech-card-light'} p-12 flex items-center justify-center min-h-[500px] ${tc.cardBorder} relative`}>
-                <div className={`text-center ${
-                  isDarkTheme ? 'text-cyan-300/40' : 'text-blue-400/50'
-                }`}>
-                  <div className="text-5xl mb-3">⬅️</div>
-                  <div className="text-base">请先上传图片或输入文字进行识别</div>
-                </div>
               </div>
             )}
           </div>
         </div>
-      </div>
     </div>
   );
 }
