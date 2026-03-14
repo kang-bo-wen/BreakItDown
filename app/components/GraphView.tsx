@@ -25,6 +25,7 @@ interface TreeNode {
   isRawMaterial: boolean;
   children: TreeNode[];
   isExpanded: boolean;
+  isCompleted?: boolean;
 }
 
 interface GraphViewProps {
@@ -196,6 +197,7 @@ function GraphViewInner({
           hasKnowledgeCard: knowledgeCache.has(node.id),
           isLoadingKnowledge: loadingKnowledgeIds.has(node.id),
           hasChildren: treeNode.children && treeNode.children.length > 0,
+          isCompleted: treeNode.isCompleted,
           zoom: currentZoom,
           isHovered: hoveredNodeId === node.id,
           nodeId: node.id,

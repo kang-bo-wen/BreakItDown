@@ -12,6 +12,7 @@ interface TreeNode {
   imageUrl?: string;
   children: TreeNode[];
   isExpanded: boolean;
+  isCompleted?: boolean;
 }
 
 interface DecompositionTreeProps {
@@ -26,6 +27,7 @@ interface DecompositionTreeProps {
   onProductionAnalysisClick?: (node: TreeNode) => void;
   onProcessFlowClick?: (node: TreeNode) => void;
   onDeleteChildrenClick?: (nodeId: string) => void;
+  onCompleteNode?: (nodeId: string, isCompleted: boolean) => void;
 }
 
 export default function DecompositionTree({
@@ -40,6 +42,7 @@ export default function DecompositionTree({
   onProductionAnalysisClick,
   onProcessFlowClick,
   onDeleteChildrenClick,
+  onCompleteNode,
 }: DecompositionTreeProps) {
   const [actionPanelNodeId, setActionPanelNodeId] = useState<string | null>(null);
   const { themeConfig } = useTheme();
@@ -67,6 +70,7 @@ export default function DecompositionTree({
         onProductionAnalysisClick={onProductionAnalysisClick}
         onProcessFlowClick={onProcessFlowClick}
         onDeleteChildrenClick={onDeleteChildrenClick}
+        onCompleteNode={onCompleteNode}
         actionPanelNodeId={actionPanelNodeId}
         setActionPanelNodeId={setActionPanelNodeId}
       />
@@ -87,6 +91,7 @@ interface TreeNodeItemProps {
   onProductionAnalysisClick?: (node: TreeNode) => void;
   onProcessFlowClick?: (node: TreeNode) => void;
   onDeleteChildrenClick?: (nodeId: string) => void;
+  onCompleteNode?: (nodeId: string, isCompleted: boolean) => void;
   actionPanelNodeId: string | null;
   setActionPanelNodeId: (nodeId: string | null) => void;
 }
@@ -104,6 +109,7 @@ function TreeNodeItem({
   onProductionAnalysisClick,
   onProcessFlowClick,
   onDeleteChildrenClick,
+  onCompleteNode,
   actionPanelNodeId,
   setActionPanelNodeId,
 }: TreeNodeItemProps) {
@@ -148,7 +154,7 @@ function TreeNodeItem({
       <div
         className={`
           relative flex items-center gap-2 px-3 py-2 mx-2 my-1 rounded-lg
-          border-2 transition-all duration-300 cursor-pointer
+          border-2 transition-all duration-300 cursor-pointer overflow-hidden
           ${color.bg} ${color.border}
           ${isRawMaterial ? 'opacity-70' : ''}
         `}
@@ -156,15 +162,29 @@ function TreeNodeItem({
           marginLeft: `${level * 20}px`,
           transform: isHovered ? 'scale(1.03)' : 'scale(1)',
           background: `linear-gradient(135deg, ${color.gradient})`,
-          boxShadow: isHovered
-            ? `0 0 20px ${color.glow}, 0 0 40px ${color.glow}, 0 4px 12px rgba(0,0,0,0.3)`
-            : `0 2px 8px rgba(0,0,0,0.2)`,
+          boxShadow: node.isCompleted
+            ? (isHovered
+              ? '0 0 30px #22c55e, 0 0 60px #22c55e, 0 0 90px #22c55e, 0 8px 25px rgba(34, 197, 94, 0.5)'
+              : '0 0 20px #22c55e, 0 0 40px rgba(34, 197, 94, 0.4), 0 4px 15px rgba(0,0,0,0.3)')
+            : (isHovered
+              ? `0 0 20px ${color.glow}, 0 0 40px ${color.glow}, 0 4px 12px rgba(0,0,0,0.3)`
+              : `0 2px 8px rgba(0,0,0,0.2)`),
+          borderColor: node.isCompleted ? (isDarkTheme ? '#22c55e' : '#16a34a') : color.border,
         }}
         onMouseEnter={() => onNodeHover(node.id)}
         onMouseLeave={() => onNodeHover(null)}
         onClick={() => onNodeClick(node)}
         onContextMenu={handleContextMenu}
       >
+        {/* 巨大的对勾背景装饰 */}
+        {node.isCompleted && (
+          <span
+            className="absolute right-2 bottom-0 text-7xl opacity-15 select-none pointer-events-none font-bold"
+            style={{ transform: 'translateY(10%)', color: '#22c55e' }}
+          >
+            ✓
+          </span>
+        )}
         {/* 折叠/展开按钮 */}
         {hasChildren && (
           <button
@@ -198,8 +218,15 @@ function TreeNodeItem({
           </span>
         )}
 
-        {/* 操作按钮 - 点击展开操作面板 */}
-        {hasChildren && (
+        {/* 完成标记 - 简化显示 */}
+        {node.isCompleted && (
+          <span className={`text-sm font-bold px-2 py-0.5 rounded ${isDarkTheme ? 'bg-green-500/70 text-white' : 'bg-green-500 text-white'}`}>
+            已完成
+          </span>
+        )}
+
+        {/* 操作按钮 - 点击展开操作面板 (所有节点都显示) */}
+        {(hasChildren || breakdownMode === 'production') && (
           <button
             onClick={(e) => {
               e.stopPropagation();
@@ -264,12 +291,12 @@ function TreeNodeItem({
                   ? 'hover:bg-cyan-500/20 text-cyan-400'
                   : 'hover:bg-cyan-50 text-cyan-600'
               }`}
-              title="查看生产分析"
+              title={node.isCompleted ? '重新定制' : '查看生产分析'}
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
               </svg>
-              <span className="text-xs">生产分析</span>
+              <span className="text-xs">{node.isCompleted ? '重新定制' : '生产分析'}</span>
             </button>
           )}
 
@@ -294,6 +321,29 @@ function TreeNodeItem({
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
               </svg>
               <span className="text-xs">删除子节点</span>
+            </button>
+          )}
+
+          {/* 完成/重新定制 */}
+          {onCompleteNode && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                const newCompleted = !node.isCompleted;
+                onCompleteNode(node.id, newCompleted);
+                setActionPanelNodeId(null);
+              }}
+              className={`flex-1 flex flex-col items-center gap-1 p-2 rounded-lg transition-all ${
+                node.isCompleted
+                  ? (isDarkTheme ? 'bg-green-500/20 text-green-400' : 'bg-green-50 text-green-600')
+                  : (isDarkTheme ? 'hover:bg-green-500/20 text-green-400' : 'hover:bg-green-50 text-green-600')
+              }`}
+              title={node.isCompleted ? '重新定制' : '完成定制'}
+            >
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+              <span className="text-xs">{node.isCompleted ? '重新定制' : '完成定制'}</span>
             </button>
           )}
         </div>
@@ -326,6 +376,7 @@ function TreeNodeItem({
               onProductionAnalysisClick={onProductionAnalysisClick}
               onProcessFlowClick={onProcessFlowClick}
               onDeleteChildrenClick={onDeleteChildrenClick}
+              onCompleteNode={onCompleteNode}
               actionPanelNodeId={actionPanelNodeId}
               setActionPanelNodeId={setActionPanelNodeId}
             />

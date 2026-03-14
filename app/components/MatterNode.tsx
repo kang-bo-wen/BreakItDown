@@ -14,6 +14,7 @@ interface MatterNodeData {
   hasChildren: boolean;
   hasKnowledgeCard: boolean;
   isLoadingKnowledge: boolean;
+  isCompleted?: boolean;
   level: number;
   zoom?: number;
   icon?: string;
@@ -37,6 +38,7 @@ function MatterNode({ data }: NodeProps<MatterNodeData>) {
     hasChildren,
     hasKnowledgeCard,
     isLoadingKnowledge,
+    isCompleted,
     level,
     zoom = 1,
     icon,
@@ -213,11 +215,16 @@ function MatterNode({ data }: NodeProps<MatterNodeData>) {
         style={{
           width: `${nodeSize}px`,
           height: `${nodeSize}px`,
-          // 增强悬浮时的发光效果
-          boxShadow: isHovered
-            ? `0 0 30px currentColor, 0 0 60px currentColor, 0 0 90px currentColor, 0 4px 20px rgba(0,0,0,0.4)`
-            : `0 4px 20px rgba(0,0,0,0.3)`,
+          // 增强悬浮时的发光效果，已完成节点显示绿色光晕
+          boxShadow: isCompleted
+            ? (isHovered
+              ? `0 0 30px #22c55e, 0 0 60px #22c55e, 0 0 90px #22c55e, 0 4px 20px rgba(0,0,0,0.4)`
+              : `0 0 15px #22c55e, 0 4px 20px rgba(0,0,0,0.3)`)
+            : (isHovered
+              ? `0 0 30px currentColor, 0 0 60px currentColor, 0 0 90px currentColor, 0 4px 20px rgba(0,0,0,0.4)`
+              : `0 4px 20px rgba(0,0,0,0.3)`),
           transform: isHovered ? 'scale(1.15)' : 'scale(1)',
+          borderColor: isCompleted ? '#22c55e' : undefined,
         }}
         onClick={handleClick}
         onContextMenu={handleContextMenu}

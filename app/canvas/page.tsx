@@ -68,6 +68,7 @@ interface TreeNode {
   imageUrl?: string;
   children: TreeNode[];
   isExpanded: boolean;
+  isCompleted?: boolean;
 }
 
 interface KnowledgeCardData {
@@ -239,6 +240,39 @@ function CanvasContent() {
         }
       } catch (error) {
         console.error('恢复设置状态失败:', error);
+      }
+    }
+
+    // 检查是否有从生产分析页面返回的节点完成状态
+    const nodeCompletedData = localStorage.getItem('nodeCompleted');
+    if (nodeCompletedData && deconstructionTree) {
+      try {
+        const { partId, isCompleted } = JSON.parse(nodeCompletedData);
+        // 标记节点为已完成
+        setDeconstructionTree(prevTree => {
+          if (!prevTree) return null;
+          const markNodeCompleted = (node: TreeNode): TreeNode => {
+            if (node.id === partId) {
+              // 标记当前节点和所有子节点为完成
+              return {
+                ...node,
+                isCompleted,
+                children: node.children.map(markNodeCompleted)
+              };
+            }
+            // 继续在子节点中查找目标节点
+            return { ...node, children: node.children.map(markNodeCompleted) };
+          };
+          return markNodeCompleted(prevTree);
+        });
+        // 清除 localStorage
+        localStorage.removeItem('nodeCompleted');
+        // 保存到数据库
+        if (currentSessionId) {
+          saveSessionToDatabase(false);
+        }
+      } catch (error) {
+        console.error('处理节点完成状态失败:', error);
       }
     }
 
@@ -1078,6 +1112,38 @@ function CanvasContent() {
                       };
                       return updateNode(prevTree);
                     });
+                  }}
+                  onCompleteNode={(nodeId, isCompleted) => {
+                    // 更新节点完成状态
+                    setDeconstructionTree(prevTree => {
+                      if (!prevTree) return null;
+                      const updateNode = (node: TreeNode): TreeNode => {
+                        // 如果是目标节点
+                        if (node.id === nodeId) {
+                          if (isCompleted) {
+                            // 设置完成状态时，递归处理子节点
+                            return {
+                              ...node,
+                              isCompleted,
+                              children: node.children.map(updateNode)
+                            };
+                          } else {
+                            // 取消完成状态时，只处理当前节点，不处理子节点
+                            return {
+                              ...node,
+                              isCompleted
+                            };
+                          }
+                        }
+                        // 继续在子节点中查找
+                        return { ...node, children: node.children.map(updateNode) };
+                      };
+                      return updateNode(prevTree);
+                    });
+                    // 保存到数据库
+                    if (currentSessionId) {
+                      saveSessionToDatabase(false);
+                    }
                   }}
                 />
               </div>

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, Suspense, useEffect, useCallback } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useTheme } from '../hooks/useTheme';
 
@@ -114,10 +114,24 @@ function ProductionAnalysisPage() {
   const { theme, themeConfig } = useTheme();
   const isDarkTheme = theme === 'dark';
   const searchParams = useSearchParams();
+  const router = useRouter();
 
   const sessionId = searchParams.get('sessionId') || '';
   const partName = searchParams.get('partName') || '';
   const partId = searchParams.get('partId') || '';
+
+  // 完成定制并返回 canvas
+  const handleComplete = () => {
+    // 保存完成状态到 localStorage，供 canvas 页面读取
+    const completeData = {
+      partId,
+      isCompleted: true,
+      timestamp: Date.now()
+    };
+    localStorage.setItem('nodeCompleted', JSON.stringify(completeData));
+    // 跳转到 canvas 页面
+    router.push(`/canvas?sessionId=${sessionId}`);
+  };
 
   // 当前步骤
   const [currentStep, setCurrentStep] = useState<AnalysisStep>('product-planning');
@@ -1916,6 +1930,16 @@ function ProductionAnalysisPage() {
               } transform hover:scale-[1.02] active:scale-[0.98]`}
             >
               ← 返回评估结果
+            </button>
+            <button
+              onClick={handleComplete}
+              className={`flex-1 py-3 rounded-xl font-medium transition-all duration-300 ${
+                isDarkTheme
+                  ? 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-lg shadow-green-500/25 hover:shadow-green-500/40'
+                  : 'bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-700 text-white shadow-md'
+              } transform hover:scale-[1.02] active:scale-[0.98]`}
+            >
+              ✓ 完成该节点定制，继续定制其他节点
             </button>
           </div>
         </div>

@@ -9,6 +9,7 @@ interface TreeNode {
   imageUrl?: string;
   children: TreeNode[];
   isExpanded: boolean;
+  isCompleted?: boolean;
 }
 
 interface RadialLayoutOptions {
@@ -107,15 +108,20 @@ export function calculateRadialLayout(
     // 添加边
     if (parentId) {
       const edgeType = options.edgeType || 'bezier';
+      const isCompletedLine = node.isCompleted;
       edges.push({
         id: `${parentId}-${node.id}`,
         source: parentId,
         target: node.id,
         type: edgeType,
-        animated: !node.isRawMaterial,
+        animated: !node.isRawMaterial && !isCompletedLine,
         style: {
-          stroke: node.isRawMaterial ? '#10b981' : '#3b82f6',
-          strokeWidth: 2,
+          stroke: node.isRawMaterial
+            ? '#10b981'
+            : (isCompletedLine ? '#22c55e' : '#3b82f6'),
+          strokeWidth: isCompletedLine ? 3 : 2,
+          strokeDasharray: isCompletedLine ? '8,4' : undefined,
+          filter: isCompletedLine ? 'drop-shadow(0 0 6px #22c55e)' : undefined,
         },
       });
     }
@@ -186,15 +192,20 @@ export function calculateForceLayout(
     });
 
     if (parentId) {
+      const isCompletedLine = node.isCompleted;
       edges.push({
         id: `${parentId}-${node.id}`,
         source: parentId,
         target: node.id,
         type: edgeType,
-        animated: !node.isRawMaterial,
+        animated: !node.isRawMaterial && !isCompletedLine,
         style: {
-          stroke: node.isRawMaterial ? '#10b981' : '#3b82f6',
-          strokeWidth: 2,
+          stroke: node.isRawMaterial
+            ? '#10b981'
+            : (isCompletedLine ? '#22c55e' : '#3b82f6'),
+          strokeWidth: isCompletedLine ? 3 : 2,
+          strokeDasharray: isCompletedLine ? '8,4' : undefined,
+          filter: isCompletedLine ? 'drop-shadow(0 0 6px #22c55e)' : undefined,
         },
       });
     }
