@@ -32,8 +32,11 @@ interface GraphViewProps {
   loadingNodeIds: Set<string>;
   knowledgeCache: Map<string, any>;
   loadingKnowledgeIds: Set<string>;
+  breakdownMode?: 'basic' | 'production';
   onNodeExpand: (nodeId: string, nodeName: string, parentContext?: string) => void;
   onShowKnowledge: (node: TreeNode) => void;
+  onProductionAnalysis?: (node: TreeNode) => void;
+  onDeleteChildren?: (nodeId: string) => void;
   onNodePositionsChange?: () => void;
   edgeType?: 'bezier' | 'smoothstep' | 'straight';
   hoveredNodeId?: string | null;
@@ -48,8 +51,11 @@ function GraphViewInner({
   loadingNodeIds,
   knowledgeCache,
   loadingKnowledgeIds,
+  breakdownMode,
   onNodeExpand,
   onShowKnowledge,
+  onProductionAnalysis,
+  onDeleteChildren,
   onNodePositionsChange,
   edgeType: initialEdgeType = 'bezier',
   hoveredNodeId: externalHoveredNodeId,
@@ -189,13 +195,18 @@ function GraphViewInner({
           isLoading: loadingNodeIds.has(node.id),
           hasKnowledgeCard: knowledgeCache.has(node.id),
           isLoadingKnowledge: loadingKnowledgeIds.has(node.id),
+          hasChildren: treeNode.children && treeNode.children.length > 0,
           zoom: currentZoom,
           isHovered: hoveredNodeId === node.id,
+          nodeId: node.id,
+          breakdownMode,
           onExpand: () => {
             const parentName = findParentName(tree, node.id);
             onNodeExpand(node.id, treeNode.name, parentName);
           },
           onShowKnowledge: () => onShowKnowledge(treeNode),
+          onProductionAnalysis: onProductionAnalysis ? () => onProductionAnalysis(treeNode) : undefined,
+          onDeleteChildren: onDeleteChildren ? () => onDeleteChildren(node.id) : undefined,
           onHover: (isHovered: boolean) => {
             setHoveredNodeId(isHovered ? node.id : null);
           },
@@ -205,7 +216,7 @@ function GraphViewInner({
 
     setNodes(enhancedNodes);
     setEdges(layoutEdges);
-  }, [tree, loadingNodeIds, knowledgeCache, loadingKnowledgeIds, currentZoom, findNodeById, findParentName, onNodeExpand, onShowKnowledge, edgeType]);
+  }, [tree, loadingNodeIds, knowledgeCache, loadingKnowledgeIds, breakdownMode, currentZoom, findNodeById, findParentName, onNodeExpand, onShowKnowledge, onProductionAnalysis, onDeleteChildren, edgeType]);
 
   // 根据悬停状态更新节点的 zIndex
   useEffect(() => {
