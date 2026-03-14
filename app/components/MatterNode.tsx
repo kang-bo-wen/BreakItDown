@@ -279,7 +279,6 @@ function MatterNode({ data }: NodeProps<MatterNodeData>) {
               {description}
             </div>
 
-            
 
             {/* 操作按钮 */}
             {!isRawMaterial && hasKnowledgeCard && (

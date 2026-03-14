@@ -59,34 +59,54 @@ export async function POST(request: NextRequest) {
       `${idx + 1}. ${c.name}${c.isRawMaterial ? ' (原材料)' : ''}: ${c.description}`
     ).join('\n');
 
-    const prompt = `生成"${parentName}"的制造流程卡片，使用以下组成部分：
+    const prompt = `Role: You are a manufacturing engineering expert specializing in production planning and supply chain management.
 
+Task: Generate a detailed manufacturing process card for "${parentName}".
+
+Components to use:
 ${childrenList}
 
-返回JSON格式（严格遵守格式，不要添加markdown代码块）：
+Return JSON format (strictly follow format, no markdown code blocks):
 {
-  "title": "${parentName}制造流程",
+  "title": "${parentName}生产制造流程",
   "doc_number": "PROC-${Date.now().toString().slice(-6)}",
+  "supply_chain": {
+    "raw_material_source": "主要原材料来源地区或供应商类型",
+    "procurement_lead_time": "采购周期（如：2-3周）",
+    "estimated_material_cost": "材料成本占比估算"
+  },
   "steps": [
     {
       "step_number": 1,
+      "stage": "生产阶段（原料/加工/组装/测试/包装）",
       "action_title": "步骤标题（3-5字）",
-      "description": "步骤描述（15-25字）",
+      "description": "步骤描述（15-30字，包含具体操作和供应链要点）",
+      "equipment": "所需设备/生产线类型",
       "parameters": [
         {"label": "核心材料", "value": "具体材料名"},
-        {"label": "主要参数", "value": "温度/压力等"}
+        {"label": "工艺参数", "value": "温度/压力/时间等关键参数"},
+        {"label": "供应链要点", "value": "供应商/物流/仓储说明"}
       ],
       "ai_image_prompt": "Technical drawing of [action], vintage blueprint style, detailed engineering lines, white background"
     }
-  ]
+  ],
+  "quality_control": {
+    "inspection_points": ["关键质检点1", "关键质检点2"],
+    "standards": "执行的质量标准"
+  },
+  "logistics": {
+    "packaging": "包装要求",
+    "shipping": "运输方式",
+    "storage": "储存条件"
+  }
 }
 
-要求：
-1. 生成1-5个步骤，按制造顺序排列
-2. 每个步骤的action_title要简洁（如"材料准备"、"组装焊接"、"质检封装"）
-3. **关键**：每个步骤的description必须包含至少一个组成部分的名称（${children.map((c: any) => c.name).join('、')}），用中文逗号分隔。**禁止省略任何组成部分的名称**，每个组成部分都必须在至少一个步骤的description中出现！
-4. description说明该步骤的具体操作，可以详细一点，但不超过100字，**组成部分名称后面不要加标点符号，直接用空格或文字连接**
-5. parameters列出1-2个关键参数或材料，label必须使用"核心材料"或"主要参数"，value填写具体内容（必须使用组成部分的名称）
+要求（中文输出）：
+1. **强调供应链流程**：每个步骤必须包含供应链相关信息（原材料采购、物流运输、仓储管理等）
+2. **生产工程视角**：从工厂实际生产角度描述，不是教学角度
+3. **包含供应链信息**：必须填写 supply_chain、quality_control、logistics 字段
+4. **实用性强**：描述要具体、可操作，符合实际生产场景
+5. description说明该步骤的具体操作和供应链要点，可以详细一点，但不超过100字
 6. ai_image_prompt用英文描述该步骤的技术图纸风格提示词
 7. 直接返回JSON，不要包含\`\`\`json标记`;
 

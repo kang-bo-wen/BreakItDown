@@ -73,13 +73,29 @@ interface TreeNode {
 interface KnowledgeCardData {
   title: string;
   doc_number: string;
+  supply_chain?: {
+    raw_material_source: string;
+    procurement_lead_time: string;
+    estimated_material_cost: string;
+  };
   steps: {
     step_number: number;
+    stage?: string;
     action_title: string;
     description: string;
+    equipment?: string;
     parameters: { label: string; value: string }[];
     ai_image_prompt: string;
   }[];
+  quality_control?: {
+    inspection_points: string[];
+    standards: string;
+  };
+  logistics?: {
+    packaging: string;
+    shipping: string;
+    storage: string;
+  };
 }
 
 function CanvasContent() {
@@ -92,7 +108,7 @@ function CanvasContent() {
   // State loaded from setup page
   const [identificationResult, setIdentificationResult] = useState<IdentificationResult | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [breakdownMode, setBreakdownMode] = useState<'basic' | 'production'>('basic');
+  const [breakdownMode, setBreakdownMode] = useState<'basic' | 'production'>('production');
   const [humorLevel, setHumorLevel] = useState(50);
   const [professionalLevel, setProfessionalLevel] = useState(70);
   const [detailLevel, setDetailLevel] = useState(50);
@@ -737,6 +753,9 @@ function CanvasContent() {
         name: part.name,
         description: part.description,
         isRawMaterial: part.is_raw_material,
+        customizable: part.customizable,
+        isRequired: part.is_required,
+        customizationOptions: part.customization_options,
         icon: part.icon,
         imageUrl: part.imageUrl,
         children: [],
@@ -1146,6 +1165,36 @@ function CanvasContent() {
                           <div className={`text-xl font-bold ${isDarkTheme ? 'text-yellow-300' : 'text-yellow-800'}`}>{knowledgeCard.data.title}</div>
                         </div>
 
+                        {/* 供应链信息 */}
+                        {knowledgeCard.data.supply_chain && (
+                          <div className={`rounded-lg p-4 border ${
+                            isDarkTheme
+                              ? 'bg-gradient-to-r from-green-500/10 to-emerald-500/10 border-green-500/30'
+                              : 'bg-green-50 border-green-200'
+                          }`}>
+                            <div className={`text-sm font-semibold mb-3 ${isDarkTheme ? 'text-green-300' : 'text-green-700'}`}>
+                              <svg className="w-4 h-4 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                              </svg>
+                              供应链信息
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                              <div className={`${isDarkTheme ? 'bg-slate-800/50' : 'bg-white'} rounded p-2 text-xs`}>
+                                <span className={themeConfig.textMuted}>原材料来源</span>
+                                <div className={`font-medium ${themeConfig.textPrimary}`}>{knowledgeCard.data.supply_chain.raw_material_source}</div>
+                              </div>
+                              <div className={`${isDarkTheme ? 'bg-slate-800/50' : 'bg-white'} rounded p-2 text-xs`}>
+                                <span className={themeConfig.textMuted}>采购周期</span>
+                                <div className={`font-medium ${themeConfig.textPrimary}`}>{knowledgeCard.data.supply_chain.procurement_lead_time}</div>
+                              </div>
+                              <div className={`${isDarkTheme ? 'bg-slate-800/50' : 'bg-white'} rounded p-2 text-xs`}>
+                                <span className={themeConfig.textMuted}>材料成本占比</span>
+                                <div className={`font-medium ${themeConfig.textPrimary}`}>{knowledgeCard.data.supply_chain.estimated_material_cost}</div>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
                         <div className="space-y-4">
                           {knowledgeCard.data.steps.map((step, idx) => (
                             <div key={idx} className="relative">
@@ -1162,6 +1211,11 @@ function CanvasContent() {
                                   </div>
 
                                   <div className="flex-1">
+                                    {step.stage && (
+                                      <div className={`text-xs font-medium mb-1 ${isDarkTheme ? 'text-purple-400' : 'text-purple-600'}`}>
+                                        {step.stage}
+                                      </div>
+                                    )}
                                     <div className={`text-lg font-bold mb-2 ${isDarkTheme ? 'text-blue-300' : 'text-blue-700'}`}>
                                       {step.action_title}
                                     </div>
@@ -1172,6 +1226,12 @@ function CanvasContent() {
                                         knowledgeCard.node.children.map(c => c.name)
                                       )}
                                     </div>
+
+                                    {step.equipment && (
+                                      <div className={`text-xs mb-2 ${isDarkTheme ? 'text-gray-400' : 'text-slate-600'}`}>
+                                        <span className="font-medium">设备：</span>{step.equipment}
+                                      </div>
+                                    )}
 
                                     {step.parameters.length > 0 && (
                                       <div className="flex flex-wrap gap-2">
@@ -1213,6 +1273,58 @@ function CanvasContent() {
                             ))}
                           </div>
                         </div>
+
+                        {/* 质量控制信息 */}
+                        {knowledgeCard.data.quality_control && (
+                          <div className={`rounded-lg p-4 border ${
+                            isDarkTheme
+                              ? 'bg-gradient-to-r from-red-500/10 to-orange-500/10 border-red-500/30'
+                              : 'bg-red-50 border-red-200'
+                          }`}>
+                            <div className={`text-sm font-semibold mb-3 ${isDarkTheme ? 'text-red-300' : 'text-red-700'}`}>
+                              <svg className="w-4 h-4 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                              </svg>
+                              质量控制
+                            </div>
+                            <div className={`text-xs mb-2 ${themeConfig.textMuted}`}>
+                              质检点：{knowledgeCard.data.quality_control.inspection_points.join(' → ')}
+                            </div>
+                            <div className={`text-xs ${themeConfig.textPrimary}`}>
+                              <span className="font-medium">执行标准：</span>{knowledgeCard.data.quality_control.standards}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* 物流信息 */}
+                        {knowledgeCard.data.logistics && (
+                          <div className={`rounded-lg p-4 border ${
+                            isDarkTheme
+                              ? 'bg-gradient-to-r from-cyan-500/10 to-blue-500/10 border-cyan-500/30'
+                              : 'bg-cyan-50 border-cyan-200'
+                          }`}>
+                            <div className={`text-sm font-semibold mb-3 ${isDarkTheme ? 'text-cyan-300' : 'text-cyan-700'}`}>
+                              <svg className="w-4 h-4 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                              </svg>
+                              物流与仓储
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+                              <div className={`text-xs ${themeConfig.textMuted}`}>
+                                <span className="font-medium">包装：</span>
+                                <span className={themeConfig.textPrimary}>{knowledgeCard.data.logistics.packaging}</span>
+                              </div>
+                              <div className={`text-xs ${themeConfig.textMuted}`}>
+                                <span className="font-medium">运输：</span>
+                                <span className={themeConfig.textPrimary}>{knowledgeCard.data.logistics.shipping}</span>
+                              </div>
+                              <div className={`text-xs ${themeConfig.textMuted}`}>
+                                <span className="font-medium">储存：</span>
+                                <span className={themeConfig.textPrimary}>{knowledgeCard.data.logistics.storage}</span>
+                              </div>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
@@ -1267,6 +1379,36 @@ function CanvasContent() {
                       <div className={`text-xl font-bold ${isDarkTheme ? 'text-yellow-300' : 'text-yellow-800'}`}>{knowledgeCard.data.title}</div>
                   </div>
 
+                  {/* 供应链信息 */}
+                  {knowledgeCard.data.supply_chain && (
+                    <div className={`rounded-lg p-4 border ${
+                      isDarkTheme
+                        ? 'bg-gradient-to-r from-green-500/10 to-emerald-500/10 border-green-500/30'
+                        : 'bg-green-50 border-green-200'
+                    }`}>
+                      <div className={`text-sm font-semibold mb-3 ${isDarkTheme ? 'text-green-300' : 'text-green-700'}`}>
+                        <svg className="w-4 h-4 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                        供应链信息
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <div className={`${isDarkTheme ? 'bg-slate-800/50' : 'bg-white'} rounded p-2 text-xs`}>
+                          <span className={themeConfig.textMuted}>原材料来源</span>
+                          <div className={`font-medium ${themeConfig.textPrimary}`}>{knowledgeCard.data.supply_chain.raw_material_source}</div>
+                        </div>
+                        <div className={`${isDarkTheme ? 'bg-slate-800/50' : 'bg-white'} rounded p-2 text-xs`}>
+                          <span className={themeConfig.textMuted}>采购周期</span>
+                          <div className={`font-medium ${themeConfig.textPrimary}`}>{knowledgeCard.data.supply_chain.procurement_lead_time}</div>
+                        </div>
+                        <div className={`${isDarkTheme ? 'bg-slate-800/50' : 'bg-white'} rounded p-2 text-xs`}>
+                          <span className={themeConfig.textMuted}>材料成本占比</span>
+                          <div className={`font-medium ${themeConfig.textPrimary}`}>{knowledgeCard.data.supply_chain.estimated_material_cost}</div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
                   <div className="space-y-4">
                     {knowledgeCard.data.steps.map((step, idx) => (
                       <div key={idx} className="relative">
@@ -1283,6 +1425,11 @@ function CanvasContent() {
                             </div>
 
                             <div className="flex-1">
+                              {step.stage && (
+                                <div className={`text-xs font-medium mb-1 ${isDarkTheme ? 'text-purple-400' : 'text-purple-600'}`}>
+                                  {step.stage}
+                                </div>
+                              )}
                               <div className={`text-lg font-bold mb-2 ${isDarkTheme ? 'text-blue-300' : 'text-blue-700'}`}>
                                 {step.action_title}
                               </div>
@@ -1293,6 +1440,12 @@ function CanvasContent() {
                                   knowledgeCard.node.children.map(c => c.name)
                                 )}
                               </div>
+
+                              {step.equipment && (
+                                <div className={`text-xs mb-2 ${isDarkTheme ? 'text-gray-400' : 'text-slate-600'}`}>
+                                  <span className="font-medium">设备：</span>{step.equipment}
+                                </div>
+                              )}
 
                               {step.parameters.length > 0 && (
                                 <div className="flex flex-wrap gap-2">
@@ -1316,6 +1469,58 @@ function CanvasContent() {
                       </div>
                     ))}
                   </div>
+
+                  {/* 质量控制信息 */}
+                  {knowledgeCard.data.quality_control && (
+                    <div className={`rounded-lg p-4 border ${
+                      isDarkTheme
+                        ? 'bg-gradient-to-r from-red-500/10 to-orange-500/10 border-red-500/30'
+                        : 'bg-red-50 border-red-200'
+                    }`}>
+                      <div className={`text-sm font-semibold mb-3 ${isDarkTheme ? 'text-red-300' : 'text-red-700'}`}>
+                        <svg className="w-4 h-4 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                        </svg>
+                        质量控制
+                      </div>
+                      <div className={`text-xs mb-2 ${themeConfig.textMuted}`}>
+                        质检点：{knowledgeCard.data.quality_control.inspection_points.join(' → ')}
+                      </div>
+                      <div className={`text-xs ${themeConfig.textPrimary}`}>
+                        <span className="font-medium">执行标准：</span>{knowledgeCard.data.quality_control.standards}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 物流信息 */}
+                  {knowledgeCard.data.logistics && (
+                    <div className={`rounded-lg p-4 border ${
+                      isDarkTheme
+                        ? 'bg-gradient-to-r from-cyan-500/10 to-blue-500/10 border-cyan-500/30'
+                        : 'bg-cyan-50 border-cyan-200'
+                    }`}>
+                      <div className={`text-sm font-semibold mb-3 ${isDarkTheme ? 'text-cyan-300' : 'text-cyan-700'}`}>
+                        <svg className="w-4 h-4 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                        </svg>
+                        物流与仓储
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+                        <div className={`text-xs ${themeConfig.textMuted}`}>
+                          <span className="font-medium">包装：</span>
+                          <span className={themeConfig.textPrimary}>{knowledgeCard.data.logistics.packaging}</span>
+                        </div>
+                        <div className={`text-xs ${themeConfig.textMuted}`}>
+                          <span className="font-medium">运输：</span>
+                          <span className={themeConfig.textPrimary}>{knowledgeCard.data.logistics.shipping}</span>
+                        </div>
+                        <div className={`text-xs ${themeConfig.textMuted}`}>
+                          <span className="font-medium">储存：</span>
+                          <span className={themeConfig.textPrimary}>{knowledgeCard.data.logistics.storage}</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
 
                   <div className={`rounded-lg p-4 border ${
                       isDarkTheme
