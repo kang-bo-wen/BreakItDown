@@ -120,8 +120,17 @@ function ProductionAnalysisPage() {
   const partName = searchParams.get('partName') || '';
   const partId = searchParams.get('partId') || '';
 
+  // 确认弹窗状态
+  const [showCompleteConfirm, setShowCompleteConfirm] = useState(false);
+
   // 完成定制并返回 canvas
-  const handleComplete = () => {
+  const handleCompleteClick = () => {
+    // 显示确认弹窗
+    setShowCompleteConfirm(true);
+  };
+
+  // 确认完成
+  const confirmComplete = () => {
     // 保存完成状态到 localStorage，供 canvas 页面读取
     const completeData = {
       partId,
@@ -133,8 +142,82 @@ function ProductionAnalysisPage() {
     router.push(`/canvas?sessionId=${sessionId}`);
   };
 
+  // 导出用户偏好数据
+  const handleExportData = () => {
+    // 构建导出数据
+    const exportData = {
+      // 基本信息
+      partName,
+      partId,
+
+      // 产品雏形规划
+      productPlan: productPlan ? {
+        useCases: productPlan.useCases,
+        targetPriceRange: productPlan.targetPriceRange,
+        materials: productPlan.materials,
+        features: productPlan.features
+      } : null,
+
+      // 用户选择（使用场景、预算、材料、特性）
+      selectedUseCases,
+      selectedBudget,
+      selectedMaterials,
+      selectedFeatures,
+
+      // 供应商选择
+      selectedSupplier: selectedSupplier ? {
+        name: selectedSupplier.name,
+        specs: selectedSupplier.specs,
+        price: selectedSupplier.price,
+        reliability: selectedSupplier.reliability,
+        leadTime: selectedSupplier.leadTime
+      } : null,
+
+      // 定制参数与问答
+      customizationQuestions,
+      customizationAnswers,
+
+      // 生产工艺选择
+      selectedProcess: selectedProcess ? {
+        name: selectedProcess.name,
+        description: selectedProcess.description,
+        cost: selectedProcess.cost,
+        risk: selectedProcess.risk,
+        carbonEmission: selectedProcess.carbonEmission
+      } : null,
+
+      exportedAt: new Date().toISOString()
+    };
+
+    // 转换为 JSON 字符串并格式化
+    const jsonString = JSON.stringify(exportData, null, 2);
+
+    // 创建 Blob 对象
+    const blob = new Blob([jsonString], { type: 'application/json' });
+
+    // 创建下载链接
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${partName || 'production-analysis'}-偏好数据-${new Date().toISOString().slice(0, 10)}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   // 当前步骤
   const [currentStep, setCurrentStep] = useState<AnalysisStep>('product-planning');
+
+  // 进入最终报告后，3秒自动弹出确认框
+  useEffect(() => {
+    if (currentStep === 'final-report') {
+      const timer = setTimeout(() => {
+        setShowCompleteConfirm(true);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [currentStep]);
 
   // 数据状态
   const [productPlan, setProductPlan] = useState<ProductPlan | null>(null);
@@ -1922,6 +2005,16 @@ function ProductionAnalysisPage() {
               🗑️ 删除全部分析
             </button>
             <button
+              onClick={handleExportData}
+              className={`flex-1 py-3 rounded-xl font-medium transition-all duration-300 ${
+                isDarkTheme
+                  ? 'bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600 text-white shadow-lg shadow-violet-500/25 hover:shadow-violet-500/40'
+                  : 'bg-gradient-to-r from-violet-600 to-purple-700 hover:from-violet-700 hover:to-purple-700 text-white shadow-md'
+              } transform hover:scale-[1.02] active:scale-[0.98]`}
+            >
+              📥 导出用户偏好数据
+            </button>
+            <button
               onClick={() => { setAiThinkingContent(''); setCurrentStep('result'); }}
               className={`flex-1 py-3 rounded-xl font-medium transition-all duration-300 ${
                 isDarkTheme
@@ -1932,7 +2025,7 @@ function ProductionAnalysisPage() {
               ← 返回评估结果
             </button>
             <button
-              onClick={handleComplete}
+              onClick={handleCompleteClick}
               className={`flex-1 py-3 rounded-xl font-medium transition-all duration-300 ${
                 isDarkTheme
                   ? 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-lg shadow-green-500/25 hover:shadow-green-500/40'
@@ -2065,6 +2158,66 @@ function ProductionAnalysisPage() {
         {currentStep === 'result' && renderResult()}
         {currentStep === 'final-report' && renderFinalReport()}
       </main>
+
+      {/* 确认完成弹窗 */}
+      {showCompleteConfirm && (
+        <div
+          className="fixed inset-0 z-[99999] flex items-center justify-center p-4"
+          onClick={() => setShowCompleteConfirm(false)}
+        >
+          {/* 背景遮罩 */}
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+
+          {/* 弹窗内容 */}
+          <div
+            className="relative w-full max-w-md p-6 rounded-2xl shadow-2xl animate-scale-in"
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              background: isDarkTheme
+                ? 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)'
+                : 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
+              border: isDarkTheme ? '1px solid #334155' : '1px solid #e2e8f0',
+            }}
+          >
+            {/* 装饰图标 */}
+            <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 rounded-full bg-green-500/20 border-2 border-green-500/30">
+              <svg className="w-8 h-8 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+
+            {/* 标题 */}
+            <h3 className={`text-xl font-bold text-center mb-2 ${isDarkTheme ? 'text-white' : 'text-slate-900'}`}>
+              确认完成定制
+            </h3>
+
+            {/* 描述 */}
+            <p className={`text-center mb-6 ${isDarkTheme ? 'text-gray-400' : 'text-slate-600'}`}>
+              确定要完成"{partName}"的定制吗？完成后该节点及其所有子节点都将标记为已完成。
+            </p>
+
+            {/* 按钮 */}
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowCompleteConfirm(false)}
+                className={`flex-1 py-3 rounded-xl font-medium transition-all ${
+                  isDarkTheme
+                    ? 'bg-white/10 hover:bg-white/20 text-white border border-white/20'
+                    : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200'
+                }`}
+              >
+                取消
+              </button>
+              <button
+                onClick={confirmComplete}
+                className="flex-1 py-3 rounded-xl font-medium transition-all bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-lg shadow-green-500/25"
+              >
+                确认完成
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -38,6 +38,7 @@ interface GraphViewProps {
   onShowKnowledge: (node: TreeNode) => void;
   onProductionAnalysis?: (node: TreeNode) => void;
   onDeleteChildren?: (nodeId: string) => void;
+  onCompleteNode?: (nodeId: string, isCompleted: boolean) => void;
   onNodePositionsChange?: () => void;
   edgeType?: 'bezier' | 'smoothstep' | 'straight';
   hoveredNodeId?: string | null;
@@ -57,6 +58,7 @@ function GraphViewInner({
   onShowKnowledge,
   onProductionAnalysis,
   onDeleteChildren,
+  onCompleteNode,
   onNodePositionsChange,
   edgeType: initialEdgeType = 'bezier',
   hoveredNodeId: externalHoveredNodeId,
@@ -209,6 +211,7 @@ function GraphViewInner({
           onShowKnowledge: () => onShowKnowledge(treeNode),
           onProductionAnalysis: onProductionAnalysis ? () => onProductionAnalysis(treeNode) : undefined,
           onDeleteChildren: onDeleteChildren ? () => onDeleteChildren(node.id) : undefined,
+          onCompleteNode: onCompleteNode ? (isCompleted: boolean) => onCompleteNode(node.id, isCompleted) : undefined,
           onHover: (isHovered: boolean) => {
             setHoveredNodeId(isHovered ? node.id : null);
           },
@@ -218,7 +221,7 @@ function GraphViewInner({
 
     setNodes(enhancedNodes);
     setEdges(layoutEdges);
-  }, [tree, loadingNodeIds, knowledgeCache, loadingKnowledgeIds, breakdownMode, currentZoom, findNodeById, findParentName, onNodeExpand, onShowKnowledge, onProductionAnalysis, onDeleteChildren, edgeType]);
+  }, [tree, loadingNodeIds, knowledgeCache, loadingKnowledgeIds, breakdownMode, currentZoom, findNodeById, findParentName, onNodeExpand, onShowKnowledge, onProductionAnalysis, onDeleteChildren, onCompleteNode, edgeType]);
 
   // 根据悬停状态更新节点的 zIndex
   useEffect(() => {

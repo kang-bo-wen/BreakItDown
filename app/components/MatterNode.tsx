@@ -27,6 +27,7 @@ interface MatterNodeData {
   onProductionAnalysis?: () => void;
   onDeleteChildren?: () => void;
   onHover?: (isHovered: boolean) => void;
+  onCompleteNode?: (nodeId: string, isCompleted: boolean) => void;
 }
 
 function MatterNode({ data }: NodeProps<MatterNodeData>) {
@@ -51,6 +52,7 @@ function MatterNode({ data }: NodeProps<MatterNodeData>) {
     onProductionAnalysis,
     onDeleteChildren,
     onHover,
+    onCompleteNode,
   } = data;
 
   // 使用主题配置
@@ -361,6 +363,27 @@ function MatterNode({ data }: NodeProps<MatterNodeData>) {
                 </svg>
                 <span className="text-xs">删除</span>
               </button>
+              )}
+
+              {/* 完成/重新定制 */}
+              {onCompleteNode && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onCompleteNode(nodeId || '', !isCompleted);
+                    setShowTooltip(false);
+                  }}
+                  className={`flex-1 flex flex-row items-center justify-center gap-1 p-2 rounded-lg transition-all ${
+                    isCompleted
+                      ? (isDarkTheme ? 'bg-green-500/20 text-green-400' : 'bg-green-50 text-green-600')
+                      : (isDarkTheme ? 'hover:bg-green-500/20 text-green-400' : 'hover:bg-green-50 text-green-600')
+                  }`}
+                >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  <span className="text-xs">{isCompleted ? '重新定制' : '完成定制'}</span>
+                </button>
               )}
             </div>
 

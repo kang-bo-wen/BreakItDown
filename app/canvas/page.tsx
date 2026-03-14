@@ -1207,6 +1207,38 @@ function CanvasContent() {
                     return updateNode(prevTree);
                   });
                 }}
+                onCompleteNode={(nodeId, isCompleted) => {
+                  // 更新节点完成状态
+                  setDeconstructionTree(prevTree => {
+                    if (!prevTree) return null;
+                    const updateNode = (node: TreeNode): TreeNode => {
+                      // 如果是目标节点
+                      if (node.id === nodeId) {
+                        if (isCompleted) {
+                          // 设置完成状态时，递归处理子节点
+                          return {
+                            ...node,
+                            isCompleted,
+                            children: node.children.map(updateNode)
+                          };
+                        } else {
+                          // 取消完成状态时，只处理当前节点，不处理子节点
+                          return {
+                            ...node,
+                            isCompleted
+                          };
+                        }
+                      }
+                      // 继续在子节点中查找
+                      return { ...node, children: node.children.map(updateNode) };
+                    };
+                    return updateNode(prevTree);
+                  });
+                  // 保存到数据库
+                  if (currentSessionId) {
+                    saveSessionToDatabase(false);
+                  }
+                }}
                 onNodePositionsChange={() => {
                   if (currentSessionId) {
                     saveSessionToDatabase(false);
