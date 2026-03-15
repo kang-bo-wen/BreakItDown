@@ -26,6 +26,15 @@
         </div>
         <p class="scene-quote">"在定制时代，让每个人都能定制自己的产品。"</p>
       </div>
+      <div class="scene-cta">
+        <a href="http://localhost:3002/landing" class="cta-button" target="_blank">
+          开始体验产品
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </a>
+        <p class="cta-hint">下翻可查阅详细技术说明文档（20pages）</p>
+      </div>
     </div>
 
     <!-- Scene 1：目标用户 -->
@@ -34,7 +43,10 @@
       <div class="scene-overlay"></div>
       <div class="scene-content scene-content--wide">
         <p class="scene-label">WHO IT'S FOR</p>
-        <h1 class="scene-title">为每一个<br>造梦者而生</h1>
+        <h1 class="scene-title">在定制时代，<br>让每个人都能定制自己的产品</h1>
+        <p class="scene-desc" style="max-width: 900px; margin: 1.5rem auto 2rem; font-size: 1.1rem; line-height: 1.8;">
+          在这个号称"万物皆可造"的时代，<strong>曾经绝大部分的定制需求，死在了"专业性"的门槛上。</strong> 我们让过去只有专业硬件工程师才能做的事情，被每一个普通人完成。我们抢占了巨大的定制市场的潜力群体——那些因为专业性有限而无法个性化定制的海量用户。
+        </p>
         <div class="scene-cards">
           <div class="scene-card">
             <p class="card-title">TikTok / 小红书卖家</p>
@@ -43,10 +55,6 @@
           <div class="scene-card">
             <p class="card-title">独立设计师 / 创客</p>
             <p class="card-desc">手绘草图或实物照片直接转化为可对接工厂的标准化工程数据，告别"发图干瞪眼"</p>
-          </div>
-          <div class="scene-card">
-            <p class="card-title">机械比赛 / 具身智能团队</p>
-            <p class="card-desc">快速寻源特殊零部件，获取供应商报价、工艺方案与风险评估</p>
           </div>
           <div class="scene-card">
             <p class="card-title">好奇心驱动用户</p>
@@ -66,8 +74,14 @@
       <div class="scene-overlay"></div>
       <div class="scene-content scene-content--wide">
         <p class="scene-label">CORE SYSTEMS</p>
-        <h1 class="scene-title">三大系统，<br>一条管道</h1>
-        <div class="scene-systems">
+        <h1 class="scene-title">我们如何抢占<br>千亿级"定制市场"？</h1>
+        <div class="scene-fade-in-text">
+          <p style="font-size: 1.1rem; line-height: 1.8; margin-bottom: 2rem;">
+            <strong>无缝嵌入巨头工作流，借势平台级高频场景：</strong><br><br>
+            Break It Down 可以无缝镶嵌在 淘宝，1688，天猫，小红书等超级生态中的"转化引擎"。我们可以提高极致用户粘性。我们将"看爆款"和"造爆款"<strong>之间的距离从几周缩短到了几秒</strong>，用户在内容平台上刷得有多高频，使用我们的频率就有多高。
+          </p>
+        </div>
+        <div class="scene-systems scene-systems--compact">
           <div class="scene-system">
             <p class="system-label">A</p>
             <p class="system-title">用户与会话管理</p>
@@ -97,37 +111,45 @@
     <div class="scene" id="scene-3">
       <div class="scene-bg bg-3"></div>
       <div class="scene-overlay"></div>
-      <div class="scene-content scene-content--wide">
-        <p class="scene-label">TECH STACK</p>
-        <h1 class="scene-title">精密<br>构建</h1>
-        <div class="scene-techcols">
-          <div class="techcol">
-            <p class="techcol-title">前端</p>
-            <p class="techcol-item">Next.js 15</p>
-            <p class="techcol-item">React 19</p>
-            <p class="techcol-item">React Flow</p>
-            <p class="techcol-item">dagre 自动布局</p>
+      <div class="scene-content scene-content--split">
+        <div class="split-left">
+          <p class="scene-label">TECH STACK</p>
+          <h1 class="scene-title" style="font-size: clamp(2rem, 4.5vw, 5rem);">精密<br>构建</h1>
+          <div class="scene-techcols scene-techcols--compact">
+            <div class="techcol">
+              <p class="techcol-title">前端</p>
+              <p class="techcol-item">Next.js 15</p>
+              <p class="techcol-item">React 19</p>
+              <p class="techcol-item">React Flow</p>
+              <p class="techcol-item">dagre 自动布局</p>
+            </div>
+            <div class="techcol">
+              <p class="techcol-title">后端</p>
+              <p class="techcol-item">Serverless API</p>
+              <p class="techcol-item">NextAuth.js</p>
+              <p class="techcol-item">Prisma 6</p>
+              <p class="techcol-item">Vercel 部署</p>
+            </div>
+            <div class="techcol">
+              <p class="techcol-title">AI 层</p>
+              <p class="techcol-item">通义千问视觉</p>
+              <p class="techcol-item">DeepSeek</p>
+              <p class="techcol-item">双轨 AI 接口</p>
+              <p class="techcol-item">指数退避重试</p>
+            </div>
+            <div class="techcol">
+              <p class="techcol-title">数据层</p>
+              <p class="techcol-item">PostgreSQL</p>
+              <p class="techcol-item">Neon 无服务器</p>
+              <p class="techcol-item">JSON 快照存储</p>
+              <p class="techcol-item">防抖批量写入</p>
+            </div>
           </div>
-          <div class="techcol">
-            <p class="techcol-title">后端</p>
-            <p class="techcol-item">Serverless API</p>
-            <p class="techcol-item">NextAuth.js</p>
-            <p class="techcol-item">Prisma 6</p>
-            <p class="techcol-item">Vercel 部署</p>
-          </div>
-          <div class="techcol">
-            <p class="techcol-title">AI 层</p>
-            <p class="techcol-item">通义千问视觉</p>
-            <p class="techcol-item">DeepSeek</p>
-            <p class="techcol-item">双轨 AI 接口</p>
-            <p class="techcol-item">指数退避重试</p>
-          </div>
-          <div class="techcol">
-            <p class="techcol-title">数据层</p>
-            <p class="techcol-item">PostgreSQL</p>
-            <p class="techcol-item">Neon 无服务器</p>
-            <p class="techcol-item">JSON 快照存储</p>
-            <p class="techcol-item">防抖批量写入</p>
+        </div>
+        <div class="split-right">
+          <div class="pdf-preview-container">
+            <div class="pdf-preview-blur"></div>
+            <button class="pdf-view-btn" onclick="openPDFFullscreen()">查看详细的技术报告</button>
           </div>
         </div>
       </div>
@@ -137,30 +159,26 @@
     <div class="scene" id="scene-4">
       <div class="scene-bg bg-4"></div>
       <div class="scene-overlay"></div>
-      <div class="scene-content">
-        <p class="scene-label">HARD PROBLEMS SOLVED</p>
-        <h1 class="scene-title">三个硬核难题，<br>三个优雅解法</h1>
-        <div class="scene-breakthroughs">
-          <div class="breakthrough">
-            <span class="breakthrough-num">01</span>
-            <div>
-              <p class="breakthrough-title">AI JSON 鲁棒解析</p>
-              <p class="breakthrough-desc">双轨正则提取 + 二次修复解析 + 指数退避重试，彻底消灭大模型输出不稳定</p>
-            </div>
+      <div class="scene-content scene-content--split">
+        <div class="split-left">
+          <p class="scene-label">DEMO VIDEO</p>
+          <h2 class="scene-title" style="font-size: clamp(2rem, 4vw, 4.5rem); margin-bottom: 1.5rem;">演示视频</h2>
+          <div class="video-container">
+            <video id="demo-video" controls>
+              <source src="demo-video.mp4" type="video/mp4">
+              您的浏览器不支持视频播放
+            </video>
+            <button class="video-fullscreen-btn" onclick="toggleVideoFullscreen()">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+              </svg>
+            </button>
           </div>
-          <div class="breakthrough">
-            <span class="breakthrough-num">02</span>
-            <div>
-              <p class="breakthrough-title">React Flow 大规模节点</p>
-              <p class="breakthrough-desc">dagre 自动布局 + 防抖写入 + JSON 快照单字段存储，50+ 节点丝滑无卡顿</p>
-            </div>
-          </div>
-          <div class="breakthrough">
-            <span class="breakthrough-num">03</span>
-            <div>
-              <p class="breakthrough-title">多 Agent 断点续做</p>
-              <p class="breakthrough-desc">(sessionId, partId) upsert + currentStep 恢复 + 流式输出，关页面不丢进度</p>
-            </div>
+        </div>
+        <div class="split-right">
+          <div class="typewriter-container">
+            <p class="typewriter-text" id="typewriter-text"></p>
+            <div class="typewriter-cursor"></div>
           </div>
         </div>
       </div>
@@ -252,6 +270,17 @@
 
   <!-- 底部进度条 -->
   <div id="progress-bar"><div id="progress-fill"></div></div>
+
+  <!-- PDF 全屏模态框 -->
+  <div id="pdf-modal" class="pdf-modal">
+    <div class="pdf-modal-header">
+      <h3>技术报告</h3>
+      <button class="pdf-close-btn" onclick="closePDFFullscreen()">✕</button>
+    </div>
+    <div class="pdf-modal-content">
+      <iframe id="pdf-iframe" src="" frameborder="0"></iframe>
+    </div>
+  </div>
 
   <script src="main.js"></script>
 </body>

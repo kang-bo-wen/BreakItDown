@@ -38,36 +38,36 @@ function initScenes() {
 /**
  * 设置单个场景的视觉状态
  * @param {Element} scene
- * @param {number} t  -1=完全滑出上方  0=完全显示  1=完全在下方
+ * @param {number} t  -1=完全滑出下方  0=完全显示  1=完全在上方
  */
 function setSceneState(scene, t) {
   const bg = scene.querySelector('.scene-bg');
   const content = scene.querySelector('.scene-content');
 
   if (t <= 0) {
-    // 向上离开：t 从 0 → -1
+    // 向下离开：t 从 0 → -1
     const exitT = -t; // 0 → 1
-    const translateY = -exitT * 100;
+    const translateY = exitT * 100;
     const opacity    = 1 - exitT * 0.6;
-    const bgShift    = exitT * 8; // 背景轻微反向 parallax
+    const bgShift    = -exitT * 8; // 背景轻微反向 parallax
 
     scene.style.transform  = `translateY(${translateY}%)`;
     scene.style.opacity    = opacity;
     bg.style.transform     = `scale(1.08) translateY(${bgShift}%)`;
-    content.style.transform = `translateY(${exitT * -3}%)`;
+    content.style.transform = `translateY(${exitT * 3}%)`;
     content.style.opacity   = 1 - exitT * 1.4;
 
   } else {
-    // 从下方进入：t 从 1 → 0
+    // 从上方进入：t 从 1 → 0
     const enterT = t; // 1 → 0
-    const translateY = enterT * 100;
+    const translateY = -enterT * 100;
     const opacity    = 1 - enterT * 0.3;
-    const bgShift    = -enterT * 8;
+    const bgShift    = enterT * 8;
 
     scene.style.transform  = `translateY(${translateY}%)`;
     scene.style.opacity    = opacity;
     bg.style.transform     = `scale(1.08) translateY(${bgShift}%)`;
-    content.style.transform = `translateY(${enterT * 5}%)`;
+    content.style.transform = `translateY(${enterT * -5}%)`;
     content.style.opacity   = 1 - enterT * 1.5;
   }
 }
@@ -132,3 +132,70 @@ window.addEventListener('keydown', (e) => {
 // ── 启动 ──
 initScenes();
 render();
+
+// ── PDF 全屏功能 ──
+function openPDFFullscreen() {
+  const modal = document.getElementById('pdf-modal');
+  const iframe = document.getElementById('pdf-iframe');
+  iframe.src = 'tech-report.pdf';
+  modal.classList.add('active');
+}
+
+function closePDFFullscreen() {
+  const modal = document.getElementById('pdf-modal');
+  const iframe = document.getElementById('pdf-iframe');
+  modal.classList.remove('active');
+  iframe.src = '';
+}
+
+// ESC 键关闭 PDF
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    const modal = document.getElementById('pdf-modal');
+    if (modal.classList.contains('active')) {
+      closePDFFullscreen();
+    }
+  }
+});
+
+// ── 视频全屏功能 ──
+function toggleVideoFullscreen() {
+  const video = document.getElementById('demo-video');
+  if (!document.fullscreenElement) {
+    video.requestFullscreen().catch(err => {
+      console.error('无法进入全屏模式:', err);
+    });
+  } else {
+    document.exitFullscreen();
+  }
+}
+
+// ── 打字机效果 ──
+const typewriterText = '开始体验产品';
+let typewriterIndex = 0;
+
+function typeWriter() {
+  const element = document.getElementById('typewriter-text');
+  if (typewriterIndex < typewriterText.length) {
+    element.textContent += typewriterText.charAt(typewriterIndex);
+    typewriterIndex++;
+    setTimeout(typeWriter, 150);
+  }
+}
+
+// 当滚动到 Scene 4 时触发打字机效果
+let typewriterTriggered = false;
+function checkTypewriterTrigger() {
+  const currentScene = Math.round(lerpProgress);
+  if (currentScene === 4 && !typewriterTriggered) {
+    typewriterTriggered = true;
+    setTimeout(typeWriter, 500);
+  }
+}
+
+// 在 render 函数中添加检查
+const originalRender = render;
+render = function() {
+  originalRender();
+  checkTypewriterTrigger();
+};
