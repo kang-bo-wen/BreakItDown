@@ -1,0 +1,455 @@
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #000;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  cursor: default;
+}
+
+/* ── 场景容器 ── */
+#scroll-container {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+}
+
+/* ── 单个场景 ── */
+.scene {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  will-change: transform, opacity;
+}
+
+/* 背景图层 */
+.scene-bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  /* 轻微放大，给 parallax 留空间 */
+  transform: scale(1.08);
+  will-change: transform;
+  transition: none;
+}
+
+/* 渐变遮罩，增强文字可读性 */
+.scene-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0,0,0,0.15) 0%,
+    rgba(0,0,0,0.05) 40%,
+    rgba(0,0,0,0.55) 100%
+  );
+}
+
+/* ── 文字内容 ── */
+.scene-content {
+  position: absolute;
+  bottom: 12vh;
+  left: 8vw;
+  color: #fff;
+  will-change: transform, opacity;
+}
+
+.scene-label {
+  font-size: clamp(11px, 1.1vw, 14px);
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.55);
+  margin-bottom: 1.2rem;
+  font-weight: 400;
+}
+
+.scene-title {
+  font-size: clamp(2.8rem, 6.5vw, 7rem);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  margin-bottom: 1.4rem;
+  text-shadow: 0 2px 40px rgba(0,0,0,0.4);
+}
+
+.scene-desc {
+  font-size: clamp(14px, 1.3vw, 18px);
+  color: rgba(255,255,255,0.7);
+  font-weight: 300;
+  letter-spacing: 0.04em;
+  max-width: 480px;
+  line-height: 1.6;
+}
+
+/* ── 宽内容变体（Scene 1/2/3 内容较多，左移并拓宽） ── */
+.scene-content--wide {
+  left: 6vw;
+  right: 4vw;
+  bottom: 8vh;
+}
+
+/* ── Tag Pills（Scene 0） ── */
+.scene-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 1.6rem;
+  margin-bottom: 1.4rem;
+}
+.scene-tag {
+  padding: 0.35em 1em;
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 999px;
+  font-size: clamp(11px, 1vw, 13px);
+  letter-spacing: 0.08em;
+  color: rgba(255,255,255,0.75);
+  background: rgba(255,255,255,0.07);
+  backdrop-filter: blur(4px);
+}
+
+/* ── 引言（Scene 0） ── */
+.scene-quote {
+  font-size: clamp(13px, 1.2vw, 16px);
+  color: rgba(255,255,255,0.45);
+  font-style: italic;
+  letter-spacing: 0.03em;
+  max-width: 520px;
+}
+
+/* ── 用户卡片（Scene 1） ── */
+.scene-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.8rem;
+  max-width: 860px;
+}
+.scene-card {
+  flex: 1 1 220px;
+  max-width: 260px;
+  padding: 1rem 1.2rem;
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 8px;
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(6px);
+}
+.card-title {
+  font-size: clamp(12px, 1.05vw, 14px);
+  font-weight: 600;
+  color: rgba(255,255,255,0.9);
+  margin-bottom: 0.5rem;
+  letter-spacing: 0.02em;
+}
+.card-desc {
+  font-size: clamp(11px, 0.95vw, 13px);
+  color: rgba(255,255,255,0.5);
+  line-height: 1.55;
+  font-weight: 300;
+}
+
+/* ── 三大系统（Scene 2） ── */
+.scene-systems {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 1.8rem;
+  max-width: 900px;
+}
+.scene-system {
+  flex: 1;
+  padding: 1.2rem 1.4rem;
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 8px;
+  background: rgba(255,255,255,0.04);
+}
+.system-label {
+  font-size: clamp(22px, 2.5vw, 32px);
+  font-weight: 800;
+  color: rgba(255,255,255,0.15);
+  line-height: 1;
+  margin-bottom: 0.6rem;
+  letter-spacing: -0.02em;
+}
+.system-title {
+  font-size: clamp(13px, 1.1vw, 15px);
+  font-weight: 600;
+  color: rgba(255,255,255,0.9);
+  margin-bottom: 0.8rem;
+  letter-spacing: 0.02em;
+}
+.system-item {
+  font-size: clamp(11px, 0.9vw, 12px);
+  color: rgba(255,255,255,0.45);
+  line-height: 1.8;
+  font-weight: 300;
+}
+
+/* ── 技术栈四列（Scene 3） ── */
+.scene-techcols {
+  display: flex;
+  gap: 2rem;
+  margin-top: 1.8rem;
+  max-width: 860px;
+}
+.techcol {
+  flex: 1;
+}
+.techcol-title {
+  font-size: clamp(11px, 1vw, 13px);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.4);
+  margin-bottom: 0.9rem;
+  font-weight: 500;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+.techcol-item {
+  font-size: clamp(12px, 1vw, 14px);
+  color: rgba(255,255,255,0.7);
+  line-height: 2;
+  font-weight: 300;
+}
+
+/* ── 技术突破（Scene 4） ── */
+.scene-breakthroughs {
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+  margin-top: 1.8rem;
+  max-width: 640px;
+}
+.breakthrough {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.2rem;
+}
+.breakthrough-num {
+  font-size: clamp(28px, 3vw, 40px);
+  font-weight: 800;
+  color: rgba(255,255,255,0.1);
+  line-height: 1;
+  flex-shrink: 0;
+  width: 2.5rem;
+  letter-spacing: -0.03em;
+}
+.breakthrough-title {
+  font-size: clamp(13px, 1.1vw, 15px);
+  font-weight: 600;
+  color: rgba(255,255,255,0.9);
+  margin-bottom: 0.3rem;
+}
+.breakthrough-desc {
+  font-size: clamp(11px, 0.95vw, 13px);
+  color: rgba(255,255,255,0.45);
+  line-height: 1.6;
+  font-weight: 300;
+}
+
+/* ── 占位渐变背景 ── */
+.bg-0 {
+  background: radial-gradient(ellipse at 30% 60%, #1a0533 0%, #0a0010 50%, #000 100%),
+              linear-gradient(135deg, #0d0020 0%, #1e0040 100%);
+  background-blend-mode: screen;
+}
+.bg-0::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 20% 80%, rgba(120,40,200,0.35) 0%, transparent 50%),
+    radial-gradient(circle at 75% 25%, rgba(60,0,120,0.25) 0%, transparent 45%);
+}
+
+.bg-1 {
+  background: linear-gradient(160deg, #0a1628 0%, #0e2a1a 40%, #051510 100%);
+}
+.bg-1::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 60% 70%, rgba(0,180,80,0.2) 0%, transparent 55%),
+    radial-gradient(ellipse at 15% 30%, rgba(0,80,40,0.3) 0%, transparent 40%);
+}
+
+.bg-2 {
+  background: linear-gradient(170deg, #1a0800 0%, #3d1200 35%, #0f0500 100%);
+}
+.bg-2::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 50% 55%, rgba(255,80,0,0.3) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(200,40,0,0.2) 0%, transparent 40%);
+}
+
+.bg-3 {
+  background: linear-gradient(180deg, #000d1a 0%, #001830 50%, #000810 100%);
+}
+.bg-3::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 40% 65%, rgba(0,100,200,0.25) 0%, transparent 55%),
+    radial-gradient(ellipse at 70% 30%, rgba(0,40,100,0.3) 0%, transparent 45%);
+}
+
+.bg-4 {
+  background: linear-gradient(150deg, #0a0a0a 0%, #1a1208 40%, #0d0800 100%);
+}
+.bg-4::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 55% 45%, rgba(255,180,0,0.18) 0%, transparent 50%),
+    radial-gradient(ellipse at 20% 75%, rgba(200,120,0,0.15) 0%, transparent 40%);
+}
+
+/* ── 万物皆可拆解（Scene 5） ── */
+.scene-decompose-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1.8rem;
+  max-width: 860px;
+}
+.decompose-item {
+  flex: 1 1 180px;
+  max-width: 220px;
+  padding: 1rem 1.2rem;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  background: rgba(255,255,255,0.04);
+}
+.decompose-icon {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+.decompose-name {
+  font-size: clamp(12px, 1.05vw, 14px);
+  font-weight: 600;
+  color: rgba(255,255,255,0.9);
+  margin-bottom: 0.4rem;
+}
+.decompose-path {
+  font-size: clamp(10px, 0.85vw, 12px);
+  color: rgba(255,255,255,0.4);
+  line-height: 1.6;
+  font-weight: 300;
+}
+
+/* ── 拆解深度链（Scene 6） ── */
+.scene-depth-chain {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-top: 1.8rem;
+  max-width: 480px;
+}
+.depth-step {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.7rem 1rem;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 6px;
+  background: rgba(255,255,255,0.03);
+}
+.depth-step--highlight {
+  border-color: rgba(255,255,255,0.25);
+  background: rgba(255,255,255,0.07);
+}
+.depth-level {
+  font-size: clamp(11px, 1vw, 13px);
+  font-weight: 700;
+  color: rgba(255,255,255,0.3);
+  letter-spacing: 0.1em;
+  width: 2rem;
+  flex-shrink: 0;
+}
+.depth-step--highlight .depth-level {
+  color: rgba(255,255,255,0.7);
+}
+.depth-text {
+  font-size: clamp(12px, 1.05vw, 14px);
+  color: rgba(255,255,255,0.6);
+  font-weight: 300;
+}
+.depth-step--highlight .depth-text {
+  color: rgba(255,255,255,0.9);
+  font-weight: 500;
+}
+.depth-arrow {
+  font-size: 12px;
+  color: rgba(255,255,255,0.15);
+  padding-left: 1.2rem;
+  line-height: 1;
+}
+
+/* ── 新增背景（Scene 5-7） ── */
+.bg-5 {
+  background: linear-gradient(155deg, #001a0d 0%, #002a18 40%, #000f08 100%);
+}
+.bg-5::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 35% 60%, rgba(0,220,120,0.18) 0%, transparent 55%),
+    radial-gradient(ellipse at 75% 25%, rgba(0,160,80,0.12) 0%, transparent 45%);
+}
+
+.bg-6 {
+  background: linear-gradient(165deg, #000818 0%, #001030 40%, #000510 100%);
+}
+.bg-6::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 50% 50%, rgba(80,120,255,0.2) 0%, transparent 55%),
+    radial-gradient(ellipse at 20% 80%, rgba(40,60,200,0.15) 0%, transparent 40%);
+}
+
+.bg-7 {
+  background: linear-gradient(145deg, #080010 0%, #150025 40%, #050010 100%);
+}
+.bg-7::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 45% 55%, rgba(160,80,255,0.25) 0%, transparent 55%),
+    radial-gradient(ellipse at 75% 30%, rgba(80,0,180,0.2) 0%, transparent 45%),
+    radial-gradient(ellipse at 20% 70%, rgba(200,100,255,0.12) 0%, transparent 40%);
+}
+
+/* ── 底部进度条 ── */
+#progress-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: rgba(255,255,255,0.12);
+  z-index: 100;
+}
+
+#progress-fill {
+  height: 100%;
+  background: rgba(255,255,255,0.75);
+  width: 0%;
+  transition: width 0.05s linear;
+}
