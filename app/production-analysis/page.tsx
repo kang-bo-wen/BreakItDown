@@ -120,6 +120,10 @@ function ProductionAnalysisPage() {
   const partName = searchParams.get('partName') || '';
   const partId = searchParams.get('partId') || '';
 
+  // 拆解树数据
+  const [treeData, setTreeData] = useState<any>(null);
+  const [treeDataLoaded, setTreeDataLoaded] = useState(false);
+
   // 确认弹窗状态
   const [showCompleteConfirm, setShowCompleteConfirm] = useState(false);
 
@@ -252,6 +256,27 @@ function ProductionAnalysisPage() {
   const [aiThinkingContent, setAiThinkingContent] = useState<string>('');
 
   // 加载进度
+  // 加载拆解树数据
+  useEffect(() => {
+    if (!sessionId) return;
+
+    const loadTreeData = async () => {
+      try {
+        const res = await fetch(`/api/sessions/${sessionId}`);
+        const data = await res.json();
+        if (data.session?.treeData) {
+          setTreeData(data.session.treeData);
+        }
+        setTreeDataLoaded(true);
+      } catch (err) {
+        console.error('加载拆解树失败:', err);
+        setTreeDataLoaded(true);
+      }
+    };
+
+    loadTreeData();
+  }, [sessionId]);
+
   useEffect(() => {
     if (!sessionId || !partId || isLoaded) return;
 
@@ -543,7 +568,7 @@ function ProductionAnalysisPage() {
     setIsLoading(true);
     setError(null);
     try {
-      const result = await callStreamingAPI('product_planning', { partName });
+      const result = await callStreamingAPI('product_planning', { partName, treeData });
       if (result?.productPlan) {
         setProductPlan(result.productPlan);
         // 默认不选中任何选项，让用户自己选择
@@ -586,7 +611,7 @@ function ProductionAnalysisPage() {
     setIsLoading(true);
     setError(null);
     try {
-      const result = await callStreamingAPI('market_research', { partName, productPlan });
+      const result = await callStreamingAPI('market_research', { partName, productPlan, treeData });
       if (result?.marketResearch) {
         setCompetitorAnalysis(result.marketResearch);
       }
@@ -608,7 +633,8 @@ function ProductionAnalysisPage() {
         partName,
         selectedMaterials,
         selectedBudget,
-        selectedFeatures
+        selectedFeatures,
+        treeData
       });
       setSuppliers(result.suppliers || []);
     } catch (err) {
@@ -629,7 +655,7 @@ function ProductionAnalysisPage() {
     setIsLoading(true);
     setError(null);
     try {
-      const result = await callStreamingAPI('start_customization', { partName });
+      const result = await callStreamingAPI('start_customization', { partName, treeData });
       setCustomizationQuestions(result.questions || []);
     } catch (err) {
       setError('生成定制问题失败，请重试');
@@ -665,7 +691,8 @@ function ProductionAnalysisPage() {
 
       const result = await callStreamingAPI('generate_processes', {
         partName,
-        customizedParams: processedAnswers
+        customizedParams: processedAnswers,
+        treeData
       });
       setProcesses(result.processes || []);
     } catch (err) {
@@ -911,15 +938,20 @@ function ProductionAnalysisPage() {
           <div className="text-center py-4">
             <button
               onClick={handleProductPlanning}
-              disabled={isLoading}
+              disabled={isLoading || !treeDataLoaded}
               className={`px-6 py-3 rounded-xl font-medium transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] ${
                 isDarkTheme
                   ? 'bg-gradient-to-r from-cyan-500 to-cyan-500 hover:from-cyan-600 hover:to-cyan-600 disabled:from-slate-600 disabled:to-slate-700 text-white shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40'
-                  : 'bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 text-white shadow-md shadow-cyan-500/20'
+                  : 'bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 text-white shadow-md shadow-cyan-500/20 disabled:opacity-50 disabled:cursor-not-allowed'
               }`}
             >
-              {isLoading ? 'AI 思考中...' : '开始产品规划'}
+              {!treeDataLoaded ? '加载拆解结构中...' : isLoading ? 'AI 思考中...' : '开始产品规划'}
             </button>
+            {!treeDataLoaded && (
+              <p className={`text-sm mt-2 ${isDarkTheme ? 'text-gray-500' : 'text-slate-400'}`}>
+                正在获取产品拆解结构...
+              </p>
+            )}
           </div>
         </div>
       ) : (

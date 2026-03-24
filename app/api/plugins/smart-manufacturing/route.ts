@@ -3,13 +3,22 @@ import deepseek from '@/lib/deepseek';
 
 // 产品规划 Agent System Prompt
 const PRODUCT_PLANNING_PROMPT = `你是一个专业的新产品规划专家。
-根据零件名称，分析并规划产品的潜在方向。
+你正在进行产品规划的零件是整体产品的一个组成部分。
+**你必须根据该零件在整体拆解结构中的位置和角色来规划其产品方向。**
+
+分析要点：
+1. 该零件是整体产品的第几层组成部分
+2. 该零件与其他部件之间的关系（是核心部件还是辅助部件）
+3. 该零件的功能定位（结构件、功能件、装饰件等）
 
 请提供以下信息：
-- 目标用途（3-5个推荐用途）
-- 目标价格区间（最低价和最高价）
-- 推荐材料（3-5种）
-- 产品特性（3-5个）
+- 目标用途（3-5个推荐用途）- 必须与该零件在整体中的角色相匹配
+- 目标价格区间（最低价和最高价）- 根据零件的重要性和功能定位来估算
+- 推荐材料（3-5种）- 考虑该零件的具体功能需求
+- 产品特性（3-5个）- 与整体产品功能相关的特性
+
+**重要**：你给出的推荐用途必须能够体现该零件在整体拆解结构中的角色！
+如果该零件是核心部件，用途应偏向高端应用；如果是辅助部件，用途应考虑配套价值。
 
 以JSON格式返回：
 {
@@ -304,19 +313,134 @@ async function callDeepSeek(systemPrompt: string, userMessage: string): Promise<
 
 // 处理各个 Agent 请求
 async function handleAgentRequest(action: string, data: any): Promise<any> {
-  const { partName, partSpecs, option, optionType, customizedParams, costData, riskData, carbonData, productPlan, competitorAnalysis, selectedSupplier, selectedProcess, analysisResult } = data;
+  const { partName, partSpecs, option, optionType, customizedParams, costData, riskData, carbonData, productPlan, competitorAnalysis, selectedSupplier, selectedProcess, analysisResult, treeData } = data;
 
   // 解析产品规划信息
   const materials = productPlan?.materials || [];
   const budget = productPlan?.budget || '';
   const features = productPlan?.features || [];
 
+  // 格式化拆解树为上下文信息
+  const formatTreeContext = (tree: any, targetPartName: string): string => {
+    if (!tree) return '';
+
+    // 递归查找节点路径
+    const findNodePath = (node: any, target: string, path: string[] = []): string[] | null => {
+      if (!node) return null;
+
+      const currentName = node.name || node.id || '';
+      const currentPath = [...path, currentName];
+
+      // 匹配目标
+      if (currentName === target) {
+        return currentPath;
+      }
+
+      // 递归搜索子节点
+      if (node.children && Array.isArray(node.children)) {
+        for (const child of node.children) {
+          const result = findNodePath(child, target, currentPath);
+          if (result) return result;
+        }
+      }
+
+      return null;
+    };
+
+    // 获取所有部件名称
+    const getAllParts = (node: any, parts: string[] = []): string[] => {
+      if (!node) return parts;
+      const name = node.name || node.id;
+      if (name) parts.push(name);
+      if (node.children && Array.isArray(node.children)) {
+        for (const child of node.children) {
+          getAllParts(child, parts);
+        }
+      }
+      return parts;
+    };
+
+    // 递归查找父节点及其同级节点
+    const findParentAndSiblings = (node: any, target: string, parent: any = null): { parent: any, siblings: string[] } | null => {
+      if (!node) return null;
+
+      const currentName = node.name || node.id || '';
+
+      // 找到目标节点
+      if (currentName === target) {
+        if (parent && parent.children) {
+          const siblings = parent.children
+            .filter((child: any) => (child.name || child.id) !== target)
+            .map((child: any) => child.name || child.id)
+            .filter((name: string) => name);
+          return { parent, siblings };
+        }
+        return { parent: null, siblings: [] };
+      }
+
+      // 递归搜索子节点
+      if (node.children && Array.isArray(node.children)) {
+        for (const child of node.children) {
+          const result = findParentAndSiblings(child, target, node);
+          if (result) return result;
+        }
+      }
+
+      return null;
+    };
+
+    const path = findNodePath(tree, targetPartName) || [];
+    const allParts = getAllParts(tree);
+    const parentInfo = findParentAndSiblings(tree, targetPartName);
+
+    let context = '';
+
+    // 添加路径信息
+    if (path.length > 0) {
+      context += `\n【该零件在整体拆解结构中的位置】\n`;
+      context += `完整路径: ${path.join(' > ')}\n`;
+      context += `层级: 第${path.length}层（根节点为第1层）\n`;
+      context += `该零件是整体产品的第${path.length}层组成部分\n`;
+    }
+
+    // 添加完整结构
+    if (allParts.length > 0) {
+      context += `\n【完整拆解结构】\n`;
+      context += `全部组成部分（共${allParts.length}个）: ${allParts.join('、')}\n`;
+    }
+
+    // 添加同级部件信息
+    if (parentInfo && parentInfo.siblings.length > 0) {
+      context += `\n【同级别部件】\n`;
+      context += `与 "${targetPartName}" 同级的其他部件: ${parentInfo.siblings.join('、')}\n`;
+    }
+
+    // 添加根节点信息
+    if (path.length > 0) {
+      context += `\n【产品定位】\n`;
+      context += `产品根节点: ${path[0]}\n`;
+      context += `目标零件 "${targetPartName}" 是 "${path[0]}" 的组成部分\n`;
+    }
+
+    return context;
+  };
+
+  const treeContext = formatTreeContext(treeData, partName);
+
   switch (action) {
     case 'product_planning': {
       const userMessage = `请为以下零件进行产品规划：
 零件名称：${partName}
+${treeContext}
 
-请分析产品的潜在方向并给出推荐用途、价格区间、材料和特性。`;
+**核心任务**：根据该零件在整体拆解结构中的位置和角色，推荐最合适的用途。
+
+**关键要求**：
+1. 该零件是"${partName}"，它在整体产品中扮演什么角色？
+2. 它的用途必须符合它在整体拆解结构中的功能定位
+3. 价格区间要考虑该零件是核心部件还是辅助部件
+
+请基于以上分析，给出推荐用途、价格区间、材料和特性。`;
 
       const result = await callDeepSeek(PRODUCT_PLANNING_PROMPT, userMessage);
       return result;
@@ -326,8 +450,9 @@ async function handleAgentRequest(action: string, data: any): Promise<any> {
       const userMessage = `请为以下零件进行竞品分析：
 零件名称：${partName}
 产品规划：${JSON.stringify(productPlan || {}, null, 2)}
+${treeContext}
 
-请分析市场竞争情况，包括价格区间、主要竞品、定价建议和市场趋势。`;
+请分析市场竞争情况，包括价格区间、主要竞品、定价建议和市场趋势。在制定定价策略时，请考虑该零件在整体产品中的定位。`;
 
       const result = await callDeepSeek(COMPETITOR_ANALYSIS_PROMPT, userMessage);
       return result;
@@ -340,8 +465,9 @@ ${partSpecs ? `规格要求：${partSpecs}` : ''}
 ${materials.length > 0 ? `首选材料：${materials.join(', ')}` : ''}
 ${budget ? `目标价格区间：${budget} CNY` : ''}
 ${features.length > 0 ? `产品特性：${features.join(', ')}` : ''}
+${treeContext}
 
-请根据以上信息生成3-5个最合适的供应商选项，优先考虑能够提供所选材料和满足预算要求的供应商。`;
+请根据以上信息生成3-5个最合适的供应商选项，优先考虑能够提供所选材料和满足预算要求的供应商。在选择供应商时，请考虑该零件在整体产品中的重要性和成本占比。`;
 
       const result = await callDeepSeek(SUPPLIER_AGENT_PROMPT, userMessage);
       return { suppliers: result?.suppliers || [] };
@@ -349,7 +475,9 @@ ${features.length > 0 ? `产品特性：${features.join(', ')}` : ''}
 
     case 'start_customization': {
       const userMessage = `用户想要定制零件：${partName}
-请生成3-5个关键问题，帮助明确定制需求。`;
+${treeContext}
+
+请生成3-5个关键问题，帮助明确定制需求。在设计问题时，请考虑该零件在整体拆解结构中的位置和功能，以及它与其他部件之间的关系。`;
 
       const result = await callDeepSeek(CUSTOMIZED_AGENT_PROMPT, userMessage);
       return { questions: result?.questions || [] };
@@ -358,8 +486,9 @@ ${features.length > 0 ? `产品特性：${features.join(', ')}` : ''}
     case 'generate_processes': {
       const userMessage = `零件名称：${partName}
 定制参数：${JSON.stringify(customizedParams || {}, null, 2)}
+${treeContext}
 
-请生成3-4种可行的工艺方案。`;
+请生成3-4种可行的工艺方案。在选择工艺时，请考虑该零件在整体产品中的功能定位和成本占比，选择最合适的加工工艺。`;
 
       const result = await callDeepSeek(PROCESS_AGENT_PROMPT, userMessage);
       return { processes: result?.processes || [] };
